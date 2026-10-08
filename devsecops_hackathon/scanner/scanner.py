@@ -321,13 +321,15 @@ if __name__ == '__main__':
     all_findings = []
     
     for file in args.files:
-        if file.endswith('.py'):
+        if os.path.exists(file):
             errors, findings = scan_file(file)
             total_errors += errors
             all_findings.extend(findings)
             
             if args.deps:
                 total_errors += scan_dependencies(file)
+        else:
+            print(f"{Fore.RED}[ERROR] File not found: {file}")
     
     if args.report:
         generate_html_report(all_findings, args.report)

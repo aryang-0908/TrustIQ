@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA | Shopping Bag</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #ffffff; --text: #111111; --text-light: #71717a; --border: #e4e4e7; --accent: #000000; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+        header { padding: 2rem; text-align: center; border-bottom: 1px solid var(--border); }
+        .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; text-transform: uppercase; }
+        .container { max-width: 1000px; margin: 4rem auto; padding: 0 2rem; }
+        h1 { font-size: 2rem; font-weight: 300; letter-spacing: 0.05em; margin-bottom: 3rem; text-align: center; text-transform: uppercase; }
+        .cart-list { border-top: 1px solid var(--border); }
+        .cart-item { display: flex; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border); align-items: center; }
+        .cart-item-img { width: 120px; height: 150px; object-fit: cover; background: #f4f4f5; }
+        .cart-item-details { flex: 1; }
+        .cart-item-title { font-size: 1.2rem; font-weight: 500; margin-bottom: 0.5rem; }
+        .cart-item-desc { font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem; max-width: 400px; }
+        .cart-item-price { font-size: 1.1rem; font-weight: 500; }
+        .remove-btn { background: none; border: none; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.8rem; cursor: pointer; margin-top: 1rem; }
+        .cart-summary { margin-top: 3rem; background: #fafafa; padding: 3rem; display: flex; flex-direction: column; align-items: flex-end; }
+        .summary-row { display: flex; justify-content: space-between; width: 300px; margin-bottom: 1rem; font-size: 1.1rem; }
+        .summary-total { display: flex; justify-content: space-between; width: 300px; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--accent); font-size: 1.4rem; font-weight: 500; }
+        .checkout-btn { background: var(--accent); color: var(--bg); padding: 1.2rem 3rem; font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; border: none; cursor: pointer; margin-top: 2rem; transition: opacity 0.2s; width: 300px; text-align: center; text-decoration: none; display: inline-block; }
+        .checkout-btn:hover { opacity: 0.9; }
+        .empty-state { text-align: center; padding: 5rem 0; color: var(--text-light); }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="shop.html" class="logo">NOVA</a>
+    </header>
+    <div class="container" id="mainContainer">
+        <h1>Your Shopping Bag</h1>
+        <div id="cartContent"></div>
+    </div>
+    <script>
+        let cart = [];
+        window.onload = () => {
+            const saved = localStorage.getItem('novaCart');
+            if (saved) cart = JSON.parse(saved);
+            renderCart();
+        };
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            renderCart();
+        }
+        function renderCart() {
+            const container = document.getElementById('cartContent');
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="empty-state"><p>Your bag is empty.</p><a href="shop.html" class="checkout-btn" style="margin-top: 2rem;">Return to Store</a></div>`;
+                return;
+            }
+            let total = 0;
+            let html = '<div class="cart-list">';
+            cart.forEach((item, idx) => {
+                total += item.price;
+                html += `<div class="cart-item">
+                    <img src="${item.img}" class="cart-item-img">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-desc">${item.desc}</div>
+                        <button class="remove-btn" onclick="removeFromCart(${idx})">Remove Item</button>
+                    </div>
+                    <div class="cart-item-price">₹${item.price.toLocaleString('en-IN')}</div>
+                </div>`;
+            });
+            html += `</div>
+            <div class="cart-summary">
+                <div class="summary-row"><span>Subtotal</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+                <div class="summary-row"><span>Shipping</span><span>Complimentary</span></div>
+                <div class="summary-total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+                <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+            </div>`;
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

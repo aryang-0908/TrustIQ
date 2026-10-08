@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA | Secure Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #ffffff; --text: #111111; --text-light: #71717a; --border: #e4e4e7; --accent: #000000; --danger: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: ₹Inter₹, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+        header { padding: 2rem; text-align: center; border-bottom: 1px solid var(--border); }
+        .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; text-transform: uppercase; }
+        
+        .checkout-container { max-width: 1200px; margin: 4rem auto; padding: 0 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+        
+        .section-title { font-size: 1.2rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 1rem; }
+        
+        .cart-item { display: flex; gap: 1.5rem; padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+        .cart-item-img { width: 80px; height: 100px; object-fit: cover; background: #f4f4f5; }
+        .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .cart-item-title { font-weight: 500; font-size: 1rem; }
+        .cart-item-price { color: var(--text-light); margin-top: 0.5rem; }
+        
+        .cart-total { margin-top: 2rem; display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 500; padding-top: 1.5rem; }
+        
+        /* Payment Area */
+        .payment-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+        .pay-tab { flex: 1; padding: 1rem; text-align: center; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--text-light); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
+        .pay-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .pay-pane { display: none; }
+        .pay-pane.active { display: block; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; color: var(--text-light); }
+        .form-group input { width: 100%; padding: 0.8rem 0; border: none; border-bottom: 1px solid var(--border); font-size: 1rem; background: transparent; transition: border-color 0.2s; outline: none; }
+        .form-group input:focus { border-bottom-color: var(--accent); }
+        .form-row { display: flex; gap: 1.5rem; }
+        .form-row .form-group { flex: 1; }
+        
+        .checkout-btn { background-color: var(--accent); color: var(--bg); border: none; padding: 1.2rem; width: 100%; margin-top: 2rem; cursor: pointer; font-size: 0.95rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; }
+        .checkout-btn:hover { opacity: 0.9; }
+        .checkout-btn:disabled { background-color: #a1a1aa; cursor: not-allowed; }
+        .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: var(--bg); border-radius: 50%; animation: spin 0.8s linear infinite; display: none; margin-right: 0.5rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* TrustIQ Screen Overlays (Full Screen for Checkout) */
+        .overlay-screen { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        
+        /* Scan UI */
+        .scan-ui { background: #050505; color: #10b981; }
+        
+        /* Block UI */
+        .trustiq-block { background: #050505; color: #a3a3a3; position: relative; overflow: hidden; display: none; }
+        .trustiq-bg-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, #171717 1px, transparent 1px), linear-gradient(to bottom, #171717 1px, transparent 1px); background-size: 20px 20px; opacity: 0.5; z-index: 0; }
+        
+        @media (max-width: 768px) { .checkout-container { grid-template-columns: 1fr; gap: 2rem; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="shop.html" class="log✓>NOVA</a>
+    </header>
+
+    <div class="checkout-container" id="mainContainer">
+        
+        <!-- Order Summary -->
+        <div>
+            <h2 class="section-title">Order Summary</h2>
+            <div id="cartItemsList"></div>
+            
+            <div class="cart-total">
+                <span>Total Due</span>
+                <!-- HACKABLE ELEMENT -->
+                <span>â‚¹<span id="actualTotalNum" contenteditable="true" style="outline: none; border-bottom: 1px solid transparent; transition: border 0.3s;" onfocus="this.style.borderBottom=₹1px solid #111₹" onblur="this.style.borderBottom=₹1px solid transparent₹" oninput="syncTamperedPrice()">0</span></span>
+            </div>
+        </div>
+
+        <!-- Payment -->
+        <div>
+            <h2 class="section-title">Payment</h2>
+            <div style="background:#f4f4f5; padding:16px 20px; margin-bottom:2rem; font-size: 0.85rem; letter-spacing: 0.05em; color: var(--text-light); display: flex; align-items: center; justify-content: space-between;">
+                <span>SECURED BY TRUSTIQ</span>
+                <input type="text" id="trustIqToken" readonly style="background:transparent; border:none; padding:0; font-family:monospace; color:#10b981; font-size:11px; width:130px; text-align:right; outline:none;" placeholder="Authenticating...">
+            </div>
+
+            <form id="paymentForm" onsubmit="processPayment(event)">
+                <div class="payment-tabs">
+                    <div class="pay-tab active" onclick="switchPayTab(₹card₹)">Credit Card</div>
+                    <div class="pay-tab" onclick="switchPayTab(₹upi₹)">UPI</div>
+                </div>
+
+                <div id="pane-card" class="pay-pane active">
+                    <div class="form-group"><label>Card Number</label><input type="text" id="cardNum" placeholder="0000 0000 0000 0000" maxlength="19" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Expiry</label><input type="text" id="cardExp" placeholder="MM/YY" maxlength="5" required></div>
+                        <div class="form-group"><label>CVV</label><input type="password" id="cardCvv" placeholder="â€¢â€¢â€¢" maxlength="3" required></div>
+                    </div>
+                </div>
+
+                <div id="pane-upi" class="pay-pane">
+                    <div class="form-group"><label>Virtual Payment Address</label><input type="text" id="upiId" placeholder="username@upi"></div>
+                </div>
+                
+                <button type="submit" class="checkout-btn" id="payBtn">
+                    <span class="spinner" id="paySpinner"></span>
+                    <span id="payText">AUTHORIZE PAYMENT</span>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- SCAN TRANSITION SCREEN -->
+    <div id="scanTransitionContainer" class="overlay-screen scan-ui">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: #10b981; box-shadow: 0 0 15px #10b981; animation: scanLine 1.5s infinite linear;"></div>
+        <div style="width: 100%; max-width: 450px; font-family: ₹Courier New₹, monospace; font-size: 0.9rem; line-height: 2; text-align: left;" id="scanLogText"></div>
+        <style>@keyframes scanLine { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }</style>
+    </div>
+
+    <!-- TRUSTIQ BLOCK SCREEN -->
+    <div id="errorMessage" class="overlay-screen trustiq-block">
+        <div class="trustiq-bg-grid"></div>
+        <div style="position: relative; z-index: 1; max-width: 500px; width: 100%; padding: 3rem;">
+            <div style="display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #262626; padding-bottom: 1.5rem; margin-bottom: 2rem;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="M12 8v4"></path><path d="M12 16h.01"></path>
+                </svg>
+                <div>
+                    <h3 style="color: #ffffff; font-size: 1.4rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px;">TrustIQ Gateway</h3>
+                    <div style="color: #f43f5e; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em;">CONNECTION DROPPED</div>
+                </div>
+            </div>
+            <p style="font-size: 1rem; margin-bottom: 2rem; line-height: 1.6; color: #a3a3a3;">Request intercepted at the edge network. Strict invariant policy violation detected in payload geometry.</p>
+            <div style="background: #0a0a0a; border: 1px solid #171717; padding: 1.5rem; font-family: ₹Courier New₹, monospace; font-size: 0.9rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;"><span style="color: #525252;">Event ID:</span><span style="color: #d4d4d4;" id="blockEventId"></span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;"><span style="color: #525252;">Action:</span><span style="color: #f43f5e; font-weight: bold;">DROP_CONNECTION</span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;"><span style="color: #525252;">Rule:</span><span style="color: #d4d4d4;">WAF_TAMPER_PROTECT</span></div>
+                <div style="border-top: 1px dashed #262626; margin: 1.5rem 0; padding-top: 1.5rem;"><span style="color: #525252; display: block; margin-bottom: 0.5rem;">Diagnostic Output:</span><span style="color: #f43f5e;" id="errorDetails"></span></div>
+            </div>
+            <a href="shop.html" style="display: inline-block; text-decoration: none; padding: 1rem 2rem; background: transparent; border: 1px solid #404040; color: #a3a3a3; margin-top: 2rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em;">RETURN TO STORE</a>
+        </div>
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div id="successMessage" class="overlay-screen" style="text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 1.5rem;">âœ“</div>
+        <h3 style="font-size: 2rem; font-weight: 300; margin-bottom: 1rem;">Order Confirmed</h3>
+        <p style="color: var(--text-light); margin-bottom: 3rem; font-size: 1.1rem;">Order #NV-<span id="orderNumber"></span></p>
+        <a href="shop.html" style="display: inline-block; text-decoration: none; background-color: var(--accent); color: var(--bg); padding: 1rem 3rem; font-size: 0.95rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">CONTINUE SHOPPING</a>
+    </div>
+
+    <script>
+        let currentTotal = 0;
+        let cart = [];
+
+        window.onload = async () => {
+            const savedCart = localStorage.getItem(₹novaCart₹);
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                renderCart();
+            } else {
+                window.location.href = ₹shop.html₹;
+            }
+
+            try {
+                const tokenInput = document.getElementById(₹trustIqToken₹);
+                const res = await fetch(₹http://127.0.0.1:8000/dashboard/generate-token₹, {
+                    method: ₹POST₹, headers: { ₹Content-Type₹: ₹application/json₹ }, body: JSON.stringify({ user_id: ₹auto_shopper₹ })
+                });
+                const data = await res.json();
+                if (data.token) {
+                    tokenInput.value = data.token.substring(0, 16) + ₹...₹; 
+                    window.sessionToken = data.token;
+                }
+            } catch (e) {}
+        };
+
+        function renderCart() {
+            const list = document.getElementById(₹cartItemsList₹);
+            let total = 0;
+            list.innerHTML = cart.map(item => {
+                total += item.price;
+                return `
+                    <div class="cart-item">
+                        <img src="${item.img}" class="cart-item-img">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">â‚¹${item.price.toLocaleString(₹en-IN₹)}</div>
+                        </div>
+                    </div>`;
+            }).join(₹₹);
+            currentTotal = total;
+            document.getElementById(₹actualTotalNum₹).innerText = currentTotal.toLocaleString(₹en-IN₹);
+        }
+
+        function syncTamperedPrice() {
+            let num = parseInt(document.getElementById(₹actualTotalNum₹).innerText.replace(/,/g, ₹₹));
+            if (!isNaN(num)) currentTotal = num;
+        }
+
+        function switchPayTab(tab) {
+            document.querySelectorAll(₹.pay-tab₹).forEach(t => t.classList.remove(₹active₹));
+            document.querySelectorAll(₹.pay-pane₹).forEach(p => p.classList.remove(₹active₹));
+            if(tab === ₹card₹) {
+                document.querySelectorAll(₹.pay-tab₹)[0].classList.add(₹active₹);
+                document.getElementById(₹pane-card₹).classList.add(₹active₹);
+                document.getElementById(₹cardNum₹).required = true;
+                document.getElementById(₹upiId₹).required = false;
+            } else {
+                document.querySelectorAll(₹.pay-tab₹)[1].classList.add(₹active₹);
+                document.getElementById(₹pane-upi₹).classList.add(₹active₹);
+                document.getElementById(₹cardNum₹).required = false;
+                document.getElementById(₹upiId₹).required = true;
+            }
+        }
+
+        async function processPayment(event) {
+            event.preventDefault();
+            const payBtn = document.getElementById(₹payBtn₹);
+            const payText = document.getElementById(₹payText₹);
+            const paySpinner = document.getElementById(₹paySpinner₹);
+
+            payBtn.disabled = true;
+            payText.innerText = ₹ROUTING SECURELY...₹;
+            paySpinner.style.display = ₹block₹;
+
+            try {
+                const response = await fetch(₹http://127.0.0.1:8000/api/checkout₹, {
+                    method: ₹POST₹,
+                    headers: { ₹Content-Type₹: ₹application/json₹, ₹Authorization₹: `Bearer ${window.sessionToken}` },
+                    body: JSON.stringify({ product_id: cart.length > 0 ? cart[0].id : 1, price: currentTotal, user_id: "demo_user" })
+                });
+
+                if (response.ok) {
+                    document.getElementById(₹mainContainer₹).style.display = ₹none₹;
+                    document.getElementById(₹orderNumber₹).innerText = Math.floor(100000 + Math.random() * 900000);
+                    document.getElementById(₹successMessage₹).style.display = ₹flex₹;
+                    localStorage.removeItem(₹novaCart₹);
+                } else {
+                    const data = await response.json();
+                    
+                    await new Promise(r => setTimeout(r, 800));
+                    document.getElementById(₹mainContainer₹).style.display = ₹none₹;
+                    
+                    const scanUI = document.getElementById(₹scanTransitionContainer₹);
+                    scanUI.style.display = ₹flex₹;
+                    
+                    const scanLines = [
+                        "<span style=₹color: #f43f5e; font-weight: bold;₹>[!] ANOMALY DETECTED IN OUTBOUND STREAM</span>",
+                        "HALTING TRANSACTION PROTOCOL...",
+                        "INITIATING DEEP PACKET INSPECTION...",
+                        "ANALYZING PAYLOAD GEOMETRY...",
+                        `<span style=₹color: #f43f5e;₹>CRITICAL MATCH: ${data.error || ₹Tampering Detected₹}</span>`,
+                        "<span style=₹color: #f43f5e;₹>EXECUTING ZERO-TRUST DROP RULE...</span>"
+                    ];
+                    const scanLog = document.getElementById(₹scanLogText₹);
+                    scanLog.innerHTML = "";
+                    for(let i=0; i<scanLines.length; i++) {
+                        await new Promise(r => setTimeout(r, 350 + Math.random() * 250));
+                        scanLog.innerHTML += `<div>> ${scanLines[i]}</div>`;
+                    }
+                    await new Promise(r => setTimeout(r, 900));
+                    
+                    scanUI.style.display = ₹none₹;
+                    document.getElementById(₹errorMessage₹).style.display = ₹flex₹;
+                    document.getElementById(₹errorDetails₹).innerText = data.error || ₹Blocked by Edge Security.₹;
+                    document.getElementById(₹blockEventId₹).innerText = `REQ-${Math.floor(Math.random() * 1000000)}`;
+                }
+            } catch (err) {}
+        }
+    </script>
+</body>
+</html>

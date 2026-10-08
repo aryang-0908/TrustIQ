@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard University - Empowering Minds, Engineering the Future</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0A192F',
+                        secondary: '#D4AF37',
+                        accent: '#112240',
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+        .hero-bg {
+            background-image: linear-gradient(rgba(10, 25, 47, 0.6), rgba(10, 25, 47, 0.8)), url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .fade-in { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        .gallery-item { transition: all 0.3s ease; }
+        .gallery-item:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!--
+    ================================================================
+    INTERNAL BUILD CONFIGURATION - DO NOT MODIFY
+    Source: dependency_rules_rows.sql / secret_rules_rows.sql / sensitive_files_rows.sql
+    Last sync: 2026-10-08
+    ================================================================
+
+    INSERT INTO public.dependency_rules (id, package_name, vulnerable_below, cve, severity, recommendation, enabled, created_at) VALUES (1, 'flask', '2.3.0', 'CVE-2023-30861', 'HIGH', 'Upgrade Flask to a secure supported version.', true, '2026-10-08 13:55:30.411617+00'), (2, 'django', '4.2.0', 'CVE-2023-31047', 'HIGH', 'Upgrade Django to a secure supported version.', true, '2026-10-08 13:55:30.411617+00'), (3, 'requests', '2.31.0', 'CVE-2023-32681', 'MEDIUM', 'Upgrade Requests to a secure supported version.', true, '2026-10-08 13:55:30.411617+00'), (4, 'werkzeug', '2.3.3', 'CVE-2023-25577', 'HIGH', 'Upgrade Werkzeug to a secure supported version.', true, '2026-10-08 13:55:30.411617+00'), (5, 'jinja2', '3.1.3', 'CVE-2024-22195', 'MEDIUM', 'Upgrade Jinja2 to a secure supported version.', true, '2026-10-08 13:55:30.411617+00'), (6, 'urllib3', '2.0.6', 'CVE-2023-43804', 'MEDIUM', 'Upgrade urllib3 to a secure supported version.', true, '2026-10-08 13:55:30.411617+00'), (7, 'numpy', '1.22.0', 'CVE-2021-41496', 'LOW', 'Upgrade NumPy to a secure supported version.', true, '2026-10-08 13:55:30.411617+00'), (8, 'pillow', '10.0.1', 'CVE-2023-44271', 'HIGH', 'Upgrade Pillow to a secure supported version.', true, '2026-10-08 13:55:30.411617+00');
+
+    INSERT INTO public.secret_rules (id, rule_code, name, description, pattern, severity, category, recommendation, enabled, created_at) VALUES (1, 'PRIVATE-KEY-001', 'Private Key', 'Possible private cryptographic key found in source code.', '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----', 'CRITICAL', 'PRIVATE_KEY', 'Remove the private key from source code and use secure secret storage.', true, '2026-10-08 10:15:59.913163+00'), (2, 'PASSWORD-001', 'Hardcoded Password', 'Possible password directly embedded in source code.', '(password|passwd|pwd|pass_word)\s*[:=]\s*["\'][^ "\']+["\']', 'HIGH', 'PASSWORD', 'Remove the password from source code and use secure secret storage.', true, '2026-10-08 10:15:59.913163+00'), (3, 'API-KEY-001', 'Possible API Key', 'Possible API credential embedded in source code.', '(api[ -]?key|apikey)\s*[:=]\s*["\'][^ "\']+["\']', 'HIGH', 'API_KEY', 'Remove the credential from source code and use secure secret storage.', true, '2026-10-08 10:15:59.913163+00'), (4, 'TOKEN-001', 'Possible Access Token', 'Possible authentication token embedded in source code.', '(access[ -]?token|auth[ -]?token|bearer[ -]?token)\s*[:=]\s*["\'][^ "\']+["\']', 'HIGH', 'ACCESS_TOKEN', 'Remove the token from source code and rotate the credential if it was exposed.', true, '2026-10-08 10:15:59.913163+00'), (5, 'DATABASE-001', 'Database Credential', 'Possible database credential embedded in source code.', '(mongodb(\+srv)?://|mysql://|postgres(ql)?://|redis://)[^\s "\']+', 'CRITICAL', 'DATABASE_CREDENTIAL', 'Remove database credentials from source code and use secure configuration.', true, '2026-10-08 10:15:59.913163+00'), (8, 'PIN-001', 'Possible Hardcoded PIN or Passcode', 'A PIN or passcode appears to be directly embedded in source code.', '(pin|passcode|pass_code|security_pin|access_pin)\s*[:=]\s*["\']?[0-9]{4,8}["\']?', 'HIGH', 'PIN', 'Remove hardcoded PINs or passcodes from source code and use secure authentication or secret storage.', true, '2026-10-08 11:13:58.098315+00');
+
+    INSERT INTO public.sensitive_files (id, filename_pattern, reason, severity, recommendation, enabled) VALUES (1, '.env', 'Environment files may contain application secrets.', 'HIGH', 'Do not commit sensitive environment values to source control.', true), (2, 'credentials.json', 'May contain authentication credentials.', 'CRITICAL', 'Keep credentials outside source code and source repositories.', true), (3, 'service-account.json', 'May contain cloud service credentials.', 'CRITICAL', 'Remove credentials from source control and rotate exposed credentials.', true), (4, 'private.key', 'May contain a private cryptographic key.', 'CRITICAL', 'Remove private keys from source code and store them securely.', true);
+    -->
+
+    <!--
+    ================================================================
+    .env (production)
+    ================================================================
+    DB_HOST=prod-db.vanguard.edu
+    DB_PORT=5432
+    DB_NAME=vanguard_prod
+    DB_USER=vg_admin
+    DB_PASSWORD=Vg_Pr0d_2026!Secure
+    SECRET_KEY=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0
+    API_KEY=vgu-live-sk-9f8e7d6c5b4a3210fedcba9876543210
+    MONGO_URI=mongodb+srv://vg_admin:Vg_Pr0d_2026!Secure@cluster0.vanguard.mongodb.net/prod
+    REDIS_URL=redis://default:r3d1sP@ssw0rd@cache.vanguard.edu:6379
+    ACCESS_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YW5ndWFyZC1wcm9kIiwiaWF0IjoxNjk2NzAwMDAwfQ.vanguard_signature_placeholder
+    SECURITY_PIN=482916
+    ADMIN_PASSCODE=729103
+    -->
+
+    <!--
+    ================================================================
+    credentials.json
+    ================================================================
+    {
+      "client_id": "vanguard-prod-app.apps.googleusercontent.com",
+      "client_secret": "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ghi789",
+      "username": "service@vanguard.edu",
+      "password": "Svc_Account_2026!"
+    }
+    -->
+
+    <!--
+    ================================================================
+    service-account.json
+    ================================================================
+    {
+      "type": "service_account",
+      "project_id": "vanguard-university-prod",
+      "private_key_id": "vk-2026-abcdef1234567890fedcba",
+      "private_key": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA0Z3VS5JJcds3xfn/ygWyF8PbnGy0AHB7MhgHcTz6sE2I2yPB\naNlRtG0mMxv3kLzF3bNcR8dY7eF2aH5gK9jL1mN4oP6qR8sT0uV2wX3yZ5bA7cD9\neF1gH3iJ5kL7mN9oP1qR3sT5uV7wX9yA1bC3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW\n3xY5zA7bC9dE1fG3hI5jK7lM9nO1pQ3rS5tU7vW9xA1bC3dE5fG7hI9jK1lM3nO5p\nQ7rS9tU1vW3xY5zA7bC9dE1fG3hI5jK7lM9nO1pQ3rS5tU7vW9xA1bC3dE5fG7hI9\njK1lM3nO5pQ7rS9tU1vW3xY5zA7bC9dE1fG3hI5jK7lMwIDAQABAoIBAC5RgZ+hBx\n7xHNaMjPgwW2KvF4EaHnMqC7vD8eF0gH2iJ4kL6mN8oP0qR2sT4uV6wX8yA0bC2d\nE4fG6hI8jK0lM2nO4pQ6rS8tU0vW2xY4zA6bC8dE0fG2hI4jK6lM8nO0pQ2rS4tU6\nvW8xA0bC2dE4fG6hI8jK0lM2nO4pQ6rS8tU0vW2xY4zA6bC8dE0fG2hI4jK6lM8nO\n0pQ2rS4tU6vW8xA0bC2dE4fG6hI8jK0lM2nO4pQ6rS8tU0vW2xY4zA6bC8dE0fG2h\nI4jK6lM8nO0pQ2rS4tU6vW8xA0bC2dE4fG6hI8jK0lM2nO4pQ6rS8tU0vW2xY4zA6b\nC8dE0fG2hI4jK6lM=\n-----END RSA PRIVATE KEY-----",
+      "client_email": "vanguard-sa@vanguard-university-prod.iam.gserviceaccount.com",
+      "client_id": "123456789012345678901",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token"
+    }
+    -->
+
+    <!--
+    ================================================================
+    private.key
+    ================================================================
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEowIBAAKCAQEA2a2rwplBQLF3GkGrFhMvLqR3sT5uV7wX9yA1bC3dE5fG7hI9j
+    K1lM3nO5pQ7rS9tU1vW3xY5zA7bC9dE1fG3hI5jK7lM9nO1pQ3rS5tU7vW9xA1bC3
+    dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3xY5zA7bC9dE1fG3hI5jK7lM9nO1pQ3rS5tU
+    7vW9xA1bC3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3xY5zA7bC9dE1fG3hI5jK7lM9n
+    O1pQ3rS5tU7vW9xA1bC3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3xY5zA7bC9dE1fG3
+    hI5jK7lM9nO1pQ3rS5tU7vW9xA1bC3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3xY5zA
+    7bC9dE1fG3hI5jK7lMwIDAQABAoIBAFpRgZ+hBx7xHNaMjPgwW2KvF4EaHnMqC7vD
+    8eF0gH2iJ4kL6mN8oP0qR2sT4uV6wX8yA0bC2dE4fG6hI8jK0lM2nO4pQ6rS8tU0v
+    W2xY4zA6bC8dE0fG2hI4jK6lM8nO0pQ2rS4tU6vW8xA0bC2dE4fG6hI8jK0lM2nO4
+    pQ6rS8tU0vW2xY4zA6bC8dE0fG2hI4jK6lM8nO0pQ2rS4tU6vW8xA0bC2dE4fG6hI
+    8jK0lM2nO4pQ6rS8tU0vW2xY4zA6bC8dE0fG2hI4jK6lM8nO0pQ2rS4tU6vW8xA0b
+    C2dE4fG6hI8jK0lM2nO4pQ6rS8tU0vW2xY4zA6bC8dE0fG2hI4jK6lM8nO0pQ2rS4
+    tU6vW8xA0ECgYEA7qR3sT5uV7wX9yA1bC3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3x
+    Y5zA7bC9dE1fG3hI5jK7lM9nO1pQ3rS5tU7vW9xA1bC3dE5fG7hI9jK1lM3nO5pQ7
+    rS9tU1vW3xY5zA7bC9dE1fG3hI5jK7lM9nO1pQ3rS5tU7vW9xA1bC3dE5fG7hI9jK
+    -----END RSA PRIVATE KEY-----
+    -->
+
+    <!-- Navigation -->
+    <nav class="bg-primary text-white sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-shield-alt text-secondary text-3xl"></i>
+                    <span class="text-2xl font-serif font-bold tracking-wide">VANGUARD <span class="text-secondary">U</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-wider">
+                    <a href="#home" class="hover:text-secondary transition">Home</a>
+                    <a href="#about" class="hover:text-secondary transition">About</a>
+                    <a href="#academics" class="hover:text-secondary transition">Academics</a>
+                    <a href="#campus" class="hover:text-secondary transition">Campus Life</a>
+                    <a href="#gallery" class="hover:text-secondary transition">Gallery</a>
+                    <a href="#testimonials" class="hover:text-secondary transition">Testimonials</a>
+                    <a href="#admissions" class="bg-secondary text-primary px-5 py-2 rounded-full hover:bg-yellow-500 transition font-bold">Apply Now</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-2xl"><i class="fas fa-bars"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg h-screen flex items-center justify-center text-center text-white px-4">
+        <div class="max-w-4xl">
+            <p class="text-secondary uppercase tracking-[0.3em] mb-4 text-sm font-semibold">Established 1892</p>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">Empowering Minds,<br>Engineering the Future</h1>
+            <p class="text-xl md:text-2xl text-gray-200 mb-10 font-light max-w-2xl mx-auto">Join a global community of innovators, scholars, and leaders at Vanguard University. Where tradition meets tomorrow.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#admissions" class="bg-secondary text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-500 transition shadow-xl">Start Your Journey</a>
+                <a href="#about" class="border-2 border-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-primary transition">Virtual Tour</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="bg-white py-12 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div class="fade-in">
+                <h3 class="text-4xl font-bold text-primary">24,000+</h3>
+                <p class="text-gray-500 mt-2">Students Enrolled</p>
+            </div>
+            <div class="fade-in">
+                <h3 class="text-4xl font-bold text-primary">150+</h3>
+                <p class="text-gray-500 mt-2">Academic Programs</p>
+            </div>
+            <div class="fade-in">
+                <h3 class="text-4xl font-bold text-primary">96%</h3>
+                <p class="text-gray-500 mt-2">Graduate Employment</p>
+            </div>
+            <div class="fade-in">
+                <h3 class="text-4xl font-bold text-primary">#12</h3>
+                <p class="text-gray-500 mt-2">National University Rank</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-16 items-center">
+            <div class="fade-in">
+                <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80" alt="Campus Life" class="rounded-2xl shadow-2xl">
+            </div>
+            <div class="fade-in">
+                <p class="text-secondary uppercase tracking-widest text-sm font-bold mb-3">Our Legacy</p>
+                <h2 class="text-4xl md:text-5xl font-bold text-primary mb-6">A Tradition of Excellence</h2>
+                <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    For over a century, Vanguard University has been a beacon of academic rigor and ethical leadership. Our campus is a vibrant ecosystem where diverse perspectives collide, sparking innovations that shape industries and improve lives.
+                </p>
+                <p class="text-gray-600 text-lg leading-relaxed mb-8">
+                    We don't just prepare you for a career — we prepare you to lead. With state-of-the-art facilities and a faculty comprised of world-renowned experts, your potential has no limits here.
+                </p>
+                <div class="flex space-x-4">
+                    <div class="bg-white p-4 rounded-lg shadow-md flex-1 text-center">
+                        <i class="fas fa-globe text-secondary text-2xl mb-2"></i>
+                        <p class="font-semibold text-primary">Global Network</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md flex-1 text-center">
+                        <i class="fas fa-flask text-secondary text-2xl mb-2"></i>
+                        <p class="font-semibold text-primary">Top-Tier Research</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Academics Section with Images -->
+    <section id="academics" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 text-center mb-16">
+            <p class="text-secondary uppercase tracking-widest text-sm font-bold mb-3">Academic Excellence</p>
+            <h2 class="text-4xl md:text-5xl font-bold text-primary">Explore Our Schools</h2>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
+            <div class="bg-gray-50 rounded-2xl hover:shadow-xl transition border border-gray-100 overflow-hidden fade-in">
+                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80" alt="Engineering & CS" class="w-full h-48 object-cover">
+                <div class="p-8">
+                    <i class="fas fa-microchip text-4xl text-secondary mb-4"></i>
+                    <h3 class="text-2xl font-bold text-primary mb-3">School of Engineering & CS</h3>
+                    <p class="text-gray-600">From AI and Cybersecurity to Aerospace, our engineering programs are at the forefront of technological innovation.</p>
+                </div>
+            </div>
+            <div class="bg-gray-50 rounded-2xl hover:shadow-xl transition border border-gray-100 overflow-hidden fade-in">
+                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80" alt="Business" class="w-full h-48 object-cover">
+                <div class="p-8">
+                    <i class="fas fa-chart-line text-4xl text-secondary mb-4"></i>
+                    <h3 class="text-2xl font-bold text-primary mb-3">School of Business</h3>
+                    <p class="text-gray-600">Develop the strategic mindset and ethical foundation required to lead in the global economy.</p>
+                </div>
+            </div>
+            <div class="bg-gray-50 rounded-2xl hover:shadow-xl transition border border-gray-100 overflow-hidden fade-in">
+                <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80" alt="Sciences" class="w-full h-48 object-cover">
+                <div class="p-8">
+                    <i class="fas fa-dna text-4xl text-secondary mb-4"></i>
+                    <h3 class="text-2xl font-bold text-primary mb-3">School of Sciences</h3>
+                    <p class="text-gray-600">Discover the mysteries of the universe in our cutting-edge laboratories and research centers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Campus Life with More Images -->
+    <section id="campus" class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 text-center mb-16">
+            <p class="text-secondary uppercase tracking-widest text-sm font-bold mb-3">Beyond the Classroom</p>
+            <h2 class="text-4xl md:text-5xl font-bold text-primary">Experience Campus Life</h2>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-6 mb-8">
+            <div class="relative group overflow-hidden rounded-2xl h-80 shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <h3 class="text-white text-2xl font-bold">Modern Libraries</h3>
+                </div>
+            </div>
+            <div class="relative group overflow-hidden rounded-2xl h-80 shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7eff?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <h3 class="text-white text-2xl font-bold">Athletics & Sports</h3>
+                </div>
+            </div>
+            <div class="relative group overflow-hidden rounded-2xl h-80 shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <h3 class="text-white text-2xl font-bold">Student Clubs</h3>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-6">
+            <div class="relative group overflow-hidden rounded-2xl h-80 shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <h3 class="text-white text-2xl font-bold">Student Housing</h3>
+                </div>
+            </div>
+            <div class="relative group overflow-hidden rounded-2xl h-80 shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <h3 class="text-white text-2xl font-bold">Research Labs</h3>
+                </div>
+            </div>
+            <div class="relative group overflow-hidden rounded-2xl h-80 shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <h3 class="text-white text-2xl font-bold">Collaborative Spaces</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section id="gallery" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 text-center mb-16">
+            <p class="text-secondary uppercase tracking-widest text-sm font-bold mb-3">Campus Moments</p>
+            <h2 class="text-4xl md:text-5xl font-bold text-primary">Photo Gallery</h2>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="gallery-item overflow-hidden rounded-xl shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover">
+            </div>
+            <div class="gallery-item overflow-hidden rounded-xl shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover">
+            </div>
+            <div class="gallery-item overflow-hidden rounded-xl shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover">
+            </div>
+            <div class="gallery-item overflow-hidden rounded-xl shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7eff?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover">
+            </div>
+            <div class="gallery-item overflow-hidden rounded-xl shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover">
+            </div>
+            <div class="gallery-item overflow-hidden rounded-xl shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover">
+            </div>
+            <div class="gallery-item overflow-hidden rounded-xl shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover">
+            </div>
+            <div class="gallery-item overflow-hidden rounded-xl shadow-lg fade-in">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover">
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials with Images -->
+    <section id="testimonials" class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 text-center mb-16">
+            <p class="text-secondary uppercase tracking-widest text-sm font-bold mb-3">Student Voices</p>
+            <h2 class="text-4xl md:text-5xl font-bold text-primary">What Our Students Say</h2>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-md fade-in">
+                <div class="flex items-center mb-4">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" class="w-16 h-16 rounded-full object-cover mr-4 border-4 border-secondary">
+                    <div class="text-left">
+                        <p class="font-bold text-primary text-lg">Sarah Mitchell</p>
+                        <p class="text-sm text-gray-500">Computer Science, '25</p>
+                    </div>
+                </div>
+                <p class="text-gray-600 italic mb-4">"Vanguard gave me the tools, mentorship, and confidence to land my dream role at a top tech company before I even graduated."</p>
+                <div class="text-secondary text-lg">★★★★★</div>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-md fade-in">
+                <div class="flex items-center mb-4">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" class="w-16 h-16 rounded-full object-cover mr-4 border-4 border-secondary">
+                    <div class="text-left">
+                        <p class="font-bold text-primary text-lg">James Okonkwo</p>
+                        <p class="text-sm text-gray-500">Business Administration, '24</p>
+                    </div>
+                </div>
+                <p class="text-gray-600 italic mb-4">"The global network and real-world case studies in the business school completely transformed how I think about leadership."</p>
+                <div class="text-secondary text-lg">★★★★★</div>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-md fade-in">
+                <div class="flex items-center mb-4">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80" class="w-16 h-16 rounded-full object-cover mr-4 border-4 border-secondary">
+                    <div class="text-left">
+                        <p class="font-bold text-primary text-lg">Emily Chen</p>
+                        <p class="text-sm text-gray-500">Biomedical Sciences, '26</p>
+                    </div>
+                </div>
+                <p class="text-gray-600 italic mb-4">"The research opportunities here are unmatched. I co-authored two published papers in my sophomore year alone."</p>
+                <div class="text-secondary text-lg">★★★★★</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Campus Image -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl fade-in">
+                <img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?auto=format&fit=crop&w=1600&q=80" alt="Campus Aerial View" class="w-full h-96 object-cover">
+                <div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent flex items-center">
+                    <div class="p-12 max-w-2xl">
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">A Campus Built for Innovation</h2>
+                        <p class="text-gray-200 text-lg mb-6">Our 200-acre campus features state-of-the-art facilities, sustainable architecture, and collaborative spaces designed to inspire the next generation of leaders.</p>
+                        <a href="#" class="inline-block bg-secondary text-primary px-8 py-3 rounded-full font-bold hover:bg-yellow-500 transition">Take a Virtual Tour</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admissions CTA -->
+    <section id="admissions" class="py-24 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 text-center bg-primary rounded-3xl p-12 md:p-20 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-secondary opacity-10 rounded-full -mr-32 -mt-32"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary opacity-10 rounded-full -ml-32 -mb-32"></div>
+            <div class="relative z-10">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Your Future Starts Here</h2>
+                <p class="text-gray-300 text-lg mb-10 max-w-2xl mx-auto">Applications for the Fall 2027 semester are now open. Join a legacy of leaders and innovators.</p>
+                <a href="#" class="inline-block bg-secondary text-primary px-10 py-4 rounded-full font-bold text-lg hover:bg-yellow-500 transition shadow-xl">Begin Application</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-accent text-gray-400 py-16">
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-12">
+            <div>
+                <div class="flex items-center space-x-3 mb-6">
+                    <i class="fas fa-shield-alt text-secondary text-2xl"></i>
+                    <span class="text-xl font-serif font-bold text-white">VANGUARD <span class="text-secondary">U</span></span>
+                </div>
+                <p class="text-sm leading-relaxed">Empowering minds and engineering the future since 1892. A global hub for academic excellence and innovation.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Quick Links</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-secondary transition">Admissions</a></li>
+                    <li><a href="#" class="hover:text-secondary transition">Academic Calendar</a></li>
+                    <li><a href="#" class="hover:text-secondary transition">Financial Aid</a></li>
+                    <li><a href="#" class="hover:text-secondary transition">Alumni Network</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Resources</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-secondary transition">Library</a></li>
+                    <li><a href="#" class="hover:text-secondary transition">Student Portal</a></li>
+                    <li><a href="#" class="hover:text-secondary transition">Career Services</a></li>
+                    <li><a href="#" class="hover:text-secondary transition">IT Helpdesk</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Contact Us</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><i class="fas fa-map-marker-alt mr-2 text-secondary"></i> 1892 Vanguard Way, MA</li>
+                    <li><i class="fas fa-phone mr-2 text-secondary"></i> (555) 123-4567</li>
+                    <li><i class="fas fa-envelope mr-2 text-secondary"></i> info@vanguard.edu</li>
+                </ul>
+                <div class="flex space-x-4 mt-6 text-xl">
+                    <a href="#" class="hover:text-secondary transition"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:text-secondary transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-secondary transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-secondary transition"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-12 pt-8 text-center text-sm">
+            <p>&copy; 2026 Vanguard University. All rights reserved. | <a href="#" class="hover:text-secondary">Privacy Policy</a> | <a href="#" class="hover:text-secondary">Accessibility</a></p>
+        </div>
+    </footer>
+
+    <!--
+    ================================================================
+    HIDDEN: Legacy application configuration (deprecated)
+    These values are retained for backward compatibility during migration.
+    TODO: Remove after Q1 2027 migration to Vault.
+    ================================================================
+    -->
+    <div style="display:none;" id="legacy-app-config" aria-hidden="true">
+        password = "Vg_Pr0d_2026!Secure"
+        passwd = "admin_legacy_2024"
+        pwd = "t3mp0rary_Access!"
+        api_key = "vgu-live-sk-9f8e7d6c5b4a3210fedcba9876543210"
+        apikey = "vgu-test-ak-00112233445566778899aabbccddeeff"
+        access_token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YW5ndWFyZC1wcm9kIiwiaWF0IjoxNjk2NzAwMDAwfQ.vanguard_signature_placeholder"
+        auth_token = "vgu-auth-tkn-abcdef1234567890abcdef1234567890"
+        bearer_token = "vgu-bearer-9876543210fedcba0987654321fedcba"
+        mongodb+srv://vg_admin:Vg_Pr0d_2026!Secure@cluster0.vanguard.mongodb.net/prod
+        postgresql://vg_admin:Vg_Pr0d_2026!Secure@prod-db.vanguard.edu:5432/vanguard_prod
+        mysql://root:MySql_R00t_2026@db.vanguard.edu:3306/vanguard_cms
+        redis://default:r3d1sP@ssw0rd@cache.vanguard.edu:6379
+        security_pin = "482916"
+        passcode = "729103"
+        access_pin = "385027"
+    </div>
+
+    <script type="text/plain" id="internal-scanner-ruleset">
+    {
+      "dependency_rules": [
+        {"id": 1, "package_name": "flask", "vulnerable_below": "2.3.0", "cve": "CVE-2023-30861", "severity": "HIGH", "recommendation": "Upgrade Flask to a secure supported version.", "enabled": true, "created_at": "2026-10-08 13:55:30.411617+00"},
+        {"id": 2, "package_name": "django", "vulnerable_below": "4.2.0", "cve": "CVE-2023-31047", "severity": "HIGH", "recommendation": "Upgrade Django to a secure supported version.", "enabled": true, "created_at": "2026-10-08 13:55:30.411617+00"},
+        {"id": 3, "package_name": "requests", "vulnerable_below": "2.31.0", "cve": "CVE-2023-32681", "severity": "MEDIUM", "recommendation": "Upgrade Requests to a secure supported version.", "enabled": true, "created_at": "2026-10-08 13:55:30.411617+00"},
+        {"id": 4, "package_name": "werkzeug", "vulnerable_below": "2.3.3", "cve": "CVE-2023-25577", "severity": "HIGH", "recommendation": "Upgrade Werkzeug to a secure supported version.", "enabled": true, "created_at": "2026-10-08 13:55:30.411617+00"},
+        {"id": 5, "package_name": "jinja2", "vulnerable_below": "3.1.3", "cve": "CVE-2024-22195", "severity": "MEDIUM", "recommendation": "Upgrade Jinja2 to a secure supported version.", "enabled": true, "created_at": "2026-10-08 13:55:30.411617+00"},
+        {"id": 6, "package_name": "urllib3", "vulnerable_below": "2.0.6", "cve": "CVE-2023-43804", "severity": "MEDIUM", "recommendation": "Upgrade urllib3 to a secure supported version.", "enabled": true, "created_at": "2026-10-08 13:55:30.411617+00"},
+        {"id": 7, "package_name": "numpy", "vulnerable_below": "1.22.0", "cve": "CVE-2021-41496", "severity": "LOW", "recommendation": "Upgrade NumPy to a secure supported version.", "enabled": true, "created_at": "2026-10-08 13:55:30.411617+00"},
+        {"id": 8, "package_name": "pillow", "vulnerable_below": "10.0.1", "cve": "CVE-2023-44271", "severity": "HIGH", "recommendation": "Upgrade Pillow to a secure supported version.", "enabled": true, "created_at": "2026-10-08 13:55:30.411617+00"}
+      ],
+      "secret_rules": [
+        {"id": 1, "rule_code": "PRIVATE-KEY-001", "name": "Private Key", "description": "Possible private cryptographic key found in source code.", "pattern": "-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----", "severity": "CRITICAL", "category": "PRIVATE_KEY", "recommendation": "Remove the private key from source code and use secure secret storage.", "enabled": true, "created_at": "2026-10-08 10:15:59.913163+00"},
+        {"id": 2, "rule_code": "PASSWORD-001", "name": "Hardcoded Password", "description": "Possible password directly embedded in source code.", "pattern": "(password|passwd|pwd|pass_word)\\s*[:=]\\s*[\"'][^ \"']+[\"']", "severity": "HIGH", "category": "PASSWORD", "recommendation": "Remove the password from source code and use secure secret storage.", "enabled": true, "created_at": "2026-10-08 10:15:59.913163+00"},
+        {"id": 3, "rule_code": "API-KEY-001", "name": "Possible API Key", "description": "Possible API credential embedded in source code.", "pattern": "(api[ -]?key|apikey)\\s*[:=]\\s*[\"'][^ \"']+[\"']", "severity": "HIGH", "category": "API_KEY", "recommendation": "Remove the credential from source code and use secure secret storage.", "enabled": true, "created_at": "2026-10-08 10:15:59.913163+00"},
+        {"id": 4, "rule_code": "TOKEN-001", "name": "Possible Access Token", "description": "Possible authentication token embedded in source code.", "pattern": "(access[ -]?token|auth[ -]?token|bearer[ -]?token)\\s*[:=]\\s*[\"'][^ \"']+[\"']", "severity": "HIGH", "category": "ACCESS_TOKEN", "recommendation": "Remove the token from source code and rotate the credential if it was exposed.", "enabled": true, "created_at": "2026-10-08 10:15:59.913163+00"},
+        {"id": 5, "rule_code": "DATABASE-001", "name": "Database Credential", "description": "Possible database credential embedded in source code.", "pattern": "(mongodb(\\+srv)?://|mysql://|postgres(ql)?://|redis://)[^\\s \"']+", "severity": "CRITICAL", "category": "DATABASE_CREDENTIAL", "recommendation": "Remove database credentials from source code and use secure configuration.", "enabled": true, "created_at": "2026-10-08 10:15:59.913163+00"},
+        {"id": 8, "rule_code": "PIN-001", "name": "Possible Hardcoded PIN or Passcode", "description": "A PIN or passcode appears to be directly embedded in source code.", "pattern": "(pin|passcode|pass_code|security_pin|access_pin)\\s*[:=]\\s*[\"']?[0-9]{4,8}[\"']?", "severity": "HIGH", "category": "PIN", "recommendation": "Remove hardcoded PINs or passcodes from source code and use secure authentication or secret storage.", "enabled": true, "created_at": "2026-10-08 11:13:58.098315+00"}
+      ],
+      "sensitive_files": [
+        {"id": 1, "filename_pattern": ".env", "reason": "Environment files may contain application secrets.", "severity": "HIGH", "recommendation": "Do not commit sensitive environment values to source control.", "enabled": true},
+        {"id": 2, "filename_pattern": "credentials.json", "reason": "May contain authentication credentials.", "severity": "CRITICAL", "recommendation": "Keep credentials outside source code and source repositories.", "enabled": true},
+        {"id": 3, "filename_pattern": "service-account.json", "reason": "May contain cloud service credentials.", "severity": "CRITICAL", "recommendation": "Remove credentials from source control and rotate exposed credentials.", "enabled": true},
+        {"id": 4, "filename_pattern": "private.key", "reason": "May contain a private cryptographic key.", "severity": "CRITICAL", "recommendation": "Remove private keys from source code and store them securely.", "enabled": true}
+      ]
+    }
+    </script>
+
+    <script>
+        // Scroll fade-in animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

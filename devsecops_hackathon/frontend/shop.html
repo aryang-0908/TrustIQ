@@ -536,12 +536,19 @@
 
             <!-- SUCCESS SCREEN -->
             <div class="success-message" id="successMessage">
-                <div style="font-size: 3rem; margin-bottom: 1.5rem;">🖤</div>
+                <div style="font-size: 3rem; margin-bottom: 1.5rem;">✓</div>
                 <h3 style="font-size: 1.5rem; font-weight: 300; margin-bottom: 1rem;">Order Confirmed</h3>
                 <p style="color: var(--text-light); margin-bottom: 2rem;">Order #NV-<span id="orderNumber"></span></p>
                 <button class="checkout-btn" onclick="finishOrder()">Return to Store</button>
             </div>
             
+            <!-- SCAN TRANSITION SCREEN -->
+            <div id="scanTransitionContainer" style="display: none; flex-direction: column; align-items: center; justify-content: center; background: #050505; color: #10b981; position: absolute; inset: 0; z-index: 1000;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: #10b981; box-shadow: 0 0 15px #10b981; animation: scanLine 1.5s infinite linear;"></div>
+                <div style="width: 100%; max-width: 450px; font-family: 'Courier New', monospace; font-size: 0.9rem; line-height: 2; text-align: left;" id="scanLogText"></div>
+                <style>@keyframes scanLine { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }</style>
+            </div>
+
             <!-- TRUSTIQ ENTERPRISE BLOCK SCREEN -->
             <div class="trustiq-block" id="errorMessage">
                 <div class="trustiq-bg-grid"></div>
@@ -771,7 +778,7 @@
                         'Authorization': `Bearer ${window.sessionToken || 'invalid'}` 
                     },
                     body: JSON.stringify({
-                        item: cart.length > 0 ? cart[0].name : "cart_items",
+                        product_id: cart.length > 0 ? cart[0].id : 1,
                         price: currentTotal,
                         user_id: "demo_user"
                     })
@@ -789,6 +796,27 @@
                 } else {
                     const data = await response.json();
                     document.getElementById('paymentFormContainer').style.display = 'none';
+                    
+                    const scanUI = document.getElementById('scanTransitionContainer');
+                    scanUI.style.display = 'flex';
+                    
+                    const scanLines = [
+                        "<span style='color: #f43f5e; font-weight: bold;'>[!] ANOMALY DETECTED IN OUTBOUND STREAM</span>",
+                        "HALTING TRANSACTION PROTOCOL...",
+                        "INITIATING DEEP PACKET INSPECTION...",
+                        "ANALYZING PAYLOAD GEOMETRY...",
+                        `<span style='color: #f43f5e;'>CRITICAL MATCH: ${data.error || 'Tampering Detected'}</span>`,
+                        "<span style='color: #f43f5e;'>EXECUTING ZERO-TRUST DROP RULE...</span>"
+                    ];
+                    const scanLog = document.getElementById('scanLogText');
+                    scanLog.innerHTML = "";
+                    for(let i=0; i<scanLines.length; i++) {
+                        await new Promise(r => setTimeout(r, 350 + Math.random() * 250));
+                        scanLog.innerHTML += `<div>> ${scanLines[i]}</div>`;
+                    }
+                    await new Promise(r => setTimeout(r, 900));
+                    
+                    scanUI.style.display = 'none';
                     document.getElementById('errorMessage').style.display = 'block';
                     document.getElementById('errorDetails').innerText = data.error || 'Blocked by Edge Security.';
                     

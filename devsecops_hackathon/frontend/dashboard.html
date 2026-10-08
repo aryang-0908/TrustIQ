@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustIQ Veil - Live Security Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; background-color: #050505; color: #e5e5e5; }
+        .glitch { position: relative; }
+        .card { background-color: #111; border: 1px solid #333; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; background: linear-gradient(to right, #4ade80, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .log-row:nth-child(even) { background-color: #0f0f0f; }
+        .log-row:hover { background-color: #1a1a1a; }
+    </style>
+</head>
+<body class="p-6 md:p-10 min-h-screen">
+
+    <header class="flex justify-between items-end mb-10 border-b border-gray-800 pb-4">
+        <div>
+            <h1 class="text-3xl font-bold tracking-widest uppercase text-white glitch">TRUSTIQ // VEIL</h1>
+            <p class="text-xs text-gray-500 mt-2">LIVE THREAT INTELLIGENCE & EGRESS MONITORING (24/7)</p>
+        </div>
+        <div class="text-right">
+            <p class="text-xs text-gray-500">PROTECTED TARGET / PLUGGED-IN WEB</p>
+            <p class="text-emerald-400 font-bold" id="target-url">http://127.0.0.1:8001</p>
+            <p class="text-xs text-emerald-400 animate-pulse mt-1"><i class="fas fa-circle"></i> SYSTEM ACTIVE</p>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div class="card p-6 rounded-lg shadow-lg">
+            <h3 class="text-gray-400 text-xs tracking-wider mb-2">TOTAL BLOCKED</h3>
+            <div class="stat-value" id="stat-blocked">0</div>
+        </div>
+        <div class="card p-6 rounded-lg shadow-lg">
+            <h3 class="text-gray-400 text-xs tracking-wider mb-2">DLP SCRUBBED (SECRETS)</h3>
+            <div class="stat-value text-red-500" style="background: none; -webkit-text-fill-color: #ef4444;" id="stat-dlp">0</div>
+        </div>
+        <div class="card p-6 rounded-lg shadow-lg">
+            <h3 class="text-gray-400 text-xs tracking-wider mb-2">IPs BANNED</h3>
+            <div class="stat-value text-red-500" style="background: none; -webkit-text-fill-color: #ef4444;" id="stat-bans">0</div>
+        </div>
+        <div class="card p-6 rounded-lg shadow-lg">
+            <h3 class="text-gray-400 text-xs tracking-wider mb-2">SAFE REQUESTS FORWARDED</h3>
+            <div class="stat-value text-blue-500" style="background: none; -webkit-text-fill-color: #3b82f6;" id="stat-forwarded">0</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="card p-6 rounded-lg shadow-lg col-span-1">
+            <h3 class="text-gray-400 text-sm tracking-wider mb-4 border-b border-gray-800 pb-2">ATTACK VECTORS</h3>
+            <ul class="space-y-4 text-sm" id="attack-vectors">
+                <li class="flex justify-between"><span>SQL Injection:</span> <span class="text-red-400" id="stat-sql">0</span></li>
+                <li class="flex justify-between"><span>Cross-Site Scripting (XSS):</span> <span class="text-red-400" id="stat-xss">0</span></li>
+                <li class="flex justify-between"><span>IDOR / Privilege:</span> <span class="text-red-400" id="stat-idor">0</span></li>
+                <li class="flex justify-between"><span>Auth Failures:</span> <span class="text-red-400" id="stat-auth">0</span></li>
+                <li class="flex justify-between"><span>Payload Tampering:</span> <span class="text-red-400" id="stat-tamper">0</span></li>
+                <li class="flex justify-between"><span>Rate Limited:</span> <span class="text-yellow-400" id="stat-rate">0</span></li>
+            </ul>
+        </div>
+        
+        <div class="card p-6 rounded-lg shadow-lg col-span-2 overflow-hidden flex flex-col">
+            <h3 class="text-gray-400 text-sm tracking-wider mb-4 border-b border-gray-800 pb-2">LIVE INTERCEPTION LOG</h3>
+            <div class="overflow-x-auto flex-1">
+                <table class="w-full text-left text-xs whitespace-nowrap">
+                    <thead class="text-gray-500 bg-[#0a0a0a]">
+                        <tr>
+                            <th class="py-2 px-3">TIMESTAMP</th>
+                            <th class="py-2 px-3">IP ADDRESS</th>
+                            <th class="py-2 px-3">THREAT TYPE</th>
+                            <th class="py-2 px-3">PATH</th>
+                            <th class="py-2 px-3">DETAILS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logs-table" class="text-gray-300 font-mono">
+                        <tr><td colspan="5" class="py-4 text-center text-gray-600">Waiting for live data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vanguard Target Security Data -->
+    <div class="card p-6 rounded-lg shadow-lg mb-10">
+        <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
+            <h3 class="text-gray-400 text-sm tracking-wider">TARGET SECURITY POSTURE (VANGUARD)</h3>
+            <button onclick="fetchVanguardData()" class="text-xs text-blue-400 hover:text-blue-300"><i class="fas fa-sync"></i> Refresh Data</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h4 class="text-emerald-400 text-xs tracking-wider mb-3"><i class="fas fa-key mr-2"></i>DLP Secret Rules</h4>
+                <div class="overflow-x-auto h-64 border border-gray-800 rounded bg-[#0a0a0a]">
+                    <table class="w-full text-left text-xs">
+                        <tbody id="vanguard-secrets" class="text-gray-400 font-mono divide-y divide-gray-800">
+                            <tr><td class="p-3 text-center">Loading target data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-red-400 text-xs tracking-wider mb-3"><i class="fas fa-bug mr-2"></i>Dependency Vulnerabilities</h4>
+                <div class="overflow-x-auto h-64 border border-gray-800 rounded bg-[#0a0a0a]">
+                    <table class="w-full text-left text-xs">
+                        <tbody id="vanguard-deps" class="text-gray-400 font-mono divide-y divide-gray-800">
+                            <tr><td class="p-3 text-center">Loading target data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/dashboard";
+
+        async function fetchVanguardData() {
+            try {
+                // Fetch the actual Vanguard HTML directly from the Vanguard host
+                const res = await fetch("http://127.0.0.1:3000/api/vanguard.html");
+                const html = await res.text();
+                
+                // Parse the embedded ruleset
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                const scriptTag = doc.getElementById('internal-scanner-ruleset');
+                
+                if (scriptTag) {
+                    const data = JSON.parse(scriptTag.textContent);
+                    
+                    // Render Secrets Rules
+                    const secTable = document.getElementById('vanguard-secrets');
+                    secTable.innerHTML = '';
+                    data.secret_rules.forEach(rule => {
+                        secTable.innerHTML += `
+                            <tr class="hover:bg-gray-900 transition">
+                                <td class="p-2 w-24 text-red-400">${rule.rule_code}</td>
+                                <td class="p-2">${rule.name}</td>
+                                <td class="p-2 text-gray-500">${rule.severity}</td>
+                            </tr>
+                        `;
+                    });
+
+                    // Render Dependencies
+                    const depTable = document.getElementById('vanguard-deps');
+                    depTable.innerHTML = '';
+                    data.dependency_rules.forEach(dep => {
+                        let sevClass = dep.severity === 'CRITICAL' ? 'text-red-500 font-bold' : (dep.severity === 'HIGH' ? 'text-red-400' : 'text-yellow-500');
+                        depTable.innerHTML += `
+                            <tr class="hover:bg-gray-900 transition">
+                                <td class="p-2 text-white">${dep.package_name}</td>
+                                <td class="p-2 ${sevClass}">${dep.cve}</td>
+                                <td class="p-2 text-gray-500">&lt; ${dep.vulnerable_below}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to load Vanguard data:", err);
+            }
+        }
+
+        // Call on load
+        fetchVanguardData();
+
+        async function fetchDashboard() {
+            try {
+                const res = await fetch(API_URL);
+                if (!res.ok) return;
+                const data = await res.json();
+                
+                // Update stats
+                document.getElementById('stat-blocked').innerText = data.total_blocked || 0;
+                document.getElementById('stat-dlp').innerText = data.dlp_scrubbed || 0;
+                document.getElementById('stat-bans').innerText = data.ip_bans || 0;
+                document.getElementById('stat-forwarded').innerText = data.total_forwarded || 0;
+                
+                document.getElementById('stat-sql').innerText = data.sql_injection || 0;
+                document.getElementById('stat-xss').innerText = data.xss_attempts || 0;
+                document.getElementById('stat-idor').innerText = data.idor_attempts || 0;
+                document.getElementById('stat-auth').innerText = data.auth_failures || 0;
+                document.getElementById('stat-tamper').innerText = data.price_tampering || 0;
+                document.getElementById('stat-rate').innerText = data.rate_limited || 0;
+
+                // Update logs
+                const tbody = document.getElementById('logs-table');
+                if (data.recent_attacks && data.recent_attacks.length > 0) {
+                    tbody.innerHTML = '';
+                    const attacks = [...data.recent_attacks].reverse().slice(0, 15);
+                    attacks.forEach(attack => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'log-row border-b border-gray-800';
+                        
+                        let colorClass = 'text-red-400';
+                        if(attack.attack_type === 'RATE_LIMIT') colorClass = 'text-yellow-400';
+                        if(attack.attack_type === 'DLP_LEAK') colorClass = 'text-purple-400';
+
+                        tr.innerHTML = `
+                            <td class="py-2 px-3 text-gray-500">${new Date(attack.timestamp).toLocaleTimeString()}</td>
+                            <td class="py-2 px-3">${attack.ip}</td>
+                            <td class="py-2 px-3 font-bold ${colorClass}">${attack.attack_type}</td>
+                            <td class="py-2 px-3 text-gray-400">${attack.path}</td>
+                            <td class="py-2 px-3 truncate max-w-xs" title="${attack.details}">${attack.details}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) {
+                console.error("Dashboard fetch error:", err);
+            }
+        }
+
+        // Fetch immediately and poll every 2 seconds
+        fetchDashboard();
+        setInterval(fetchDashboard, 2000);
+    </script>
+</body>
+</html>
+

@@ -29,7 +29,7 @@ AUDIT_LOG_FILE = "security_log.json"
 DISCORD_WEBHOOK_URL = None     # Set your Discord webhook URL here to enable alerts
 
 # Product catalog (trusted server-side copy)
-VALID_PRICES = {"1": 1000.00, "2": 150.00, "3": 169.00, "4": 80.00, "5": 120.00, "6": 250.00}
+VALID_PRICES = {"1": 24999.00, "2": 12499.00, "3": 34999.00, "4": 45000.00, "5": 8999.00, "6": 15999.00}
 
 # ==========================================
 # IN-MEMORY TRACKING
@@ -55,6 +55,14 @@ security_stats = {
 # DLP (Data Loss Prevention) Patterns
 # ==========================================
 DLP_PATTERNS = [
+    # --- Vanguard Custom Rules (Must be at the top to prevent generic rules from intercepting) ---
+    (re.compile(r'-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----[\s\S]*?-----END (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'), "[REDACTED_PRIVATE_KEY]", "Private Key"),
+    (re.compile(r'(?i)(password|passwd|pwd|pass_word)\s*[:=]\s*["\'][^ "\']+["\']'), r'\1="[REDACTED_PASSWORD]"', "Hardcoded Password"),
+    (re.compile(r'(?i)(api[ -_]?key|apikey)\s*[:=]\s*["\'][^ "\']+["\']'), r'\1="[REDACTED_API_KEY]"', "API Key"),
+    (re.compile(r'(?i)(access[ -_]?token|auth[ -_]?token|bearer[ -_]?token)\s*[:=]\s*["\'][^ "\']+["\']'), r'\1="[REDACTED_TOKEN]"', "Access Token"),
+    (re.compile(r'(mongodb(\+srv)?://|mysql://|postgres(ql)?://|redis://)[^\s "\']+'), r'\1[REDACTED_DB_CREDENTIALS]', "Database Credential"),
+    (re.compile(r'(?i)(pin|passcode|pass_code|security_pin|access_pin)\s*[:=]\s*["\']?[0-9]{4,8}["\']?'), r'\1="[REDACTED_PIN]"', "PIN/Passcode"),
+    # --- Standard Rules ---
     (re.compile(r'sk_live_[a-zA-Z0-9]+'), "[REDACTED_API_KEY]", "API Key"),
     (re.compile(r'sk_test_[a-zA-Z0-9]+'), "[REDACTED_TEST_KEY]", "Test API Key"),
     (re.compile(r'AKIA[0-9A-Z]{16}'), "[REDACTED_AWS_KEY]", "AWS Key"),
@@ -246,48 +254,52 @@ def scan_code():
     lines = code.split('\n')
     findings = []
     
-    # We will reuse the DLP/SQL/XSS patterns we already have loaded in the proxy
+    # Advanced Patterns from scanner.py
+    ADV_SECRETS = [
+        (re.compile(r'sk_(live|test|fake)_[a-zA-Z0-9]{10,}'), "Hardcoded Stripe API key"),
+        (re.compile(r'(AKIA|MOCK)[0-9A-Z]{16}'), "Hardcoded AWS Access Key"),
+        (re.compile(r'ghp_[a-zA-Z0-9]{36}'), "Hardcoded GitHub Personal Token"),
+        (re.compile(r'(?i)(password|passwd|pwd)\s*=\s*["\'][^"\']{4,}["\']'), "Hardcoded password"),
+        (re.compile(r'(?i)(api_key|apikey|secret_key|secret)\s*=\s*["\'][^"\']{8,}["\']'), "Hardcoded secret/API key"),
+    ]
+    ADV_PRICE = [
+        re.compile(r'request\.json\.get\([\'"]price[\'"]\)'),
+        re.compile(r'request\.form\.get\([\'"]price[\'"]\)'),
+        re.compile(r'request\.args\.get\([\'"]price[\'"]\)'),
+    ]
+    ADV_SQL = [
+        (re.compile(r'f["\'].*(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER).*\{.*\}.*["\']', re.IGNORECASE), "SQL injection via f-string"),
+        (re.compile(r'(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER).*%s', re.IGNORECASE), "SQL injection via %s formatting"),
+        (re.compile(r'(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER).*\+\s*(?:request|user_input|data)', re.IGNORECASE), "SQL injection via string concatenation"),
+        (re.compile(r'\.execute\(\s*f["\']', re.IGNORECASE), "SQL injection in .execute() with f-string"),
+        (re.compile(r'\.execute\(.*\+', re.IGNORECASE), "SQL injection in .execute() with concatenation"),
+    ]
+    ADV_XSS = [
+        (re.compile(r'innerHTML\s*='), "Potential XSS via innerHTML assignment"),
+        (re.compile(r'document\.write\('), "Potential XSS via document.write"),
+        (re.compile(r'\|\s*safe'), "Potential XSS via Jinja2 |safe filter"),
+        (re.compile(r'Markup\(.*request'), "Potential XSS via Flask Markup with user input"),
+    ]
+    
     for i, line in enumerate(lines):
         line_num = i + 1
         
-        # Check for Secrets / PII (Using DLP Patterns)
-        for pattern, replacement, desc in DLP_PATTERNS:
+        for pattern, desc in ADV_SECRETS:
             if pattern.search(line):
-                findings.append({
-                    "line": line_num,
-                    "issue": f"Exposed {desc}",
-                    "fix": "Move to environment variables or use a secure vault."
-                })
+                findings.append({"line": line_num, "issue": desc, "fix": "Use os.getenv() or a secure vault."})
                 
-        # Check for SQL Injection
-        for pattern in SQL_PATTERNS:
+        for pattern in ADV_PRICE:
             if pattern.search(line):
-                findings.append({
-                    "line": line_num,
-                    "issue": "Potential SQL Injection",
-                    "fix": "Use parameterized queries or an ORM."
-                })
+                findings.append({"line": line_num, "issue": "Parameter Tampering Risk", "fix": "Never trust client-side prices. Look up prices in backend database."})
                 
-        # Check for XSS
-        for pattern in XSS_PATTERNS:
+        for pattern, desc in ADV_SQL:
             if pattern.search(line):
-                findings.append({
-                    "line": line_num,
-                    "issue": "Potential Cross-Site Scripting (XSS)",
-                    "fix": "Sanitize user input before rendering it in the DOM."
-                })
+                findings.append({"line": line_num, "issue": desc, "fix": "Use parameterized queries or an ORM (e.g. SQLAlchemy)."})
                 
-        # Generic Secret Check (fallback)
-        if "password" in line.lower() or "api_key" in line.lower() or "secret" in line.lower():
-            if "=" in line or ":" in line:
-                # Prevent duplicates
-                if not any(f["line"] == line_num and "Exposed" in f["issue"] for f in findings):
-                    findings.append({
-                        "line": line_num,
-                        "issue": "Hardcoded Credential/Secret",
-                        "fix": "Use os.getenv() or a secret manager."
-                    })
-                    
+        for pattern, desc in ADV_XSS:
+            if pattern.search(line):
+                findings.append({"line": line_num, "issue": desc, "fix": "Sanitize user input before rendering it in the DOM."})
+                
     return jsonify({"vulnerabilities": findings})
 
 # ==========================================
@@ -364,18 +376,37 @@ def proxy(path):
             return jsonify({"error": "TrustIQ: Forbidden. You do not own this resource."}), 403
 
     # ==========================================
-    # RULE 5: PRICE TAMPERING
+    # RULE 5: GENERIC PAYLOAD TAMPERING & PRIVILEGE ESCALATION
     # ==========================================
-    if path.startswith('api/checkout') and request.method == 'POST':
-        data = request.json
-        if data:
-            product_id = str(data.get("product_id"))
-            provided_price = float(data.get("price", 0))
-            if product_id in VALID_PRICES and provided_price != VALID_PRICES[product_id]:
-                security_stats["price_tampering"] += 1
-                log_attack(client_ip, "PRICE_TAMPERING", f"Client sent ${provided_price}, actual is ${VALID_PRICES[product_id]}", path)
-                print(f"{Fore.RED}[BLOCKED] Price Tampering! Client sent ${provided_price}, actual is ${VALID_PRICES[product_id]}.")
-                return jsonify({"error": "TrustIQ: Payload validation failed. Malicious price detected."}), 400
+    if request.method in ['POST', 'PUT']:
+        data = request.json if request.is_json else None
+        if data and isinstance(data, dict):
+            # Price Tampering specific to our App
+            if 'product_id' in data and 'price' in data:
+                pid = str(data['product_id'])
+                if pid in VALID_PRICES:
+                    expected_price = VALID_PRICES[pid]
+                    try:
+                        actual_price = float(data['price'])
+                        # Only block if they try to pay LESS than the base price of the item.
+                        # This allows multi-item carts (where total > single item price).
+                        if actual_price < expected_price:
+                            security_stats["price_tampering"] += 1
+                            log_attack(client_ip, "PAYLOAD_TAMPERING", f"Price tampered for product {pid}. Expected {expected_price}, got {actual_price}", path)
+                            print(f"{Fore.RED}[BLOCKED] Payload Tampering! Expected price {expected_price}, got {actual_price}.")
+                            return jsonify({"error": f"TrustIQ: Invariant policy violation. Price tampering detected."}), 400
+                    except (ValueError, TypeError):
+                        pass
+
+            for key, value in data.items():
+                # Removed generic '<= 10' rule. Proxy now relies strictly on deterministic backend catalog validation.
+                
+                # Privilege Escalation / Sensitive Field Injection (e.g. admin_password)
+                if key.lower() in ['admin_password', 'is_admin', 'role', 'permissions']:
+                    security_stats["idor_attempts"] += 1
+                    log_attack(client_ip, "PRIVILEGE_ESCALATION", f"Attempted to inject restricted field: {key}={value}", path)
+                    print(f"{Fore.RED}[BLOCKED] Privilege Escalation Attempt: {key}={value}.")
+                    return jsonify({"error": "TrustIQ: Privilege escalation attempt blocked."}), 403
 
     # ==========================================
     # ALL CHECKS PASSED: FORWARD THE REQUEST

@@ -13,12 +13,12 @@ SUPPORT_PHONE = "+91-9876543210"
 
 # --- Mock Database ---
 CATALOG = {
-    "1": {"name": "Hacker Laptop Pro", "price": 1000.00},
-    "2": {"name": "Mechanical Keyboard (Cherry MX)", "price": 150.00},
-    "3": {"name": "Flipper Zero (PenTest Tool)", "price": 169.00},
-    "4": {"name": "Raspberry Pi 5 Server", "price": 80.00},
-    "5": {"name": "Hak5 WiFi Pineapple", "price": 120.00},
-    "6": {"name": "Noise Cancelling Headphones", "price": 250.00}
+    "1": {"name": "Nova Pro Wireless Headphones", "price": 24999.00},
+    "2": {"name": "Obsidian Mechanical Keyboard", "price": 12499.00},
+    "3": {"name": "Nova Watch Series X", "price": 34999.00},
+    "4": {"name": "Acoustic Tower Speaker", "price": 45000.00},
+    "5": {"name": "Ergo Desk Setup", "price": 8999.00},
+    "6": {"name": "Smart Display Hub", "price": 15999.00}
 }
 
 USERS = {

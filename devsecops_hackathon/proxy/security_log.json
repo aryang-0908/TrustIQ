@@ -22,5 +22,125 @@
     "path": "api/checkout",
     "details": "Malicious SQL detected in request body",
     "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-08T23:55:10.073371",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 1. Expected 24999.0, got 999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-08T23:55:41.313522",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 1299.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-08T23:57:13.347886",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 63497.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T00:11:07.123144",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/vanguard.html",
+    "details": "Scrubbed outbound data: Phone Number",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T00:13:15.889230",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/vanguard.html",
+    "details": "Scrubbed outbound data: Phone Number",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T00:16:35.010432",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/vanguard.html",
+    "details": "Scrubbed outbound data: Phone Number, Private Key, Hardcoded Password, API Key, Database Credential, PIN/Passcode",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T00:18:04.568919",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/vanguard.html",
+    "details": "Scrubbed outbound data: Phone Number, Private Key, Hardcoded Password, API Key, Database Credential, PIN/Passcode",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T00:18:26.621229",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/vanguard.html",
+    "details": "Scrubbed outbound data: Phone Number, Private Key, Hardcoded Password, API Key, Database Credential, PIN/Passcode",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T00:18:57.935100",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/vanguard.html",
+    "details": "Scrubbed outbound data: Phone Number, Private Key, Hardcoded Password, API Key, Database Credential, PIN/Passcode",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T00:21:39.463643",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/vanguard.html",
+    "details": "Scrubbed outbound data: Private Key, Hardcoded Password, API Key, Access Token, Database Credential, PIN/Passcode, Phone Number",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T00:29:35.001835",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/vanguard.html",
+    "details": "Scrubbed outbound data: Private Key, Hardcoded Password, API Key, Access Token, Database Credential, PIN/Passcode, Phone Number",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T00:31:47.036270",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 99.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T00:34:44.636762",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 47498.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T00:39:15.716671",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 3499.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T00:41:38.496974",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 3.0",
+    "method": "POST"
   }
 ]
