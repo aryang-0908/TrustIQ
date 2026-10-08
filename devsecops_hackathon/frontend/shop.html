@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA | Premium Technology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #111111;
+            --text-light: #71717a;
+            --border: #e4e4e7;
+            --accent: #000000;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+        /* --- Header --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .cart-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .cart-count {
+            background: var(--accent);
+            color: var(--bg);
+            font-size: 0.7rem;
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        /* --- Hero --- */
+        .hero {
+            height: 60vh;
+            background-image: url('https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            padding: 2rem;
+        }
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+        .hero-content p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            opacity: 0.9;
+        }
+
+        /* --- Main Content --- */
+        main {
+            max-width: 1400px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 3rem 2rem;
+        }
+
+        .product-card {
+            background: var(--bg);
+            cursor: pointer;
+        }
+        .product-img-wrapper {
+            width: 100%;
+            aspect-ratio: 4/5;
+            overflow: hidden;
+            background: #f4f4f5;
+            margin-bottom: 1.5rem;
+        }
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-light);
+        }
+        .product-desc {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .add-to-cart-btn {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.8rem 1.5rem;
+            width: 100%;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+        }
+        .add-to-cart-btn:hover {
+            background-color: var(--accent);
+            color: var(--bg);
+        }
+
+        /* --- Modals --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        
+        .modal {
+            background: var(--bg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .modal-overlay.active .modal { transform: translateY(0); }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .modal-header h2 { font-size: 1.2rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 300;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        /* Cart Specific */
+        .cart-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .cart-item-img {
+            width: 80px;
+            height: 100px;
+            object-fit: cover;
+            background: #f4f4f5;
+        }
+        .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .cart-item-title { font-weight: 500; font-size: 1rem; }
+        .cart-item-price { color: var(--text-light); margin-top: 0.5rem; }
+        .remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            text-align: left;
+            margin-top: auto;
+        }
+        .remove-btn:hover { color: var(--danger); }
+        
+        .cart-total {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: 500;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--accent);
+        }
+        
+        .checkout-btn {
+            background-color: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 1rem;
+            width: 100%;
+            margin-top: 2rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: opacity 0.2s;
+        }
+        .checkout-btn:hover { opacity: 0.9; }
+        .checkout-btn:disabled { background-color: #a1a1aa; cursor: not-allowed; }
+
+        /* Modern Payment Gateway Styles */
+        .payment-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .pay-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .pay-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        .pay-pane { display: none; }
+        .pay-pane.active { display: block; }
+
+        .upi-box {
+            border: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            background: #fafafa;
+        }
+
+        /* Payment Form */
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 0;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            font-size: 1rem;
+            background: transparent;
+            border-radius: 0;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-bottom-color: var(--accent);
+        }
+        .form-row { display: flex; gap: 1.5rem; }
+        .form-row .form-group { flex: 1; }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: var(--bg);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* TrustIQ Overlay */
+        .trustiq-block {
+            display: none;
+            text-align: left;
+            background: #050505;
+            color: #a3a3a3;
+            padding: 2.5rem;
+            border: 1px solid #262626;
+            position: relative;
+            overflow: hidden;
+            margin: -2.5rem; /* pull out to edges of modal */
+            min-height: 500px;
+        }
+        .trustiq-bg-grid {
+            position: absolute; inset: 0; 
+            background-image: linear-gradient(to right, #171717 1px, transparent 1px), linear-gradient(to bottom, #171717 1px, transparent 1px); 
+            background-size: 20px 20px; opacity: 0.5; z-index: 0;
+        }
+        .success-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            display: none;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 1rem 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+            .hero-content h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-top">
+            <a href="#" class="logo">NOVA</a>
+            <div class="header-actions">
+                <button class="cart-btn" onclick="openCart()">
+                    Cart
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Sound, Redefined.</h1>
+            <p>Discover the next generation of premium acoustic engineering.</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <h2 class="section-title">The Collection</h2>
+        <div class="product-grid" id="productGrid">
+            <!-- Products injected via JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 NOVA TECHNOLOGIES. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Your Cart</h2>
+                <button class="close-btn" onclick="closeCart()">&times;</button>
+            </div>
+            <div id="cartItems">
+                <!-- Cart items injected here -->
+            </div>
+            <div class="cart-total" id="cartTotal">
+                <span>Subtotal</span>
+                <span>₹<span id="actualTotalNum" contenteditable="true" style="outline: none; border-bottom: 1px solid transparent; transition: border 0.3s;" onfocus="this.style.borderBottom='1px solid #111'" onblur="this.style.borderBottom='1px solid transparent'" oninput="syncTamperedPrice()">0</span></span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled>Secure Checkout</button>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal">
+            <div class="modal-header" id="paymentHeader">
+                <h2>Checkout</h2>
+                <button class="close-btn" onclick="closeCheckout()">&times;</button>
+            </div>
+            
+            <div id="paymentFormContainer">
+                <div style="background:#f4f4f5; padding:12px 16px; margin-bottom:2rem; font-size: 0.8rem; letter-spacing: 0.05em; color: var(--text-light); display: flex; align-items: center; justify-content: space-between;">
+                    <span>SECURED BY TRUSTIQ</span>
+                    <input type="text" id="trustIqToken" readonly style="background:transparent; border:none; padding:0; font-family:monospace; color:#10b981; font-size:10px; width:120px; text-align:right; outline:none;" placeholder="Authenticating...">
+                </div>
+
+                <form id="paymentForm" onsubmit="processPayment(event)">
+                    <div class="payment-tabs">
+                        <div class="pay-tab active" onclick="switchPayTab('card')">Credit Card</div>
+                        <div class="pay-tab" onclick="switchPayTab('upi')">UPI</div>
+                    </div>
+
+                    <div id="pane-card" class="pay-pane active">
+                        <div class="form-group">
+                            <label>Card Number</label>
+                            <input type="text" id="cardNum" placeholder="0000 0000 0000 0000" maxlength="19">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Expiry</label>
+                                <input type="text" id="cardExp" placeholder="MM/YY" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="password" id="cardCvv" placeholder="•••" maxlength="3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pane-upi" class="pay-pane">
+                        <div class="upi-box">
+                            <h4 style="margin-bottom: 1.5rem; font-weight: 500;">Pay with any UPI App</h4>
+                            <div class="form-group" style="text-align: left;">
+                                <label>Enter Virtual Payment Address</label>
+                                <input type="text" id="upiId" placeholder="username@upi">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 500;">
+                        <span>Total Due</span>
+                        <span>₹<span id="payTotalNum">0</span></span>
+                    </div>
+                    
+                    <button type="submit" class="checkout-btn" id="payBtn" style="display: flex; align-items: center; justify-content: center;">
+                        <span class="spinner" id="paySpinner"></span>
+                        <span id="payText">AUTHORIZE PAYMENT</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- SUCCESS SCREEN -->
+            <div class="success-message" id="successMessage">
+                <div style="font-size: 3rem; margin-bottom: 1.5rem;">🖤</div>
+                <h3 style="font-size: 1.5rem; font-weight: 300; margin-bottom: 1rem;">Order Confirmed</h3>
+                <p style="color: var(--text-light); margin-bottom: 2rem;">Order #NV-<span id="orderNumber"></span></p>
+                <button class="checkout-btn" onclick="finishOrder()">Return to Store</button>
+            </div>
+            
+            <!-- TRUSTIQ ENTERPRISE BLOCK SCREEN -->
+            <div class="trustiq-block" id="errorMessage">
+                <div class="trustiq-bg-grid"></div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #262626; padding-bottom: 1.5rem; margin-bottom: 2rem;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="M12 8v4"></path>
+                            <path d="M12 16h.01"></path>
+                        </svg>
+                        <div>
+                            <h3 style="color: #ffffff; font-size: 1.2rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px;">TrustIQ Gateway</h3>
+                            <div style="color: #f43f5e; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;">CONNECTION DROPPED</div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.6; color: #a3a3a3;">
+                        Request intercepted at the edge network. Strict invariant policy violation detected in payload geometry.
+                    </p>
+                    
+                    <div style="background: #0a0a0a; border: 1px solid #171717; padding: 1.5rem; font-family: 'Courier New', monospace; font-size: 0.85rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                            <span style="color: #525252;">Event ID:</span>
+                            <span style="color: #d4d4d4;" id="blockEventId">REQ-000000</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                            <span style="color: #525252;">Action:</span>
+                            <span style="color: #f43f5e; font-weight: bold;">DROP_CONNECTION</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                            <span style="color: #525252;">Rule:</span>
+                            <span style="color: #d4d4d4;">WAF_TAMPER_PROTECT</span>
+                        </div>
+                        <div style="border-top: 1px dashed #262626; margin: 1.2rem 0; padding-top: 1.2rem;">
+                            <span style="color: #525252; display: block; margin-bottom: 0.5rem;">Diagnostic Output:</span>
+                            <span style="color: #f43f5e;" id="errorDetails">Price tampering detected</span>
+                        </div>
+                    </div>
+
+                    <button class="checkout-btn" style="background: transparent; border: 1px solid #404040; color: #a3a3a3; margin-top: 2rem;" onclick="closeCheckout()">ACKNOWLEDGE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastMsg">Added to cart</span>
+    </div>
+
+    <script>
+        // --- High-End Data ---
+        const products = [
+            { id: 1, name: "Nova Pro Wireless Headphones", price: 24999, img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80", desc: "Studio-grade fidelity with active noise cancellation." },
+            { id: 2, name: "Obsidian Mechanical Keyboard", price: 12499, img: "https://images.unsplash.com/photo-1595225476474-87563907a212?w=600&q=80", desc: "Aerospace-grade aluminum body, tactile switches." },
+            { id: 3, name: "Nova Watch Series X", price: 34999, img: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=600&q=80", desc: "Titanium case, sapphire crystal, 7-day battery life." },
+            { id: 4, name: "Acoustic Tower Speaker", price: 45000, img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&q=80", desc: "Room-filling sound with deep, undistorted bass." },
+            { id: 5, name: "Ergo Desk Setup", price: 8999, img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&q=80", desc: "Minimalist aluminum stand and ergonomic mouse." },
+            { id: 6, name: "Smart Display Hub", price: 15999, img: "https://images.unsplash.com/photo-1558089687-f282ffcbc126?w=600&q=80", desc: "Control your entire ecosystem from one sleek panel." }
+        ];
+
+        let cart = [];
+        let currentTotal = 0;
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('productGrid');
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-img-wrapper">
+                        <img src="${product.img}" alt="${product.name}" class="product-img">
+                    </div>
+                    <div class="product-meta">
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-price">₹${product.price.toLocaleString('en-IN')}</div>
+                    </div>
+                    <div class="product-desc">${product.desc}</div>
+                    <button class="add-to-cart-btn" onclick="addToCart(${product.id})">Add to Cart</button>
+                `;
+                grid.appendChild(card);
+            });
+        });
+
+        // --- Cart Logic ---
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            updateCartUI();
+            showToast(`${product.name} added`);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartCount').innerText = cart.length;
+            const cartItemsContainer = document.getElementById('cartItems');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem 0; font-size: 0.9rem;">Your cart is empty.</p>';
+                document.getElementById('actualTotalNum').innerText = '0';
+                currentTotal = 0;
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            checkoutBtn.disabled = false;
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <img src="${item.img}" class="cart-item-img">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">₹${item.price.toLocaleString('en-IN')}</div>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(div);
+            });
+
+            currentTotal = total;
+            document.getElementById('actualTotalNum').innerText = currentTotal.toLocaleString('en-IN');
+            document.getElementById('payTotalNum').innerText = currentTotal.toLocaleString('en-IN');
+        }
+
+        // --- DOM Tampering Logic ---
+        function syncTamperedPrice() {
+            let tampered = document.getElementById('actualTotalNum').innerText.replace(/,/g, '');
+            let num = parseInt(tampered);
+            if (!isNaN(num)) {
+                currentTotal = num;
+                document.getElementById('payTotalNum').innerText = num.toLocaleString('en-IN');
+            }
+        }
+
+        function openCart() {
+            document.getElementById('cartModal').classList.add('active');
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').classList.remove('active');
+        }
+
+        // --- Checkout & Payment Logic ---
+        async function openCheckout() {
+            if (cart.length === 0) return;
+            closeCart();
+            document.getElementById('paymentModal').classList.add('active');
+            
+            document.getElementById('paymentHeader').style.display = 'flex';
+            document.getElementById('paymentFormContainer').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            document.getElementById('paymentForm').reset();
+            document.getElementById('payBtn').disabled = false;
+            document.getElementById('payText').innerText = 'AUTHORIZE PAYMENT';
+            document.getElementById('paySpinner').style.display = 'none';
+
+            // Silent Auto-Fetch TrustIQ Token
+            try {
+                const tokenInput = document.getElementById('trustIqToken');
+                tokenInput.value = "Authenticating...";
+                const res = await fetch('http://127.0.0.1:8000/dashboard/generate-token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: 'auto_shopper' })
+                });
+                const data = await res.json();
+                if (data.token) {
+                    tokenInput.value = data.token.substring(0, 16) + '...'; 
+                    window.sessionToken = data.token; // save full token
+                }
+            } catch (e) {
+                console.error("Failed to auto-fetch token", e);
+            }
+        }
+
+        function closeCheckout() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function switchPayTab(tab) {
+            document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.pay-pane').forEach(p => p.classList.remove('active'));
+            
+            if(tab === 'card') {
+                document.querySelectorAll('.pay-tab')[0].classList.add('active');
+                document.getElementById('pane-card').classList.add('active');
+                document.getElementById('cardNum').required = true;
+                document.getElementById('upiId').required = false;
+            } else {
+                document.querySelectorAll('.pay-tab')[1].classList.add('active');
+                document.getElementById('pane-upi').classList.add('active');
+                document.getElementById('cardNum').required = false;
+                document.getElementById('upiId').required = true;
+            }
+        }
+
+        async function processPayment(event) {
+            event.preventDefault();
+            
+            const payBtn = document.getElementById('payBtn');
+            const payText = document.getElementById('payText');
+            const paySpinner = document.getElementById('paySpinner');
+
+            payBtn.disabled = true;
+            payText.innerText = 'ROUTING SECURELY...';
+            paySpinner.style.display = 'block';
+
+            try {
+                // Live Call to TrustIQ Edge
+                const response = await fetch('http://127.0.0.1:8000/api/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${window.sessionToken || 'invalid'}` 
+                    },
+                    body: JSON.stringify({
+                        item: cart.length > 0 ? cart[0].name : "cart_items",
+                        price: currentTotal,
+                        user_id: "demo_user"
+                    })
+                });
+
+                document.getElementById('paymentHeader').style.display = 'none';
+
+                if (response.ok) {
+                    const orderNum = Math.floor(100000 + Math.random() * 900000);
+                    document.getElementById('orderNumber').innerText = orderNum;
+                    document.getElementById('paymentFormContainer').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    cart = [];
+                    updateCartUI();
+                } else {
+                    const data = await response.json();
+                    document.getElementById('paymentFormContainer').style.display = 'none';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('errorDetails').innerText = data.error || 'Blocked by Edge Security.';
+                    
+                    const hexId = Math.random().toString(16).substr(2, 8).toUpperCase();
+                    document.getElementById('blockEventId').innerText = `REQ-${hexId}`;
+                }
+            } catch (err) {
+                document.getElementById('paymentHeader').style.display = 'none';
+                document.getElementById('paymentFormContainer').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorDetails').innerText = "CONNECTION REFUSED. Is Proxy running?";
+            }
+
+            payBtn.disabled = false;
+            payText.innerText = 'AUTHORIZE PAYMENT';
+            paySpinner.style.display = 'none';
+        }
+
+        function finishOrder() {
+            closeCheckout();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

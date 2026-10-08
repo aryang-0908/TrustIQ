@@ -1,0 +1,2691 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustIQ - Tools of Quiet Protection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter','sans-serif'],
+        serif: ['Lora','serif'],
+        mono: ['JetBrains Mono','monospace'],
+      },
+      colors: {
+        obsidian: { 950:'#f3f4f6', 900:'#eef0f2', 850:'#e5e7eb', 800:'#dfe3e8', 700:'#cbd5e1' },
+      }
+    }
+  }
+}
+</script>
+<style>
+  *{ -webkit-tap-highlight-color: transparent; }
+  html,body{ background:#eef0f2; }
+  body{ color:#a3a3a3; overflow-x:hidden; }
+  ::selection{ background:#262626; color:#fff; }
+  .text-primary{ color:#e5e5e5; }
+  .italic-em{ font-family:'Lora',serif; font-style:italic; font-weight:400; color:#e5e5e5; }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-track{ background:#e5e7eb; }
+  ::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:4px; }
+  ::-webkit-scrollbar-thumb:hover{ background:#94a3b8; }
+  .custom-scroll::-webkit-scrollbar{ width:5px; }
+  .custom-scroll::-webkit-scrollbar-thumb{ background:#262626; border-radius:3px; }
+
+  /* ---------- background grid ---------- */
+  .grid-bg{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-size:64px 64px;
+  }
+
+  /* ---------- page router transitions ---------- */
+  .page{ display:none; }
+  .page.active{ display:block; }
+  #app{ opacity:1; transform:translateY(0); transition:opacity .34s ease, transform .34s cubic-bezier(.22,1,.36,1); }
+  #app.leaving{ opacity:0; transform:translateY(14px); }
+
+  /* ---------- scroll reveal ---------- */
+  [data-reveal]{
+    opacity:0; transform:translateY(26px);
+    transition:opacity .85s cubic-bezier(.22,1,.36,1), transform .85s cubic-bezier(.22,1,.36,1);
+    will-change:opacity,transform;
+  }
+  [data-reveal].revealed{ opacity:1; transform:none; }
+
+  /* ---------- nav ---------- */
+  .nav-link{ position:relative; color:#6b6b6b; transition:color .3s; }
+  .nav-link:hover{ color:#e5e5e5; }
+  .nav-link::after{
+    content:''; position:absolute; left:0; right:0; bottom:-7px; height:1px; background:#e5e5e5;
+    transform:scaleX(0); transform-origin:left; transition:transform .45s cubic-bezier(.22,1,.36,1);
+  }
+  .nav-link:hover::after, .nav-link.active::after{ transform:scaleX(1); }
+  .nav-link.active{ color:#e5e5e5; }
+
+  /* ---------- live dot ---------- */
+  .live-dot{ width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block; animation:pulseDot 2.2s infinite; }
+  @keyframes pulseDot{
+    0%{ }
+    70%{ }
+    100%{ }
+  }
+  .live-dot.amber{ background:#fbbf24; animation:pulseDotA 2.2s infinite; }
+  @keyframes pulseDotA{
+    0%{ }
+    70%{ }
+    100%{ }
+  }
+
+  /* ---------- ticker ---------- */
+  .marquee-wrap{ overflow:hidden; position:relative; }
+  .marquee{ display:flex; width:max-content; animation:marquee 48s linear infinite; }
+  .marquee-wrap:hover .marquee{ animation-play-state:paused; }
+  @keyframes marquee{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+
+  /* ---------- rows / entries ---------- */
+  @keyframes rowIn{ from{ opacity:0; transform:translateY(-10px); } to{ opacity:1; transform:none; } }
+  .row-in{ animation:rowIn .5s cubic-bezier(.22,1,.36,1); }
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+  .fade-up{ animation:fadeUp .55s cubic-bezier(.22,1,.36,1) both; }
+
+  /* ---------- caret ---------- */
+  .caret{ display:inline-block; width:7px; height:14px; background:#e5e5e5; vertical-align:-2px; animation:blink 1.05s step-end infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ---------- typing dots ---------- */
+  .tdots span{ display:inline-block; width:5px;height:5px;border-radius:50%;background:#6b6b6b;margin-right:3px; animation:td 1.2s infinite; }
+  .tdots span:nth-child(2){ animation-delay:.15s; }
+  .tdots span:nth-child(3){ animation-delay:.3s; }
+  @keyframes td{ 0%,60%,100%{ transform:translateY(0); opacity:.4; } 30%{ transform:translateY(-4px); opacity:1; } }
+
+  /* ---------- shimmer sweep ---------- */
+  .sweep{ position:relative; overflow:hidden; }
+  .sweep::after{
+    content:''; position:absolute; top:0; left:-60%; width:40%; height:100%; background:transparent;
+    animation:sweepMove 4.5s ease-in-out infinite;
+  }
+  @keyframes sweepMove{ 0%{ left:-60%; } 55%{ left:120%; } 100%{ left:120%; } }
+
+  /* ---------- glow divider ---------- */
+  .glow-divider{ height:1px; background:transparent; }
+
+  /* ---------- card hover ---------- */
+  .prog-card{ transition:background-color .5s ease, transform .5s cubic-bezier(.22,1,.36,1); }
+  .prog-card:hover{ transform:translateY(-4px); }
+
+  .link-arrow{ transition:gap .35s cubic-bezier(.22,1,.36,1); }
+  .group:hover .link-arrow{ gap:.75rem; }
+
+  /* progress bar top */
+  #scroll-progress{
+    position:fixed; top:0; left:0; height:2px; width:0%; background:transparent;
+    z-index:100; transition:width .12s linear;
+  }
+
+  /* gauge text */
+  .stat-num{ font-variant-numeric: tabular-nums; }
+
+  /* mobile menu */
+  #mobileMenu{ transition:opacity .35s ease, transform .35s cubic-bezier(.22,1,.36,1); }
+  #mobileMenu.hidden-menu{ opacity:0; pointer-events:none; transform:translateY(-10px); }
+
+  /* chat bubbles */
+  .bubble-in{ animation:fadeUp .45s cubic-bezier(.22,1,.36,1) both; }
+</style>
+
+<style id="trustiQ-light-overrides">
+  html, body { background:#eef0f2 !important; color:#374151 !important; }
+  body { overflow-x:hidden; }
+  .grid-bg { display:none !important; }
+  .text-primary { color:#111827 !important; }
+  .italic-em { color:#111827 !important; }
+  #nav { background:#f7f8fa !important; }
+  #navInner { border-color:#e5e7eb !important; }
+  .nav-link { color:#4b5563 !important; }
+  .nav-link:hover, .nav-link.active { color:#111827 !important; }
+  .nav-link::after { background:#111827 !important; }
+  .bg-obsidian-950, .bg-obsidian-900, .bg-obsidian-850, .bg-obsidian-800 { background-color:#f3f4f6 !important; }
+  .bg-obsidian-950\/85, .bg-obsidian-950\/97, .bg-obsidian-900\/50 { background-color:rgba(247,248,250,.97) !important; }
+  .border-neutral-900, .border-neutral-800, .border-neutral-700 { border-color:#e5e7eb !important; }
+  .text-neutral-400, .text-neutral-500, .text-neutral-600, .text-neutral-700 { color:#6b7280 !important; }
+  .prog-card:hover { background-color:#f9fafb !important; }
+  #mobileMenu { background:#ffffff !important; backdrop-filter:none !important; }
+  #scroll-progress { background:#374151 !important; }
+</style>
+
+<style id="trustiQ-final-clean">
+  /* Final visual cleanup: preserve structure and real demos, remove decorative styling. */
+  html, body { background:#eef0f2 !important; color:#374151 !important; }
+  body { overflow-x:hidden; }
+  #app { background:transparent !important; }
+  .grid-bg, #scroll-progress { display:none !important; }
+
+  /* No gradients, radial effects, glassmorphism, or heavy shadows. */
+  *, *::before, *::after { text-shadow:none !important; }
+  [style*="gradient"], [class*="gradient"] { background-image:none !important; }
+  .glow-divider, .sweep::after { background-image:none !important; }
+  .backdrop-blur-sm, .backdrop-blur-xl, [class*="backdrop-blur"] { backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+
+  /* Neutral palette: no purple/black/neon/rainbow/pastel-heavy treatment. */
+  .bg-obsidian-950, .bg-obsidian-900, .bg-obsidian-850, .bg-obsidian-800,
+  .bg-obsidian-950\/85, .bg-obsidian-950\/97, .bg-obsidian-900\/50, .bg-obsidian-900\/60, .bg-obsidian-900\/40 {
+    background-color:#eef0f2 !important;
+  }
+  .bg-white, [class*="bg-white"] { background-color:#eef0f2 !important; }
+  .border-neutral-900, .border-neutral-800, .border-neutral-700, .border-neutral-600 { border-color:#d7dbe0 !important; }
+  .text-primary { color:#17202a !important; }
+  .text-neutral-400, .text-neutral-500, .text-neutral-600, .text-neutral-700 { color:#59636e !important; }
+  .text-neutral-800, .text-neutral-900 { color:#26313b !important; }
+  .nav-link, .nav-link.active, .nav-link:hover { color:#334155 !important; }
+  .nav-link::after { background:#334155 !important; }
+  #nav, #mobileMenu, #navInner { background:#eef0f2 !important; }
+
+  /* Moderate corners only. */
+  .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-lg { border-radius:6px !important; }
+  .rounded-full { border-radius:999px !important; }
+
+  /* Remove decorative motion while keeping functional canvas/data updates. */
+  .marquee, .live-dot, .live-dot.amber, .sweep, .bubble-in, .caret, .tdots span { animation:none !important; }
+  .prog-card:hover, .group:hover .link-arrow { transform:none !important; }
+  .link-arrow { transition:none !important; }
+  [data-reveal] { opacity:1 !important; transform:none !important; transition:none !important; }
+
+  /* Remove decorative line/icon treatment and terminal chrome. */
+  .prog-card { border:1px solid #d7dbe0 !important; background:#eef0f2 !important; }
+  .prog-card::before, .prog-card::after { display:none !important; }
+  #veilTerminal { background:#eef0f2 !important; border:0 !important; }
+  #veilTerminal + div { background:#eef0f2 !important; }
+
+  /* Do not present simulated numbers as real-world security claims. */
+  #navStatus, #heroStatus { color:#59636e !important; }
+</style>
+
+<style id="trustiQ-motion-cleanup">
+  *, *::before, *::after { animation:none !important; transition:none !important; }
+  .nav-link::after { transform:scaleX(1); }
+
+  /* Oracle input area: fully black */
+  #chatMessages, #chatInput, #chatInput::placeholder { background:#000000 !important; }
+  #chatInput { color:#e5e7eb !important; }
+  #chatInput::placeholder { color:#737373 !important; }
+  #chatInput:focus { outline:none !important; }
+  #chatInput + div { background:#000000 !important; }
+  .lg\:col-span-6 { background:#000000 !important; }
+</style>
+
+<style id="trustiq-complete-black-background">
+  /* Complete black background override */
+  html, body, #app, main, section, header, footer, nav, article, aside, form,
+  .page, .prog-card, .tool-card, .card, .panel, .hero, .marquee-wrap,
+  [class*="bg-"], [class*="background"], [style*="background"] {
+    background-color:#000000 !important;
+    background-image:none !important;
+  }
+  textarea, input, pre, code, select, button {
+    background-color:#000000 !important;
+    background-image:none !important;
+  }
+  #mobileMenu, #nav, #navInner, #veilTerminal, #veilTerminal + div,
+  #chatMessages, #chatInput, #chatInput + div {
+    background:#000000 !important;
+  }
+</style>
+
+<style id="black-background-only">
+  html, body { background:#000 !important; color:#d1d5db !important; }
+  #nav, #mobileMenu, #navInner, #app { background:#000 !important; }
+  .bg-obsidian-950, .bg-obsidian-900, .bg-obsidian-850, .bg-obsidian-800,
+  .bg-obsidian-950\/85, .bg-obsidian-950\/97, .bg-obsidian-900\/50, .bg-obsidian-900\/60, .bg-obsidian-900\/40,
+  .bg-white, [class*="bg-white"] { background-color:#000 !important; }
+  .prog-card { background:#000 !important; }
+  .text-primary { color:#f3f4f6 !important; }
+  .text-neutral-400, .text-neutral-500, .text-neutral-600, .text-neutral-700 { color:#9ca3af !important; }
+  .text-neutral-800, .text-neutral-900 { color:#e5e7eb !important; }
+  .nav-link, .nav-link.active, .nav-link:hover { color:#d1d5db !important; }
+  .nav-link::after { background:#e5e7eb !important; }
+  .border-neutral-900, .border-neutral-800, .border-neutral-700, .border-neutral-600 { border-color:#262626 !important; }
+</style>
+
+<style id="trustiq-homepage-hover-fix">
+/* Keep homepage product cards black on hover/focus/click. */
+[data-page="home"] .prog-card,
+[data-page="home"] .prog-card:hover,
+[data-page="home"] .prog-card:focus,
+[data-page="home"] .prog-card:focus-within,
+[data-page="home"] .prog-card:active {
+  background-color:#000000 !important;
+  background-image:none !important;
+}
+[data-page="home"] .prog-card *:focus { outline-color:#666666; }
+</style>
+</head>
+<body class="antialiased font-sans">
+
+<div class="grid-bg"></div>
+<div id="scroll-progress"></div>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<nav id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+  <div class="max-w-7xl mx-auto px-6 md:px-12">
+    <div class="flex justify-between items-center h-20 border-b border-transparent transition-colors duration-500" id="navInner">
+      <a href="#home" data-nav="home" class="flex flex-col group select-none">
+        <span class="text-primary text-sm tracking-[0.22em] font-medium group-hover:text-white transition-colors duration-300">TrustIQ</span>
+      </a>
+
+      <div class="hidden lg:flex items-center gap-8 text-xs tracking-wide">
+        <a href="#home"      data-nav="home"      class="nav-link">Home</a>
+        <a href="#tools"     data-nav="tools"     class="nav-link">Tools</a>
+        <a href="#veil"      data-nav="veil"      class="nav-link">Veil</a>
+        <a href="#aegis"     data-nav="aegis"     class="nav-link">Aegis</a>
+        <a href="#oracle"    data-nav="oracle"    class="nav-link">Oracle</a>
+        <a href="#manifesto" data-nav="manifesto" class="nav-link">Manifesto</a>
+        <a href="#contact"   data-nav="contact"   class="nav-link">Contact</a>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-2 text-[10px] tracking-[0.15em] text-neutral-600 font-mono">
+          <span class="live-dot"></span>
+          <span id="navStatus">SYSTEMS NOMINAL</span>
+        </div>
+        <button id="burger" class="lg:hidden w-8 h-8 flex flex-col justify-center items-end gap-1.5 group" aria-label="Menu">
+          <span class="w-6 h-px bg-neutral-500 group-hover:bg-white transition-colors"></span>
+          <span class="w-4 h-px bg-neutral-500 group-hover:bg-white transition-colors"></span>
+          <span class="w-6 h-px bg-neutral-500 group-hover:bg-white transition-colors"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile menu -->
+  <div id="mobileMenu" class="hidden-menu lg:hidden absolute top-20 left-0 right-0 bg-obsidian-950/97 border-b border-neutral-800">
+    <div class="px-6 py-6 flex flex-col gap-1 text-sm">
+      <a href="#home"      data-nav="home"      class="py-3 border-b border-neutral-900 text-neutral-400 hover:text-primary transition-colors">Home</a>
+      <a href="#tools"     data-nav="tools"     class="py-3 border-b border-neutral-900 text-neutral-400 hover:text-primary transition-colors">Tools</a>
+      <a href="#veil"      data-nav="veil"      class="py-3 border-b border-neutral-900 text-neutral-400 hover:text-primary transition-colors">Veil</a>
+      <a href="#aegis"     data-nav="aegis"     class="py-3 border-b border-neutral-900 text-neutral-400 hover:text-primary transition-colors">Aegis</a>
+      <a href="#oracle"    data-nav="oracle"    class="py-3 border-b border-neutral-900 text-neutral-400 hover:text-primary transition-colors">Oracle</a>
+      <a href="#manifesto" data-nav="manifesto" class="py-3 border-b border-neutral-900 text-neutral-400 hover:text-primary transition-colors">Manifesto</a>
+      <a href="#contact"   data-nav="contact"   class="py-3 text-neutral-400 hover:text-primary transition-colors">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════ APP ══════════════════ -->
+<main id="app" class="relative z-10 pt-20">
+
+<!-- ─────────────────────────────────────────────
+     PAGE : HOME
+────────────────────────────────────────────── -->
+<section class="page" data-page="home">
+
+  <header class="px-6 md:px-12 max-w-7xl mx-auto pt-14 md:pt-24 pb-16">
+    <div class="flex items-center gap-3 mb-7 text-[10px] tracking-[0.28em] text-neutral-600 font-mono" data-reveal>
+      <span class="live-dot"></span>
+      <span id="heroStatus">TRUSTIQ SECURITY PLATFORM</span>
+    </div>
+    <h1 class="text-4xl md:text-7xl font-serif text-primary leading-[1.04] max-w-4xl" data-reveal data-delay="80">
+      Tools of <span class="italic-em">quiet</span> protection.
+    </h1>
+    <p class="mt-7 text-lg md:text-xl max-w-2xl leading-relaxed font-light" data-reveal data-delay="160">
+      Three programs. Each built to secure, not just patch. We make few things, deliberately, and we make them last longer than the vulnerability they were designed to fix.
+    </p>
+    <div class="mt-10 flex flex-wrap gap-6 text-sm tracking-wide" data-reveal data-delay="240">
+      <a href="#tools" data-nav="tools" class="text-primary border-b border-neutral-700 pb-1 hover:border-primary transition-colors duration-300">Explore the tools</a>
+      <a href="#manifesto" data-nav="manifesto" class="text-neutral-500 border-b border-transparent pb-1 hover:text-primary hover:border-neutral-700 transition-all duration-300">The manifesto</a>
+    </div>
+  </header>
+
+  <!-- live stat bar -->
+  <section class="border-y border-neutral-800 bg-obsidian-900/50" data-reveal>
+    <div class="max-w-7xl mx-auto px-6 md:px-12 py-9 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+      <div>
+        <span class="block text-3xl font-serif text-primary stat-num" data-counter="1284" data-rate="0.02">0</span>
+        <span class="text-neutral-500 text-xs mt-1 block">Attacks prevented today</span>
+      </div>
+      <div>
+        <span class="block text-3xl font-serif text-primary stat-num" data-counter="86" data-rate="0.01">0</span>
+        <span class="text-neutral-500 text-xs mt-1 block">Secrets shielded from exposure</span>
+      </div>
+      <div>
+        <span class="block text-3xl font-serif text-primary stat-num" data-counter="24" data-rate="0.01">0</span>
+        <span class="text-neutral-500 text-xs mt-1 block">Repositories under watch</span>
+      </div>
+      <div>
+        <span class="block text-3xl font-serif text-primary">0<span class="text-base text-neutral-500">ms</span></span>
+        <span class="text-neutral-500 text-xs mt-1 block">Trust assumed</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- live ticker -->
+  <section class="border-b border-neutral-800 bg-obsidian-950/80 overflow-hidden">
+    <div class="marquee-wrap py-3">
+      <div class="marquee gap-12 font-mono text-[11px] text-neutral-600" id="tickerTrack"></div>
+    </div>
+  </section>
+
+  <!-- main live chart -->
+  <section class="px-6 md:px-12 max-w-7xl mx-auto py-20">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8" data-reveal>
+      <div>
+        <span class="text-[10px] tracking-[0.28em] text-neutral-600 font-mono">[ LIVE TELEMETRY ]</span>
+        <h2 class="text-3xl md:text-4xl font-serif text-primary mt-2">Attacks prevented, <span class="italic-em">in motion</span></h2>
+      </div>
+      <div class="flex items-center gap-6 text-[11px] font-mono text-neutral-500">
+        <span class="flex items-center gap-2"><span class="w-4 h-px bg-neutral-200 inline-block"></span>Veil</span>
+        <span class="flex items-center gap-2"><span class="w-4 h-px bg-emerald-400 inline-block"></span>Aegis</span>
+        <span class="flex items-center gap-2"><span class="w-4 h-px bg-amber-400 inline-block"></span>Oracle</span>
+      </div>
+    </div>
+
+    <div class="border border-neutral-800 bg-obsidian-900/40 p-6 md:p-8 sweep" data-reveal data-delay="100">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-7 pb-6 border-b border-neutral-800">
+        <div>
+          <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">COMBINED BLOCKED</span>
+          <span class="text-2xl font-serif text-primary stat-num" data-counter="312" data-rate="0.01">0</span>
+        </div>
+        <div>
+          <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">PEAK / SEC</span>
+          <span class="text-2xl font-serif text-primary stat-num" id="peakSec">18</span>
+        </div>
+        <div>
+          <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">MEDIAN LATENCY</span>
+          <span class="text-2xl font-serif text-primary stat-num" id="medianLat">3.8<span class="text-sm text-neutral-500">ms</span></span>
+        </div>
+        <div>
+          <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">FALSE POSITIVE RATE</span>
+          <span class="text-2xl font-serif text-primary stat-num" id="fpRate">1.2<span class="text-sm text-neutral-500">%</span></span>
+        </div>
+      </div>
+      <canvas id="homeChart" class="w-full h-56 md:h-72 block"></canvas>
+      <div class="flex justify-between font-mono text-[10px] text-neutral-700 mt-3">
+        <span>−60s</span><span>−45s</span><span>−30s</span><span>−15s</span><span>now</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- program cards -->
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-20">
+    <div class="flex justify-between items-end mb-10" data-reveal>
+      <h2 class="text-3xl md:text-4xl font-serif text-primary">Everything we <span class="italic-em">make</span></h2>
+      <a href="#tools" data-nav="tools" class="text-xs text-neutral-600 tracking-widest hover:text-primary transition-colors hidden md:block">THE COLLECTION 2024</a>
+    </div>
+
+    <div class="grid gap-4" data-reveal data-delay="100">
+
+      <div class="prog-card bg-obsidian-950 p-8 md:p-10 flex flex-col justify-between min-h-[380px] group cursor-pointer hover:bg-obsidian-900" data-nav="veil">
+        <div>
+          <div class="flex justify-between items-start mb-8">
+            <span class="text-xs tracking-[0.2em] text-neutral-500 font-mono">VEIL / 001</span>
+            <span class="text-[10px] text-neutral-600 font-mono">LOCAL</span>
+          </div>
+          <h3 class="text-2xl font-serif text-primary mb-2">Local Code Scanner</h3>
+          <p class="text-sm leading-relaxed text-neutral-400 mt-4">
+            Install as a Python module. Scans your codebase statically to identify secrets, credentials, and critical data left exposed in the open.
+          </p>
+          <div class="mt-7 h-16">
+          </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-neutral-800 flex justify-between items-center">
+          <span class="text-primary font-serif text-lg">₹0</span>
+          <span class="text-sm text-primary flex items-center gap-2 link-arrow">Open Interface</span>
+        </div>
+      </div>
+
+      <div class="prog-card bg-obsidian-950 p-8 md:p-10 flex flex-col justify-between min-h-[380px] group cursor-pointer hover:bg-obsidian-900" data-nav="aegis">
+        <div>
+          <div class="flex justify-between items-start mb-8">
+            <span class="text-xs tracking-[0.2em] text-neutral-500 font-mono">AEGIS / 002</span>
+            <span class="text-[10px] text-neutral-600 font-mono">EDGE</span>
+          </div>
+          <h3 class="text-2xl font-serif text-primary mb-2">Zero-Trust DB Auth</h3>
+          <p class="text-sm leading-relaxed text-neutral-400 mt-4">
+            Middleware that establishes zero-trust authentication between your website and database. Scans each request, blocking anomalies instantly.
+          </p>
+          <div class="mt-7 h-16">
+          </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-neutral-800 flex justify-between items-center">
+          <span class="text-primary font-serif text-lg">₹4,099 <span class="text-xs text-neutral-500 font-sans">/ mo</span></span>
+          <span class="text-sm text-primary flex items-center gap-2 link-arrow">Open Interface</span>
+        </div>
+      </div>
+
+      <div class="prog-card bg-obsidian-950 p-8 md:p-10 flex flex-col justify-between min-h-[380px] group cursor-pointer hover:bg-obsidian-900" data-nav="oracle">
+        <div>
+          <div class="flex justify-between items-start mb-8">
+            <span class="text-xs tracking-[0.2em] text-neutral-500 font-mono">ORACLE / 003</span>
+            <span class="text-[10px] text-neutral-600 font-mono">INTERACTIVE</span>
+          </div>
+          <h3 class="text-2xl font-serif text-primary mb-2">Code Review Chatbox</h3>
+          <p class="text-sm leading-relaxed text-neutral-400 mt-4">
+            Paste your code. Receive quiet truths. Verifies faults and exposed data before you commit, returning actionable details.
+          </p>
+          <div class="mt-7 h-16">
+          </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-neutral-800 flex justify-between items-center">
+          <span class="text-primary font-serif text-lg">₹1,299 <span class="text-xs text-neutral-500 font-sans">/ mo</span></span>
+          <span class="text-sm text-primary flex items-center gap-2 link-arrow">Open Interface</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- live threat feed -->
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-24">
+    <div class="grid lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-4" data-reveal>
+        <span class="text-[10px] tracking-[0.28em] text-neutral-600 font-mono">[ GLOBAL TRACKER ]</span>
+        <h2 class="text-3xl font-serif text-primary mt-2 mb-4">The feed never <span class="italic-em">sleeps</span></h2>
+        <p class="text-sm leading-relaxed text-neutral-400">
+          Every verdict, token mint, and AST analysis is written into an append-only ledger. This stream is a live projection of that ledger across all active deployments.
+        </p>
+        <div class="mt-8 space-y-3 font-mono text-[11px]">
+          <div class="flex justify-between border-b border-neutral-900 pb-2">
+            <span class="text-neutral-600">LEDGER HEIGHT</span>
+            <span class="text-primary stat-num" id="ledgerHeight">8,412,905</span>
+          </div>
+          <div class="flex justify-between border-b border-neutral-900 pb-2">
+            <span class="text-neutral-600">BLOCKS / MIN</span>
+            <span class="text-primary stat-num" id="blocksMin">142</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-neutral-600">CONSENSUS</span>
+            <span class="text-emerald-400">3 / 3 NODES</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-8 border border-neutral-800 bg-obsidian-900/40" data-reveal data-delay="120">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
+          <span class="text-[10px] tracking-[0.24em] text-neutral-500 font-mono">LIVE EVENT STREAM</span>
+          <span class="flex items-center gap-2 text-[10px] font-mono text-neutral-600"><span class="live-dot"></span>STREAMING</span>
+        </div>
+        <div id="homeFeed" class="divide-y divide-neutral-900 max-h-[420px] overflow-hidden"></div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     PAGE : TOOLS
+────────────────────────────────────────────── -->
+<section class="page" data-page="tools">
+  <header class="px-6 md:px-12 max-w-7xl mx-auto pt-14 md:pt-20 pb-14">
+    <span class="text-[10px] tracking-[0.3em] text-neutral-600 font-mono" data-reveal>[ THE COLLECTION ]</span>
+    <h1 class="text-4xl md:text-6xl font-serif text-primary leading-tight mt-4 max-w-3xl" data-reveal data-delay="80">
+      Three programs. <span class="italic-em">One</span> philosophy.
+    </h1>
+    <p class="mt-6 text-lg max-w-2xl leading-relaxed font-light" data-reveal data-delay="160">
+      Each tool is engineered to run where your data lives. No cloud round-trips. No silent telemetry. No assumed trust.
+    </p>
+  </header>
+
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-16">
+    <div class="border border-neutral-800 bg-obsidian-900/40 p-6 md:p-8" data-reveal>
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+        <div>
+          <span class="text-[10px] tracking-[0.24em] text-neutral-600 font-mono">DETECTIONS BY PROGRAM</span>
+          <h3 class="text-xl font-serif text-primary mt-1">Rolling 24-hour window</h3>
+        </div>
+        <span class="font-mono text-[10px] text-neutral-600">AUTO-REFRESHING</span>
+      </div>
+      <canvas id="toolsBars" class="w-full h-52 block"></canvas>
+      <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-neutral-800 text-center">
+        <div>
+          <span class="text-2xl font-serif text-primary stat-num" id="toolsVeil">0</span>
+          <span class="block text-[10px] tracking-[0.2em] text-neutral-600 font-mono mt-1">VEIL</span>
+        </div>
+        <div>
+          <span class="text-2xl font-serif text-primary stat-num" id="toolsAegis">0</span>
+          <span class="block text-[10px] tracking-[0.2em] text-neutral-600 font-mono mt-1">AEGIS</span>
+        </div>
+        <div>
+          <span class="text-2xl font-serif text-primary stat-num" id="toolsOracle">0</span>
+          <span class="block text-[10px] tracking-[0.2em] text-neutral-600 font-mono mt-1">ORACLE</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-20">
+    <div class="grid gap-4">
+
+      <div class="prog-card bg-obsidian-950 p-8 md:p-10 flex flex-col justify-between min-h-[440px] group cursor-pointer hover:bg-obsidian-900" data-nav="veil" data-reveal>
+        <div>
+          <div class="flex justify-between items-start mb-8">
+            <span class="text-xs tracking-[0.2em] text-neutral-500 font-mono">VEIL / 001</span>
+            <span class="text-[10px] text-neutral-600 font-mono">LOCAL</span>
+          </div>
+          <h3 class="text-2xl font-serif text-primary mb-2">Local Code Scanner</h3>
+          <p class="text-sm leading-relaxed text-neutral-400 mt-4">
+            Static entropy evaluation and high-assurance credential detection. Never leaks a code hash outside the host boundary.
+          </p>
+          <ul class="mt-7 space-y-2.5 text-xs text-neutral-500">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>1,480 AST signatures</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Shannon entropy thresholding</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Pre-commit hook ready</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Zero network syscalls</li>
+          </ul>
+        </div>
+        <div class="mt-8 pt-8 border-t border-neutral-800 flex justify-between items-center">
+          <span class="text-primary font-serif text-lg">₹0</span>
+          <span class="text-sm text-primary flex items-center gap-2 link-arrow">Open</span>
+        </div>
+      </div>
+
+      <div class="prog-card bg-obsidian-950 p-8 md:p-10 flex flex-col justify-between min-h-[440px] group cursor-pointer hover:bg-obsidian-900" data-nav="aegis" data-reveal data-delay="90">
+        <div>
+          <div class="flex justify-between items-start mb-8">
+            <span class="text-xs tracking-[0.2em] text-neutral-500 font-mono">AEGIS / 002</span>
+            <span class="text-[10px] text-neutral-600 font-mono">EDGE</span>
+          </div>
+          <h3 class="text-2xl font-serif text-primary mb-2">Zero-Trust DB Auth</h3>
+          <p class="text-sm leading-relaxed text-neutral-400 mt-4">
+            Deterministic cryptographic request handshakes. Invariant token sanitisation at sub-millisecond edge latency, without state retention.
+          </p>
+          <ul class="mt-7 space-y-2.5 text-xs text-neutral-500">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Request-level inspection</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Automated burst throttling</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>ChaCha20-Poly1305 envelopes</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>p99.9 &lt; 8.7 ms overhead</li>
+          </ul>
+        </div>
+        <div class="mt-8 pt-8 border-t border-neutral-800 flex justify-between items-center">
+          <span class="text-primary font-serif text-lg">₹4,099 <span class="text-xs text-neutral-500 font-sans">/ mo</span></span>
+          <span class="text-sm text-primary flex items-center gap-2 link-arrow">Open</span>
+        </div>
+      </div>
+
+      <div class="prog-card bg-obsidian-950 p-8 md:p-10 flex flex-col justify-between min-h-[440px] group cursor-pointer hover:bg-obsidian-900" data-nav="oracle" data-reveal data-delay="180">
+        <div>
+          <div class="flex justify-between items-start mb-8">
+            <span class="text-xs tracking-[0.2em] text-neutral-500 font-mono">ORACLE / 003</span>
+            <span class="text-[10px] text-neutral-600 font-mono">INTERACTIVE</span>
+          </div>
+          <h3 class="text-2xl font-serif text-primary mb-2">Code Review Chatbox</h3>
+          <p class="text-sm leading-relaxed text-neutral-400 mt-4">
+            Paste a snippet. Receive a deterministic verdict. Detects memory leaks, unchecked buffers and hardcoded credentials before merge consensus.
+          </p>
+          <ul class="mt-7 space-y-2.5 text-xs text-neutral-500">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Go, Python, JS, Rust</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Patch diff proposals</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Conversation history</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-600 rounded-full"></span>Signed audit attestation</li>
+          </ul>
+        </div>
+        <div class="mt-8 pt-8 border-t border-neutral-800 flex justify-between items-center">
+          <span class="text-primary font-serif text-lg">₹1,299 <span class="text-xs text-neutral-500 font-sans">/ mo</span></span>
+          <span class="text-sm text-primary flex items-center gap-2 link-arrow">Open</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- capability matrix -->
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-24">
+    <div class="border border-neutral-800 bg-obsidian-900/40 overflow-hidden" data-reveal>
+      <div class="px-6 py-4 border-b border-neutral-800 flex items-center justify-between">
+        <span class="text-[10px] tracking-[0.24em] text-neutral-500 font-mono">CAPABILITY MATRIX</span>
+        <span class="text-[10px] text-neutral-700 font-mono">V4.19-SEC</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono min-w-[600px]">
+          <thead>
+            <tr class="text-neutral-600 border-b border-neutral-800">
+              <th class="px-6 py-4 font-normal tracking-widest">CAPABILITY</th>
+              <th class="px-6 py-4 font-normal tracking-widest text-center">VEIL</th>
+              <th class="px-6 py-4 font-normal tracking-widest text-center">AEGIS</th>
+              <th class="px-6 py-4 font-normal tracking-widest text-center">ORACLE</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-900 text-neutral-400">
+            <tr class="hover:bg-obsidian-950 transition-colors"><td class="px-6 py-4">Runs fully local</td><td class="px-6 py-4 text-center text-emerald-400">●</td><td class="px-6 py-4 text-center text-neutral-700">○</td><td class="px-6 py-4 text-center text-emerald-400">●</td></tr>
+            <tr class="hover:bg-obsidian-950 transition-colors"><td class="px-6 py-4">Zero outbound telemetry</td><td class="px-6 py-4 text-center text-emerald-400">●</td><td class="px-6 py-4 text-center text-emerald-400">●</td><td class="px-6 py-4 text-center text-emerald-400">●</td></tr>
+            <tr class="hover:bg-obsidian-950 transition-colors"><td class="px-6 py-4">AST-level parsing</td><td class="px-6 py-4 text-center text-emerald-400">●</td><td class="px-6 py-4 text-center text-neutral-700">○</td><td class="px-6 py-4 text-center text-emerald-400">●</td></tr>
+            <tr class="hover:bg-obsidian-950 transition-colors"><td class="px-6 py-4">Runtime request inspection</td><td class="px-6 py-4 text-center text-neutral-700">○</td><td class="px-6 py-4 text-center text-emerald-400">●</td><td class="px-6 py-4 text-center text-neutral-700">○</td></tr>
+            <tr class="hover:bg-obsidian-950 transition-colors"><td class="px-6 py-4">Ephemeral key rotation</td><td class="px-6 py-4 text-center text-neutral-700">○</td><td class="px-6 py-4 text-center text-emerald-400">●</td><td class="px-6 py-4 text-center text-neutral-700">○</td></tr>
+            <tr class="hover:bg-obsidian-950 transition-colors"><td class="px-6 py-4">Patch diff generation</td><td class="px-6 py-4 text-center text-neutral-700">○</td><td class="px-6 py-4 text-center text-neutral-700">○</td><td class="px-6 py-4 text-center text-emerald-400">●</td></tr>
+            <tr class="hover:bg-obsidian-950 transition-colors"><td class="px-6 py-4">Signed ledger attestation</td><td class="px-6 py-4 text-center text-emerald-400">●</td><td class="px-6 py-4 text-center text-emerald-400">●</td><td class="px-6 py-4 text-center text-emerald-400">●</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     PAGE : VEIL
+────────────────────────────────────────────── -->
+<section class="page" data-page="veil">
+  <header class="px-6 md:px-12 max-w-7xl mx-auto pt-14 md:pt-20 pb-12">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div>
+        <span class="text-[10px] tracking-[0.3em] text-neutral-600 font-mono" data-reveal>[ PROGRAM 01 // VEIL ]</span>
+        <h1 class="text-4xl md:text-6xl font-serif text-primary leading-tight mt-4" data-reveal data-delay="80">
+          Local Static <span class="italic-em">Code Scanner</span>
+        </h1>
+        <p class="mt-6 text-lg max-w-2xl leading-relaxed font-light" data-reveal data-delay="160">
+          Air-gapped entropy evaluation and high-assurance credential detection. Never leaks code hashes outside the host boundary.
+        </p>
+      </div>
+      <div class="flex gap-3 font-mono text-[10px] shrink-0" data-reveal data-delay="220">
+        <span class="px-3 py-1.5 border border-neutral-800 text-emerald-400 bg-obsidian-900">ENV: AIR_GAPPED</span>
+        <span class="px-3 py-1.5 border border-neutral-800 text-neutral-500 bg-obsidian-900">VER: v1.8.4</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- kpi strip -->
+  <section class="border-y border-neutral-800 bg-obsidian-900/40" data-reveal>
+    <div class="max-w-7xl mx-auto px-6 md:px-12 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div>
+        <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">SECRETS INTERCEPTED</span>
+        <span class="text-3xl font-serif text-primary stat-num mt-2 block" data-counter="86" data-rate="0.01">0</span>
+      </div>
+      <div>
+        <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">TOKENS PARSED / MIN</span>
+        <span class="text-3xl font-serif text-primary stat-num mt-2 block" data-counter="1240" data-rate="0.08">0</span>
+      </div>
+      <div>
+        <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">ENTROPY THRESHOLD</span>
+        <span class="text-3xl font-serif text-primary stat-num mt-2 block">4.85<span class="text-sm text-neutral-500"> H</span></span>
+      </div>
+      <div>
+        <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">OUTBOUND PAYLOAD</span>
+        <span class="text-3xl font-serif text-emerald-400 stat-num mt-2 block">0<span class="text-sm text-neutral-500"> B</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-12 max-w-7xl mx-auto py-16">
+    <div class="grid lg:grid-cols-12 gap-6">
+
+      <!-- Veil scan output demo -->
+      <div class="lg:col-span-5 border border-neutral-800 bg-obsidian-900/60 flex flex-col" data-reveal>
+        <div class="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
+          <span class="font-mono text-[10px] tracking-widest text-neutral-600">VEIL SCAN OUTPUT</span>
+        </div>
+        <div id="veilTerminal" class="p-5 font-mono text-[12px] leading-relaxed text-neutral-400 min-h-[320px] flex-1"></div>
+        <div class="px-5 py-3 border-t border-neutral-800 flex items-center justify-between font-mono text-[10px] text-neutral-600">
+          <span>NETWORK INTERFACE eth0: UNBOUND</span>
+          <span class="text-emerald-400">SEALED</span>
+        </div>
+      </div>
+
+      <!-- entropy chart -->
+      <div class="lg:col-span-7 border border-neutral-800 bg-obsidian-900/40 p-6 flex flex-col" data-reveal data-delay="120">
+        <div class="flex items-center justify-between pb-4 border-b border-neutral-800">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-500 font-mono">SHANNON ENTROPY DISPERSION</span>
+          <span class="font-mono text-[10px] text-neutral-600" id="veilSample">SAMPLE: 42,910 TOKENS</span>
+        </div>
+        <canvas id="veilChart" class="w-full h-56 block mt-5"></canvas>
+        <div class="flex justify-between font-mono text-[10px] text-neutral-700 mt-3">
+          <span>0.0 bits · dict</span>
+          <span>2.5 · identifiers</span>
+          <span class="text-rose-400/70">4.85 · threshold</span>
+          <span>8.0 · pure RNG</span>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-neutral-800 space-y-3">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-600 font-mono block">MONITORED MONOREPO NODES</span>
+
+          <div class="flex items-center justify-between p-3 bg-obsidian-950 border border-neutral-800 hover:border-neutral-700 transition-colors">
+            <div class="flex items-center gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span class="font-mono text-xs text-primary">core-payments-api</span>
+            </div>
+            <div class="flex items-center gap-5 font-mono text-[10px]">
+              <span class="text-neutral-600">48k LOC</span>
+              <span class="text-emerald-400">0 LEAKS</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between p-3 bg-obsidian-950 border border-amber-500/30">
+            <div class="flex items-center gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+              <span class="font-mono text-xs text-primary">auth-microservice</span>
+            </div>
+            <div class="flex items-center gap-5 font-mono text-[10px]">
+              <span class="text-neutral-600">12k LOC</span>
+              <span class="text-amber-400">1 TOKEN FLAGGED</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between p-3 bg-obsidian-950 border border-neutral-800 hover:border-neutral-700 transition-colors">
+            <div class="flex items-center gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span class="font-mono text-xs text-primary">infra-terraform</span>
+            </div>
+            <div class="flex items-center gap-5 font-mono text-[10px]">
+              <span class="text-neutral-600">94 MODULES</span>
+              <span class="text-emerald-400">KMS ALIGNED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- scan throughput + hook -->
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-24">
+    <div class="grid lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-7 border border-neutral-800 bg-obsidian-900/40 p-6" data-reveal>
+        <div class="flex items-center justify-between pb-4 border-b border-neutral-800 mb-5">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-500 font-mono">FILES SCANNED / SEC - LIVE</span>
+          <span class="font-mono text-[10px] text-emerald-400 flex items-center gap-2"><span class="live-dot"></span>RUNNING</span>
+        </div>
+        <canvas id="veilThroughput" class="w-full h-44 block"></canvas>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-5 border-t border-neutral-800 font-mono text-[10px] text-neutral-500">
+          <div class="flex items-center gap-2">Cloud Providers</div>
+          <div class="flex items-center gap-2">Private RSA / EC</div>
+          <div class="flex items-center gap-2">DB Connection URIs</div>
+          <div class="flex items-center gap-2">JWT Secret Salts</div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 border border-neutral-800 bg-obsidian-900/40 p-6" data-reveal data-delay="120">
+        <span class="text-[10px] tracking-[0.22em] text-neutral-500 font-mono block mb-4">GIT HOOK INJECTOR YAML</span>
+        <pre class="bg-obsidian-950 p-4 text-[11px] font-mono text-neutral-400 overflow-x-auto border border-neutral-800 leading-relaxed"><code>repos:
+  - repo: local
+    hooks:
+      - id: veil-strict-pre-commit
+        name: Veil Airgap Scanner
+        entry: veil scan --staged
+               --fail-on-warning
+        language: system
+        pass_filenames: true</code></pre>
+        <button class="w-full mt-5 py-3 border border-neutral-800 bg-obsidian-950 hover:border-neutral-600 text-primary text-xs tracking-widest font-mono transition-colors duration-300">
+          COPY CONFIGURATION
+        </button>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     PAGE : AEGIS
+────────────────────────────────────────────── -->
+<section class="page" data-page="aegis">
+  <header class="px-6 md:px-12 max-w-7xl mx-auto pt-14 md:pt-20 pb-12">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div>
+        <span class="text-[10px] tracking-[0.3em] text-neutral-600 font-mono" data-reveal>[ PROGRAM 02 // AEGIS ]</span>
+        <h1 class="text-4xl md:text-6xl font-serif text-primary leading-tight mt-4" data-reveal data-delay="80">
+          Zero-Trust <span class="italic-em">Ingress</span> Gateway
+        </h1>
+        <p class="mt-6 text-lg max-w-2xl leading-relaxed font-light" data-reveal data-delay="160">
+          Deterministic cryptographic request handshakes. Invariant token sanitisation at sub-millisecond edge latency, without state retention.
+        </p>
+      </div>
+      <button class="shrink-0 px-6 py-3 bg-neutral-100 text-obsidian-950 text-xs font-medium tracking-widest hover:bg-white transition-colors duration-300" data-reveal data-delay="220">
+        GENERATE EPHEMERAL KEY
+      </button>
+    </div>
+  </header>
+
+  <!-- stat row -->
+  <section class="border-y border-neutral-800 bg-obsidian-900/40" data-reveal>
+    <div class="max-w-7xl mx-auto px-6 md:px-12 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div>
+        <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">24H VERIFIED INGRESS</span>
+        <span class="text-3xl font-serif text-primary stat-num mt-2 block" data-counter="2846" data-rate="0.03">0</span>
+        <span class="text-[10px] text-neutral-600 font-mono mt-1 block">Zero handshake failures</span>
+      </div>
+      <div>
+        <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">ANOMALIES NEUTRALISED</span>
+        <span class="text-3xl font-serif text-amber-400 stat-num mt-2 block" data-counter="37" data-rate="0.01">0</span>
+        <span class="text-[10px] text-neutral-600 font-mono mt-1 block">Drop rule executed @ edge</span>
+      </div>
+      <div>
+        <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">MEAN LATENCY ADDED</span>
+        <span class="text-3xl font-serif text-emerald-400 stat-num mt-2 block" id="aegisLat">3.8<span class="text-sm text-neutral-500">ms</span></span>
+        <span class="text-[10px] text-neutral-600 font-mono mt-1 block">p99.9 &lt; 8.7 ms</span>
+      </div>
+      <div>
+        <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono block">IMPLICIT TRUST</span>
+        <span class="text-3xl font-serif text-primary mt-2 block">0%</span>
+        <span class="text-[10px] text-neutral-600 font-mono mt-1 block">Continuous micro-attestation</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- radar + charts -->
+  <section class="px-6 md:px-12 max-w-7xl mx-auto py-16">
+    <div class="grid lg:grid-cols-12 gap-6">
+
+      <div class="lg:col-span-5 border border-neutral-800 bg-obsidian-900/40 p-6 flex flex-col" data-reveal>
+        <div class="flex items-center justify-between pb-4 border-b border-neutral-800">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-500 font-mono">PERIMETER SWEEP</span>
+          <span class="font-mono text-[10px] text-emerald-400 flex items-center gap-2"><span class="live-dot"></span>SCANNING</span>
+        </div>
+        <canvas id="aegisRadar" class="w-full h-72 block mt-4"></canvas>
+        <div class="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-neutral-800 font-mono text-[10px]">
+          <div class="flex justify-between"><span class="text-neutral-600">CONTACTS</span><span class="text-primary" id="radarContacts">0</span></div>
+          <div class="flex justify-between"><span class="text-neutral-600">SWEEP RATE</span><span class="text-primary">6.0 s</span></div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 flex flex-col gap-6">
+        <div class="border border-neutral-800 bg-obsidian-900/40 p-6" data-reveal data-delay="100">
+          <div class="flex items-center justify-between pb-4 border-b border-neutral-800 mb-5">
+            <span class="text-[10px] tracking-[0.22em] text-neutral-500 font-mono">REQUESTS VERIFIED / BLOCKED</span>
+            <span class="font-mono text-[10px] text-neutral-600">ROLLING 60s</span>
+          </div>
+          <canvas id="aegisChart" class="w-full h-48 block"></canvas>
+          <div class="flex items-center gap-6 mt-4 font-mono text-[10px] text-neutral-600">
+            <span class="flex items-center gap-2"><span class="w-4 h-px bg-neutral-300 inline-block"></span>Verified</span>
+            <span class="flex items-center gap-2"><span class="w-4 h-px bg-rose-400 inline-block"></span>Blocked</span>
+          </div>
+        </div>
+
+        <div class="border border-neutral-800 bg-obsidian-900/40 p-6" data-reveal data-delay="180">
+          <div class="flex items-center justify-between pb-4 border-b border-neutral-800 mb-5">
+            <span class="text-[10px] tracking-[0.22em] text-neutral-500 font-mono">ATTACK VECTORS NEUTRALISED - 24H</span>
+            <span class="font-mono text-[10px] text-neutral-600">BY CATEGORY</span>
+          </div>
+          <canvas id="aegisBars" class="w-full h-40 block"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- live table + vault -->
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-24">
+    <div class="grid lg:grid-cols-12 gap-6">
+
+      <div class="lg:col-span-8 border border-neutral-800 bg-obsidian-900/40" data-reveal>
+        <div class="flex items-center justify-between px-5 py-4 border-b border-neutral-800">
+          <div class="flex items-center gap-3">
+            <span class="live-dot"></span>
+            <span class="text-[10px] tracking-[0.22em] text-neutral-400 font-mono">LIVE INGRESS GATE TELEMETRY</span>
+          </div>
+          <span class="font-mono text-[10px] text-neutral-700">FIFO BUFFER [STREAMING]</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-mono text-[11px] min-w-[640px]">
+            <thead>
+              <tr class="text-neutral-600 border-b border-neutral-800">
+                <th class="px-5 py-3 font-normal tracking-widest">TIMESTAMP</th>
+                <th class="px-5 py-3 font-normal tracking-widest">ENDPOINT</th>
+                <th class="px-5 py-3 font-normal tracking-widest">ENTROPY</th>
+                <th class="px-5 py-3 font-normal tracking-widest">STATUS</th>
+                <th class="px-5 py-3 font-normal tracking-widest text-right">ACTION</th>
+              </tr>
+            </thead>
+            <tbody id="aegisTable" class="divide-y divide-neutral-900 text-neutral-400"></tbody>
+          </table>
+        </div>
+        <div class="px-5 py-3 border-t border-neutral-800 flex items-center justify-between font-mono text-[10px] text-neutral-700">
+          <span>SHOWING LAST 6 VERIFIED PACKETS</span>
+          <span>POLICIES APPLIED: 8 / 8 INGRESS HOOKS</span>
+        </div>
+      </div>
+
+      <div class="lg:col-span-4 border border-neutral-800 bg-obsidian-900/40 p-6 flex flex-col justify-between" data-reveal data-delay="120">
+        <div>
+          <div class="flex items-center justify-between pb-4 border-b border-neutral-800">
+            <span class="text-[10px] tracking-[0.22em] text-neutral-400 font-mono">SCOPED VAULT KEYS</span>
+            <span class="font-mono text-[10px] text-emerald-400">ACTIVE</span>
+          </div>
+          <div class="mt-5 space-y-3" id="vaultList"></div>
+
+          <div class="mt-6 pt-5 border-t border-neutral-800">
+            <span class="text-[10px] tracking-[0.22em] text-neutral-600 font-mono block mb-3">ACTIVE DEFENCE INVARIANTS</span>
+            <ul class="space-y-2.5 font-mono text-[11px] text-neutral-500">
+              <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-500"></span>AST token pre-scanner on payload buffers</li>
+              <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-500"></span>ChaCha20 nonce collision prevention</li>
+              <li class="flex items-center gap-2"><span class="w-1 h-1 bg-neutral-500"></span>All keys expire in &lt; 60 minutes</li>
+            </ul>
+          </div>
+        </div>
+        <button class="w-full mt-7 py-3 border border-neutral-800 bg-obsidian-950 hover:border-neutral-600 text-primary text-[11px] tracking-widest font-mono transition-colors duration-300">
+          EXPORT KEY ENVELOPE (.pem)
+        </button>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     PAGE : ORACLE
+────────────────────────────────────────────── -->
+<section class="page" data-page="oracle">
+  <header class="px-6 md:px-12 max-w-7xl mx-auto pt-14 md:pt-20 pb-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div>
+        <span class="text-[10px] tracking-[0.3em] text-neutral-600 font-mono" data-reveal>[ PROGRAM 03 // ORACLE ]</span>
+        <h1 class="text-4xl md:text-6xl font-serif text-primary leading-tight mt-4" data-reveal data-delay="80">
+          The <span class="italic-em">Oracle</span> Interface
+        </h1>
+        <p class="mt-6 text-lg max-w-2xl leading-relaxed font-light" data-reveal data-delay="160">
+          Paste a snippet. The engine returns a deterministic verdict - hardcoded secrets, injection surfaces, exposed logic - before you commit.
+        </p>
+      </div>
+      <div class="font-mono text-[10px] text-neutral-600 space-y-1.5 shrink-0" data-reveal data-delay="220">
+        <p>• Go · Python · JavaScript · Rust</p>
+        <p>• Nothing stored beyond your session</p>
+        <p>• Sandboxed deterministic parse</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-24">
+    <div class="grid lg:grid-cols-12 gap-6">
+
+      <!-- history sidebar -->
+      <aside class="lg:col-span-3 border border-neutral-800 bg-obsidian-900/40 flex flex-col h-[620px]" data-reveal>
+        <button id="newChatBtn" class="m-4 py-3 border border-neutral-800 bg-obsidian-950 hover:border-neutral-600 text-primary text-[11px] tracking-[0.2em] font-mono transition-colors duration-300 flex items-center justify-center gap-2">
+          <span class="text-base leading-none">+</span> NEW CHAT
+        </button>
+        <div class="px-5 py-3 border-y border-neutral-800 flex items-center justify-between">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-600 font-mono">HISTORY</span>
+          <span class="text-[10px] text-neutral-700 font-mono" id="historyCount">0 / 10</span>
+        </div>
+        <div id="chatHistory" class="flex-1 overflow-y-auto custom-scroll p-3 space-y-1.5"></div>
+        <div class="p-4 border-t border-neutral-800">
+          <button id="clearHistoryBtn" class="w-full py-2 text-[10px] tracking-[0.2em] font-mono text-neutral-600 hover:text-rose-400 transition-colors">
+            CLEAR ALL HISTORY
+          </button>
+        </div>
+      </aside>
+
+      <!-- chat panel -->
+      <div class="lg:col-span-6 border border-neutral-800 bg-obsidian-900/60 flex flex-col h-[620px]" data-reveal data-delay="100">
+        <div class="flex items-center justify-between px-5 py-3.5 border-b border-neutral-800">
+          <div class="flex items-center gap-3">
+            <span class="live-dot"></span>
+            <span class="text-[10px] tracking-[0.22em] text-neutral-400 font-mono" id="chatTitleBar">NEW SESSION</span>
+          </div>
+          <span class="font-mono text-[10px] text-neutral-700">ORACLE v3.1</span>
+        </div>
+
+        <div id="chatMessages" class="flex-1 overflow-y-auto custom-scroll p-5 space-y-5"></div>
+
+        <div class="border-t border-neutral-800 p-4 bg-obsidian-950/60">
+          <textarea id="chatInput" rows="3" placeholder="Paste your code here…"
+            class="w-full bg-transparent text-neutral-300 placeholder-neutral-700 text-[13px] font-mono resize-none focus:outline-none leading-relaxed"></textarea>
+          <div class="flex justify-between items-center mt-3">
+            <span class="text-[10px] text-neutral-700 font-mono" id="charCount">0 characters</span>
+            <button id="sendBtn" class="px-6 py-2.5 bg-neutral-100 text-obsidian-950 text-[11px] font-medium tracking-[0.15em] border border-neutral-300 hover:bg-white transition-colors duration-300">
+              ANALYZE CODE
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- telemetry -->
+      <aside class="lg:col-span-3 flex flex-col gap-6" data-reveal data-delay="180">
+        <div class="border border-neutral-800 bg-obsidian-900/40 p-5">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-600 font-mono block">ANALYSIS THROUGHPUT</span>
+          <canvas id="oracleChart" class="w-full h-28 block mt-3"></canvas>
+          <div class="flex justify-between font-mono text-[10px] text-neutral-700 mt-2">
+            <span>VERDICTS / MIN</span>
+            <span class="text-primary stat-num" id="oracleRate">42</span>
+          </div>
+        </div>
+
+        <div class="border border-neutral-800 bg-obsidian-900/40 p-5">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-600 font-mono block mb-4">SESSION TOTALS</span>
+          <div class="space-y-3 font-mono text-[11px]">
+            <div class="flex justify-between"><span class="text-neutral-600">FILES REVIEWED</span><span class="text-primary stat-num" id="oracleFiles">0</span></div>
+            <div class="flex justify-between"><span class="text-neutral-600">FAULTS LOGGED</span><span class="text-rose-400 stat-num" id="oracleFaults">0</span></div>
+            <div class="flex justify-between"><span class="text-neutral-600">PATCHES PROPOSED</span><span class="text-emerald-400 stat-num" id="oraclePatches">0</span></div>
+            <div class="flex justify-between"><span class="text-neutral-600">PARSE DURATION</span><span class="text-primary" id="oracleParse">1.18 ms</span></div>
+            <div class="flex justify-between"><span class="text-neutral-600">CONFIDENCE</span><span class="text-emerald-400">100%</span></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     PAGE : MANIFESTO
+────────────────────────────────────────────── -->
+<section class="page" data-page="manifesto">
+  <header class="px-6 md:px-12 max-w-4xl mx-auto pt-20 md:pt-32 pb-20 text-center">
+    <span class="text-[10px] tracking-[0.3em] text-neutral-600 font-mono" data-reveal>[ THE COVENANT ]</span>
+    <h1 class="text-3xl md:text-6xl font-serif text-primary leading-[1.15] mt-8" data-reveal data-delay="100">
+      “Software security is not an administrative compliance checkbox. It is an unyielding <span class="italic-em">mathematical theorem</span>.”
+    </h1>
+    <p class="mt-10 text-lg md:text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto" data-reveal data-delay="200">
+      We do not transmit your secrets to remote cloud prediction models. We do not operate surveillance telemetry. Security starts with local determinism, uncompromising speed, and mathematical certainty.
+    </p>
+  </header>
+
+  <div class="max-w-4xl mx-auto px-6 md:px-12"><div class="glow-divider" data-reveal></div></div>
+
+  <section class="px-6 md:px-12 max-w-5xl mx-auto py-20 space-y-px">
+    <div class="grid md:grid-cols-12 gap-8 py-10 border-b border-neutral-900" data-reveal>
+      <div class="md:col-span-3"><span class="text-[10px] tracking-[0.3em] text-neutral-700 font-mono">PRINCIPLE 01</span></div>
+      <div class="md:col-span-9">
+        <h3 class="text-2xl font-serif text-primary mb-3">Local by default, always.</h3>
+        <p class="text-sm leading-relaxed text-neutral-400">
+          A security tool that ships your code to a remote server has already failed. Every TrustIQ program executes inside your runtime boundary. There is no fallback to the cloud, because there is no cloud.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-8 py-10 border-b border-neutral-900" data-reveal>
+      <div class="md:col-span-3"><span class="text-[10px] tracking-[0.3em] text-neutral-700 font-mono">PRINCIPLE 02</span></div>
+      <div class="md:col-span-9">
+        <h3 class="text-2xl font-serif text-primary mb-3">Determinism over heuristics.</h3>
+        <p class="text-sm leading-relaxed text-neutral-400">
+          A verdict should be reproducible. Given the same input, Oracle returns the same answer, byte for byte, hash for hash. Probabilistic guesswork has no place in a security boundary.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-8 py-10 border-b border-neutral-900" data-reveal>
+      <div class="md:col-span-3"><span class="text-[10px] tracking-[0.3em] text-neutral-700 font-mono">PRINCIPLE 03</span></div>
+      <div class="md:col-span-9">
+        <h3 class="text-2xl font-serif text-primary mb-3">Zero assumed trust.</h3>
+        <p class="text-sm leading-relaxed text-neutral-400">
+          Every request is verified as if it were the first. Every key expires. Every token is attested. Trust is not a state you enter - it is a calculation you repeat, continuously, forever.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-8 py-10" data-reveal>
+      <div class="md:col-span-3"><span class="text-[10px] tracking-[0.3em] text-neutral-700 font-mono">PRINCIPLE 04</span></div>
+      <div class="md:col-span-9">
+        <h3 class="text-2xl font-serif text-primary mb-3">Quiet is a feature.</h3>
+        <p class="text-sm leading-relaxed text-neutral-400">
+          We do not shout with false positives. We do not sell attention. A tool earns its place by surviving the moment that made you seek it - and then returning to silence.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-24">
+    <div class="border border-neutral-800 bg-obsidian-900/40 p-8 md:p-12" data-reveal>
+      <span class="text-[10px] tracking-[0.24em] text-neutral-600 font-mono">CUMULATIVE LEDGER - ATTACKS PREVENTED</span>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-8">
+        <div>
+          <span class="text-3xl md:text-4xl font-serif text-primary stat-num block" data-counter="9841" data-rate="0.08">0</span>
+          <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono mt-2 block">VEIL INTERCEPTIONS</span>
+        </div>
+        <div>
+          <span class="text-3xl md:text-4xl font-serif text-primary stat-num block" data-counter="17284" data-rate="0.12">0</span>
+          <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono mt-2 block">AEGIS BLOCKS</span>
+        </div>
+        <div>
+          <span class="text-3xl md:text-4xl font-serif text-primary stat-num block" data-counter="4210" data-rate="0.05">0</span>
+          <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono mt-2 block">ORACLE VERDICTS</span>
+        </div>
+        <div>
+          <span class="text-3xl md:text-4xl font-serif text-emerald-400 block">0</span>
+          <span class="text-[10px] tracking-[0.2em] text-neutral-600 font-mono mt-2 block">RECORDED BREACHES</span>
+        </div>
+      </div>
+      <div class="mt-10 pt-8 border-t border-neutral-800">
+        <canvas id="manifestoChart" class="w-full h-48 block"></canvas>
+      </div>
+    </div>
+
+    <div class="mt-14 flex flex-wrap items-center justify-center gap-5" data-reveal>
+      <a href="#home" data-nav="home" class="px-8 py-4 bg-neutral-100 text-obsidian-950 text-xs font-medium tracking-[0.18em] hover:bg-white transition-colors duration-300">BACK TO SYSTEM ROOT</a>
+      <button class="px-8 py-4 border border-neutral-800 bg-obsidian-900 hover:border-neutral-600 text-primary text-xs font-medium tracking-[0.18em] transition-colors duration-300">READ FORMAL SPECIFICATION</button>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     PAGE : CONTACT
+────────────────────────────────────────────── -->
+<section class="page" data-page="contact">
+  <header class="px-6 md:px-12 max-w-7xl mx-auto pt-14 md:pt-20 pb-14">
+    <span class="text-[10px] tracking-[0.3em] text-neutral-600 font-mono" data-reveal>[ SECURE CHANNEL ]</span>
+    <h1 class="text-4xl md:text-6xl font-serif text-primary leading-tight mt-4 max-w-3xl" data-reveal data-delay="80">
+      Say something <span class="italic-em">quiet</span>.
+    </h1>
+    <p class="mt-6 text-lg max-w-2xl leading-relaxed font-light" data-reveal data-delay="160">
+      No ticket queues. No chatbot loops. A human reads every message, and the median first response is under four hours.
+    </p>
+  </header>
+
+  <section class="px-6 md:px-12 max-w-7xl mx-auto pb-24">
+    <div class="grid lg:grid-cols-12 gap-6">
+
+      <div class="lg:col-span-7 border border-neutral-800 bg-obsidian-900/40 p-7 md:p-9" data-reveal>
+        <form id="contactForm" class="space-y-6">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-[10px] tracking-[0.22em] text-neutral-600 font-mono mb-2">FULL NAME</label>
+              <input type="text" required class="w-full bg-obsidian-950 border border-neutral-800 text-primary text-sm p-3.5 focus:outline-none focus:border-neutral-500 transition-colors duration-300">
+            </div>
+            <div>
+              <label class="block text-[10px] tracking-[0.22em] text-neutral-600 font-mono mb-2">WORK EMAIL</label>
+              <input type="email" required class="w-full bg-obsidian-950 border border-neutral-800 text-primary text-sm p-3.5 focus:outline-none focus:border-neutral-500 transition-colors duration-300">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-[0.22em] text-neutral-600 font-mono mb-2">ORGANISATION</label>
+            <input type="text" class="w-full bg-obsidian-950 border border-neutral-800 text-primary text-sm p-3.5 focus:outline-none focus:border-neutral-500 transition-colors duration-300">
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-[0.22em] text-neutral-600 font-mono mb-2">SUBJECT</label>
+            <select class="w-full bg-obsidian-950 border border-neutral-800 text-neutral-400 text-sm p-3.5 focus:outline-none focus:border-neutral-500 transition-colors duration-300">
+              <option>Veil - local scanner enquiry</option>
+              <option>Aegis - gateway deployment</option>
+              <option>Oracle - code review access</option>
+              <option>Security disclosure</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-[0.22em] text-neutral-600 font-mono mb-2">MESSAGE</label>
+            <textarea rows="5" required class="w-full bg-obsidian-950 border border-neutral-800 text-primary text-sm p-3.5 focus:outline-none focus:border-neutral-500 transition-colors duration-300 resize-none"></textarea>
+          </div>
+          <button type="submit" id="contactBtn" class="w-full py-4 bg-neutral-100 text-obsidian-950 text-xs font-medium tracking-[0.18em] hover:bg-white transition-colors duration-300">
+            TRANSMIT MESSAGE
+          </button>
+          <p id="contactStatus" class="hidden text-center text-[11px] font-mono text-emerald-400 pt-1">
+            MESSAGE SEALED - EXPECT A REPLY WITHIN 4 HOURS
+          </p>
+        </form>
+      </div>
+
+      <div class="lg:col-span-5 flex flex-col gap-6">
+        <div class="border border-neutral-800 bg-obsidian-900/40 p-6" data-reveal data-delay="100">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-600 font-mono block mb-5">DIRECT CHANNELS</span>
+          <div class="space-y-4 font-mono text-[11px]">
+            <div class="flex justify-between border-b border-neutral-900 pb-3">
+              <span class="text-neutral-600">GENERAL</span><span class="text-primary">hello@trustiq.dev</span>
+            </div>
+            <div class="flex justify-between border-b border-neutral-900 pb-3">
+              <span class="text-neutral-600">SECURITY</span><span class="text-primary">pgp@trustiq.dev</span>
+            </div>
+            <div class="flex justify-between border-b border-neutral-900 pb-3">
+              <span class="text-neutral-600">PRESS</span><span class="text-primary">press@trustiq.dev</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-neutral-600">PGP FINGERPRINT</span><span class="text-primary">9E88 41A2 77A1 CC02</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="border border-neutral-800 bg-obsidian-900/40 p-6" data-reveal data-delay="180">
+          <div class="flex items-center justify-between mb-5">
+            <span class="text-[10px] tracking-[0.22em] text-neutral-600 font-mono">RESPONSE LATENCY - ROLLING</span>
+            <span class="live-dot"></span>
+          </div>
+          <canvas id="contactChart" class="w-full h-28 block"></canvas>
+          <div class="flex justify-between font-mono text-[10px] mt-3">
+            <span class="text-neutral-600">MEDIAN FIRST REPLY</span>
+            <span class="text-emerald-400 stat-num" id="contactMedian">3h 41m</span>
+          </div>
+        </div>
+
+        <div class="border border-neutral-800 bg-obsidian-900/40 p-6" data-reveal data-delay="240">
+          <span class="text-[10px] tracking-[0.22em] text-neutral-600 font-mono block mb-4">OFFICES</span>
+          <div class="grid grid-cols-2 gap-4 text-xs">
+            <div>
+              <p class="text-primary">San Francisco</p>
+              <p class="text-neutral-600 text-[11px] mt-1">548 Market St<br>CA 94104</p>
+            </div>
+            <div>
+              <p class="text-primary">Berlin</p>
+              <p class="text-neutral-600 text-[11px] mt-1">Torstraße 140<br>10119</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+</main>
+
+<!-- ══════════════════ FOOTER (shared) ══════════════════ -->
+<footer class="relative z-10 border-t border-neutral-800 bg-obsidian-900/30">
+  <div class="max-w-7xl mx-auto px-6 md:px-12 py-20">
+    <div class="max-w-2xl" data-reveal>
+      <p class="text-xl md:text-2xl font-serif text-primary leading-relaxed">
+        We believe a security tool should earn its place in your stack - <span class="italic-em">not</span> by shouting with false positives, but by surviving the moment that made you seek it.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-4 gap-12 mt-20 text-sm">
+      <div>
+        <h4 class="text-primary mb-5 tracking-[0.15em] text-[10px] font-mono">PLATFORM</h4>
+        <ul class="space-y-3 text-neutral-500">
+          <li><a href="#veil" data-nav="veil" class="hover:text-primary transition-colors duration-300">Veil Scanner</a></li>
+          <li><a href="#aegis" data-nav="aegis" class="hover:text-primary transition-colors duration-300">Aegis Auth</a></li>
+          <li><a href="#oracle" data-nav="oracle" class="hover:text-primary transition-colors duration-300">Oracle Review</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-primary mb-5 tracking-[0.15em] text-[10px] font-mono">COMPANY</h4>
+        <ul class="space-y-3 text-neutral-500">
+          <li><a href="#manifesto" data-nav="manifesto" class="hover:text-primary transition-colors duration-300">Manifesto</a></li>
+          <li><a href="#tools" data-nav="tools" class="hover:text-primary transition-colors duration-300">Tools</a></li>
+          <li><a href="#contact" data-nav="contact" class="hover:text-primary transition-colors duration-300">Contact</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <h4 class="text-primary mb-5 tracking-[0.15em] text-[10px] font-mono">NEWSLETTER</h4>
+        <p class="text-neutral-500 text-xs mb-4">Quiet updates on new vulnerabilities and tooling. No spam.</p>
+        <div class="flex border-b border-neutral-700 pb-2 focus-within:border-neutral-400 transition-colors duration-300">
+          <input type="email" placeholder="Email address" class="bg-transparent w-full focus:outline-none text-primary placeholder-neutral-700 text-sm">
+          <button class="text-neutral-400 hover:text-primary text-[11px] tracking-[0.15em] transition-colors duration-300">SUBMIT</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-20 pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between items-center gap-3 text-[10px] font-mono text-neutral-600">
+      <span>© 2024 TrustIQ ALL RIGHTS RESERVED.</span>
+      <div class="flex flex-wrap justify-center gap-6">
+        <span>KERNEL: V4.19-SEC</span>
+        <span>CONSENSUS: BYZANTINE</span>
+        <span>DESIGNED WITH QUIET OBSESSION.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ==========================================================
+   0. UTILITIES
+========================================================== */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const rnd = (a, b) => a + Math.random() * (b - a);
+const rndInt = (a, b) => Math.floor(rnd(a, b + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmtIN = n => Math.round(n).toLocaleString('en-IN');
+const nowStamp = () => {
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+};
+
+/* ==========================================================
+   1. CHART ENGINE
+========================================================== */
+const charts = [];
+let currentRoute = 'home';
+
+function fitCanvas(cv) {
+  const rect = cv.getBoundingClientRect();
+  if (rect.width < 2 || rect.height < 2) return null;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.round(rect.width * dpr), h = Math.round(rect.height * dpr);
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+function seedWalk(n, base, vol, min, max) {
+  const out = []; let v = base;
+  for (let i = 0; i < n; i++) {
+    v = clamp(v + rnd(-vol, vol), min ?? base - vol * 3, max ?? base + vol * 3);
+    out.push(v);
+  }
+  return out;
+}
+
+/* ---------- Live multi-series line chart ---------- */
+class LiveLine {
+  constructor(canvas, opts = {}) {
+    this.cv = canvas;
+    this.o = Object.assign({
+      points: 60, interval: 900, min: 0, max: 100,
+      grid: true, fill: true, lineWidth: 1.6, page: null,
+      series: []
+    }, opts);
+    this.series = this.o.series.map(s => ({
+      color: s.color,
+      data: seedWalk(this.o.points, s.base, s.vol, this.o.min, this.o.max)
+    }));
+    this.last = 0;
+    charts.push(this);
+  }
+  tick() {
+    this.series.forEach((s, i) => {
+      const base = this.o.series[i].base;
+      const vol = this.o.series[i].vol;
+      const prev = s.data[s.data.length - 1];
+      const pull = (base - prev) * 0.12;
+      s.data.push(clamp(prev + pull + rnd(-vol, vol), this.o.min, this.o.max));
+      s.data.shift();
+    });
+  }
+  draw() {
+    if (this.o.page && this.o.page !== currentRoute) return;
+    const fit = fitCanvas(this.cv);
+    if (!fit) return;
+    const { ctx, w, h } = fit;
+    ctx.clearRect(0, 0, w, h);
+
+    if (this.o.grid) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = (h / 4) * i + 0.5;
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+    }
+
+    const range = this.o.max - this.o.min || 1;
+    const n = this.o.points;
+
+    this.series.forEach(s => {
+      const pts = s.data.map((v, i) => ({
+        x: (i / (n - 1)) * w,
+        y: h - ((v - this.o.min) / range) * h
+      }));
+
+      if (this.o.fill) {
+        const g = ctx.createLinearGradient(0, 0, 0, h);
+        g.addColorStop(0, s.color + '30');
+        g.addColorStop(1, s.color + '00');
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, h);
+        pts.forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(pts[pts.length - 1].x, h);
+        ctx.closePath();
+        ctx.fillStyle = g;
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[i], p1 = pts[i + 1], cx = (p0.x + p1.x) / 2;
+        ctx.bezierCurveTo(cx, p0.y, cx, p1.y, p1.x, p1.y);
+      }
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = this.o.lineWidth;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // leading dot
+      const last = pts[pts.length - 1];
+      ctx.beginPath();
+      ctx.arc(last.x - 1.5, last.y, 2.6, 0, Math.PI * 2);
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(last.x - 1.5, last.y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = s.color + '22';
+      ctx.fill();
+    });
+  }
+}
+
+/* ---------- Live bar chart ---------- */
+class LiveBars {
+  constructor(canvas, opts = {}) {
+    this.cv = canvas;
+    this.o = Object.assign({ page: null, interval: 1800, labels: [], values: [], max: 100 }, opts);
+    this.values = this.o.values.map(v => ({ target: v, current: v * 0.4 }));
+    this.last = 0;
+    charts.push(this);
+  }
+  tick() {
+    this.values.forEach(v => {
+      v.target = clamp(v.target + rnd(-v.target * 0.12, v.target * 0.16), 6, this.o.max);
+    });
+  }
+  draw() {
+    if (this.o.page && this.o.page !== currentRoute) return;
+    const fit = fitCanvas(this.cv);
+    if (!fit) return;
+    const { ctx, w, h } = fit;
+    ctx.clearRect(0, 0, w, h);
+
+    const n = this.values.length;
+    const gap = 18;
+    const bw = (w - gap * (n - 1)) / n;
+    const maxV = this.o.max;
+
+    this.values.forEach((v, i) => {
+      v.current += (v.target - v.current) * 0.07;
+      const bh = (v.current / maxV) * (h - 26);
+      const x = i * (bw + gap);
+      const y = h - bh - 20;
+
+      const g = ctx.createLinearGradient(0, y, 0, h - 20);
+      g.addColorStop(0, 'rgba(229,229,229,0.85)');
+      g.addColorStop(1, 'rgba(229,229,229,0.10)');
+      ctx.fillStyle = g;
+      ctx.fillRect(x, y, bw, bh);
+
+      ctx.fillStyle = 'rgba(229,229,229,0.9)';
+      ctx.fillRect(x, y - 2, bw, 1.5);
+
+      // value label
+      ctx.fillStyle = 'rgba(163,163,163,0.9)';
+      ctx.font = '500 10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(fmtIN(v.current), x + bw / 2, y - 8);
+
+      // label
+      ctx.fillStyle = 'rgba(115,115,115,0.9)';
+      ctx.font = '400 9px "JetBrains Mono", monospace';
+      ctx.fillText(this.o.labels[i] || '', x + bw / 2, h - 6);
+    });
+  }
+}
+
+/* ---------- Radar ---------- */
+class Radar {
+  constructor(canvas, opts = {}) {
+    this.cv = canvas;
+    this.o = Object.assign({ page: null, blips: 26 }, opts);
+    this.angle = 0;
+    this.blips = [];
+    this.lastBlip = 0;
+    charts.push(this);
+  }
+  tick(ts) {
+    this.angle += 0.012;
+    if (ts - this.lastBlip > 420) {
+      this.lastBlip = ts;
+      this.blips.push({ a: rnd(0, Math.PI * 2), d: rnd(0.18, 0.95), born: ts, threat: Math.random() < 0.14 });
+      if (this.blips.length > this.o.blips) this.blips.shift();
+    }
+    this.blips = this.blips.filter(b => ts - b.born < 5200);
+  }
+  draw(ts) {
+    if (this.o.page && this.o.page !== currentRoute) return;
+    const fit = fitCanvas(this.cv);
+    if (!fit) return;
+    const { ctx, w, h } = fit;
+    ctx.clearRect(0, 0, w, h);
+
+    const cx = w / 2, cy = h / 2;
+    const R = Math.min(w, h) / 2 - 12;
+
+    // rings
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 4; i++) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, (R / 4) * i, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    // cross
+    ctx.beginPath();
+    ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy);
+    ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R);
+    ctx.stroke();
+
+    // sweep
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R, this.angle - 0.9, this.angle, false);
+    ctx.closePath();
+    const sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+    sg.addColorStop(0, 'rgba(229,229,229,0.16)');
+    sg.addColorStop(1, 'rgba(229,229,229,0.00)');
+    ctx.fillStyle = sg;
+    ctx.fill();
+    ctx.restore();
+
+    // sweep line
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(this.angle) * R, cy + Math.sin(this.angle) * R);
+    ctx.strokeStyle = 'rgba(229,229,229,0.35)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // blips
+    this.blips.forEach(b => {
+      const age = (ts - b.born) / 5200;
+      const alpha = Math.max(0, 1 - age);
+      const x = cx + Math.cos(b.a) * b.d * R;
+      const y = cy + Math.sin(b.a) * b.d * R;
+      const col = b.threat ? '248,113,113' : '229,229,229';
+      ctx.beginPath();
+      ctx.arc(x, y, b.threat ? 3.2 : 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${col},${alpha})`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x, y, 9, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${col},${alpha * 0.12})`;
+      ctx.fill();
+    });
+
+    // centre
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(229,229,229,0.7)';
+    ctx.fill();
+  }
+}
+
+/* ---------- Sparkline ---------- */
+class Spark {
+  constructor(canvas, opts = {}) {
+    this.cv = canvas;
+    this.o = Object.assign({ color: 'rgba(229,229,229,0.75)', points: 34, interval: 1400, page: null }, opts);
+    this.data = seedWalk(this.o.points, 50, 12, 5, 95);
+    this.last = 0;
+    charts.push(this);
+  }
+  tick() {
+    const prev = this.data[this.data.length - 1];
+    this.data.push(clamp(prev + rnd(-10, 10) + (50 - prev) * 0.1, 5, 95));
+    this.data.shift();
+  }
+  draw() {
+    if (this.o.page && this.o.page !== currentRoute) return;
+    const fit = fitCanvas(this.cv);
+    if (!fit) return;
+    const { ctx, w, h } = fit;
+    ctx.clearRect(0, 0, w, h);
+    const n = this.data.length;
+    const pts = this.data.map((v, i) => ({ x: (i / (n - 1)) * w, y: h - (v / 100) * h }));
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, h);
+    pts.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(pts[n - 1].x, h);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, 'rgba(229,229,229,0.16)');
+    g.addColorStop(1, 'rgba(229,229,229,0)');
+    ctx.fillStyle = g; ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i], p1 = pts[i + 1], cx = (p0.x + p1.x) / 2;
+      ctx.bezierCurveTo(cx, p0.y, cx, p1.y, p1.x, p1.y);
+    }
+    ctx.strokeStyle = this.o.color;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+  }
+}
+
+/* ---------- Global render loop ---------- */
+let lastFrame = 0;
+function loop(ts) {
+  requestAnimationFrame(loop);
+  const dt = ts - lastFrame;
+  lastFrame = ts;
+  for (const c of charts) {
+    if (c.o.page && c.o.page !== currentRoute) continue;
+    if (c.tick && ts - (c.last || 0) > (c.o.interval || 900)) {
+      c.last = ts;
+      c.tick(ts);
+    }
+    c.draw(ts);
+  }
+}
+requestAnimationFrame(loop);
+
+/* ==========================================================
+   2. LIVE COUNTERS
+========================================================== */
+const counters = [];
+function initCounters(root) {
+  $$('[data-counter]', root).forEach(el => {
+    const target = parseFloat(el.dataset.counter);
+    const rate = parseFloat(el.dataset.rate || '0');
+    let current = 0;
+    const dur = 1600;
+    const start = performance.now();
+    function step(t) {
+      const p = Math.min((t - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      current = target * eased;
+      el.textContent = fmtIN(current);
+      if (p < 1) requestAnimationFrame(step);
+      else {
+        current = target;
+        if (rate > 0) counters.push({ el, val: current, rate });
+      }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+setInterval(() => {
+  counters.forEach(c => {
+    c.val += c.rate * (0.5 + Math.random());
+    c.el.textContent = fmtIN(c.val);
+  });
+}, 2200);
+
+/* ==========================================================
+   3. ROUTER
+========================================================== */
+const app = $('#app');
+let isNavigating = false;
+
+function setActiveNav(route) {
+  $$('.nav-link').forEach(a => {
+    a.classList.toggle('active', a.dataset.nav === route);
+  });
+}
+
+function setupReveal(root) {
+  const els = $$('[data-reveal]', root);
+  els.forEach(el => {
+    el.classList.remove('revealed');
+    const sibs = el.parentElement
+      ? Array.from(el.parentElement.children).filter(c => c.hasAttribute('data-reveal'))
+      : [el];
+    const idx = Math.min(sibs.indexOf(el), 6);
+    const manual = el.dataset.delay ? parseInt(el.dataset.delay) : idx * 70;
+    el.style.transitionDelay = Math.min(manual, 420) + 'ms';
+  });
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('revealed');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+  els.forEach(el => obs.observe(el));
+}
+
+function navigate(route, push = true) {
+  const validRoutes = ['home','tools','veil','aegis','oracle','manifesto','contact'];
+  if (!validRoutes.includes(route)) return;
+
+  const target = document.querySelector(`.page[data-page="${route}"]`);
+  if (!target) return;
+
+  // Switch pages immediately so navigation never gets stuck behind an animation.
+  $$('.page').forEach(p => p.classList.remove('active'));
+  target.classList.add('active');
+  currentRoute = route;
+  setActiveNav(route);
+  app.classList.remove('leaving');
+  window.scrollTo(0, 0);
+
+  if (push && location.hash !== '#' + route) {
+    history.replaceState(null, '', '#' + route);
+  }
+
+  // Initialize the page safely. A demo error must not blank the page.
+  try {
+    if (route === 'veil') initVeil();
+    if (route === 'aegis') initAegis();
+    if (route === 'oracle') initOracle();
+    if (route === 'home') initHome();
+    if (route === 'tools') initTools();
+    if (route === 'manifesto') initManifesto();
+    if (route === 'contact') initContact();
+  } catch (err) {
+    console.error('TrustIQ page initialization error:', err);
+  }
+
+  initCounters(target);
+  setupReveal(target);
+  // Ensure content is visible even if IntersectionObserver is unavailable.
+  $$('[data-reveal]', target).forEach(el => el.classList.add('revealed'));
+}
+
+document.addEventListener('click', (e) => {
+  const nav = e.target.closest('[data-nav]');
+  if (!nav) return;
+  e.preventDefault();
+  navigate(nav.dataset.nav);
+  closeMobile();
+});
+
+function closeMobile() {
+  $('#mobileMenu').classList.add('hidden-menu');
+}
+$('#burger').addEventListener('click', () => {
+  $('#mobileMenu').classList.toggle('hidden-menu');
+});
+
+window.addEventListener('hashchange', () => {
+  const r = location.hash.replace('#', '') || 'home';
+  if (r !== currentRoute) navigate(r, false);
+});
+
+/* ==========================================================
+   4. NAV SCROLL STATE + PROGRESS BAR
+========================================================== */
+const nav = $('#nav');
+const navInner = $('#navInner');
+const progress = $('#scroll-progress');
+
+function onScroll() {
+  const y = window.scrollY;
+  if (y > 20) {
+    nav.classList.add('bg-obsidian-950/85');
+    navInner.classList.add('border-neutral-800');
+    navInner.classList.remove('border-transparent');
+  } else {
+    nav.classList.remove('bg-obsidian-950/85');
+    navInner.classList.remove('border-neutral-800');
+    navInner.classList.add('border-transparent');
+  }
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const p = docH > 0 ? (y / docH) * 100 : 0;
+  progress.style.width = p + '%';
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+/* ==========================================================
+   5. HOME - chart, ticker, feed, sparks
+========================================================== */
+let homeInit = false;
+function initHome() {
+  if (!homeInit) {
+    homeInit = true;
+
+    new LiveLine($('#homeChart'), {
+      page: 'home', points: 60, interval: 850, min: 0, max: 260,
+      series: [
+        { color: '#e5e5e5', base: 62, vol: 12 },
+        { color: '#4ade80', base: 148, vol: 22 },
+        { color: '#fbbf24', base: 34, vol: 9 }
+      ]
+    });
+
+    const sparks = { veil: 'rgba(229,229,229,0.7)', aegis: 'rgba(74,222,128,0.7)', oracle: 'rgba(251,191,36,0.7)' };
+    // Decorative spark visuals intentionally disabled.
+
+    buildTicker();
+    startHomeFeed();
+    startLedgerTicker();
+    startPeakTicker();
+  }
+}
+
+function buildTicker() {
+  const events = [
+    'VEIL :: 1,480 AST signatures loaded',
+    'AEGIS :: ChaCha20-Poly1305 key rotated',
+    'ORACLE :: 12,847 verdicts issued today',
+    'AEGIS :: SQL injection payload dropped @ edge',
+    'VEIL :: entropy threshold H ≥ 4.85 enforced',
+    'AEGIS :: burst limit engaged on tenant/provision',
+    'ORACLE :: patch diff proposed for auth handler',
+    'VEIL :: eth0 unbound - airgap confirmed',
+    'AEGIS :: 0% implicit trust across 3 regions',
+    'ORACLE :: Ed25519 attestation sealed',
+    'VEIL :: monorepo core-payments-api clean',
+    'AEGIS :: 1,429,807 handshakes verified'
+  ];
+  const track = $('#tickerTrack');
+  const build = () => events.map(t =>
+    `<span class="whitespace-nowrap flex items-center gap-3">
+       <span class="w-1 h-1 rounded-full bg-neutral-700"></span>${t}
+     </span>`).join('');
+  track.innerHTML = build() + build();
+}
+
+const feedTemplates = [
+  { tag: 'AEGIS', color: 'text-rose-400', msg: 'Ingress payload dropped - injection signature matched', meta: 'Invariant: AST_SANITIZE_STRICT' },
+  { tag: 'VEIL', color: 'text-emerald-400', msg: 'High-entropy token flagged in config/vault.go', meta: 'Merkle root sealed · Ed25519' },
+  { tag: 'AEGIS', color: 'text-emerald-400', msg: 'Ephemeral key rotation completed', meta: 'Previous key shredded · pool re-seeded' },
+  { tag: 'ORACLE', color: 'text-amber-400', msg: 'Diagnostic evaluation complete - 2 issues flagged', meta: 'Patch proposed · parameterised query' },
+  { tag: 'VEIL', color: 'text-emerald-400', msg: 'Monorepo scan finished - 0 leaks detected', meta: '42,910 tokens parsed' },
+  { tag: 'AEGIS', color: 'text-amber-400', msg: 'Burst limit engaged on /v1/tenant/provision', meta: 'Throttled @ 429' },
+  { tag: 'ORACLE', color: 'text-emerald-400', msg: 'Signed audit attestation committed', meta: 'Confidence: 100% (mathematical)' }
+];
+
+function feedRow(t) {
+  const ips = ['198.51.100.44', '203.0.113.19', '192.0.2.77', '45.142.212.61', '104.28.9.4'];
+  const div = document.createElement('div');
+  div.className = 'row-in px-5 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-2 hover:bg-obsidian-950 transition-colors';
+  div.innerHTML = `
+    <div class="flex items-start md:items-center gap-4">
+      <span class="font-mono text-[10px] text-neutral-700 shrink-0">${nowStamp()}</span>
+      <span class="px-2 py-0.5 bg-obsidian-800 text-[9px] font-mono tracking-widest ${t.color} shrink-0">${t.tag}</span>
+      <div class="flex flex-col">
+        <span class="text-[13px] text-neutral-300">${t.msg}</span>
+        <span class="font-mono text-[10px] text-neutral-700 mt-0.5">${t.meta} · ${pick(ips)}</span>
+      </div>
+    </div>
+    <span class="font-mono text-[10px] text-neutral-700 self-end md:self-auto">${Math.random().toString(16).slice(2, 6)}…${Math.random().toString(16).slice(2, 6)}</span>
+  `;
+  return div;
+}
+
+let feedStarted = false;
+function startHomeFeed() {
+  if (feedStarted) return;
+  feedStarted = true;
+  const container = $('#homeFeed');
+  const push = () => {
+    const row = feedRow(pick(feedTemplates));
+    container.prepend(row);
+    while (container.children.length > 7) container.lastElementChild.remove();
+  };
+  for (let i = 0; i < 6; i++) push();
+  setInterval(push, 3200);
+}
+
+function startLedgerTicker() {
+  let h = 12840, b = 24;
+  setInterval(() => {
+    h += rndInt(1, 4);
+    b = clamp(b + rndInt(-6, 6), 96, 210);
+    const he = $('#ledgerHeight'); const bm = $('#blocksMin');
+    if (he) he.textContent = fmtIN(h);
+    if (bm) bm.textContent = b;
+  }, 2600);
+}
+
+function startPeakTicker() {
+  setInterval(() => {
+    const p = $('#peakSec'); const l = $('#medianLat'); const f = $('#fpRate');
+    if (p) p.textContent = fmtIN(rndInt(12, 24));
+    if (l) l.innerHTML = (rnd(3.2, 4.8)).toFixed(1) + '<span class="text-sm text-neutral-500">ms</span>';
+    if (f) f.innerHTML = (rnd(0.8, 1.5)).toFixed(1) + '<span class="text-sm text-neutral-500">%</span>';
+  }, 3400);
+}
+
+/* ==========================================================
+   6. TOOLS - bar chart
+========================================================== */
+let toolsInit = false;
+function initTools() {
+  if (toolsInit) return;
+  toolsInit = true;
+  const bars = new LiveBars($('#toolsBars'), {
+    page: 'tools',
+    labels: ['VEIL', 'AEGIS', 'ORACLE'],
+    values: [128, 284, 76],
+    max: 400,
+    interval: 2000
+  });
+  setInterval(() => {
+    const v = $('#toolsVeil'), a = $('#toolsAegis'), o = $('#toolsOracle');
+    if (v) v.textContent = fmtIN(bars.values[0].current);
+    if (a) a.textContent = fmtIN(bars.values[1].current);
+    if (o) o.textContent = fmtIN(bars.values[2].current);
+  }, 600);
+}
+
+/* ==========================================================
+   7. VEIL - terminal + charts
+========================================================== */
+let veilInit = false;
+let veilTerminalStarted = false;
+
+const veilLines = [
+  { t: 'cmd',  v: '$ pip install veil-scanner-core' },
+  { t: 'out',  v: '[ok] wheel verified · signature valid (ed25519)' },
+  { t: 'cmd',  v: '$ veil scan ./src --strict --no-telemetry' },
+  { t: 'out',  v: '[veil] loading 1,480 AST signatures ......... ok' },
+  { t: 'out',  v: '[veil] entropy baseline H ≥ 4.85 bits/char' },
+  { t: 'out',  v: '[veil] network interface eth0 .............. UNBOUND' },
+  { t: 'out',  v: '[veil] scanning 42,910 tokens .............. done' },
+  { t: 'warn', v: '[veil] 1 high-entropy token flagged → ./src/config/vault.go:88' },
+  { t: 'ok',   v: '[veil] report sealed (ed25519) · 0 bytes outbound' },
+  { t: 'cmd',  v: '$ ' }
+];
+
+function typeLine(container, line, cb) {
+  const div = document.createElement('div');
+  const colors = { cmd: 'text-primary', out: 'text-neutral-500', warn: 'text-amber-400', ok: 'text-emerald-400' };
+  div.className = colors[line.t] || 'text-neutral-500';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+
+  if (line.t === 'cmd' && line.v.length > 3) {
+    let i = 0;
+    const caret = document.createElement('span');
+    caret.className = 'caret ml-0.5';
+    div.appendChild(caret);
+    const timer = setInterval(() => {
+      i++;
+      div.textContent = line.v.slice(0, i);
+      div.appendChild(caret);
+      if (i >= line.v.length) {
+        clearInterval(timer);
+        caret.remove();
+        setTimeout(cb, 240);
+      }
+    }, 26);
+  } else {
+    div.textContent = line.v;
+    setTimeout(cb, 220);
+  }
+}
+
+function runVeilTerminal() {
+  const c = $('#veilTerminal');
+  if (!c) return;
+  c.innerHTML = '';
+  let i = 0;
+  const next = () => {
+    if (i >= veilLines.length) {
+      setTimeout(() => { if (currentRoute === 'veil') runVeilTerminal(); }, 4200);
+      return;
+    }
+    typeLine(c, veilLines[i++], next);
+  };
+  next();
+}
+
+function initVeil() {
+  if (!veilInit) {
+    veilInit = true;
+
+    new LiveLine($('#veilChart'), {
+      page: 'veil', points: 64, interval: 700, min: 0, max: 8,
+      series: [{ color: '#e5e5e5', base: 3.4, vol: 0.85 }]
+    });
+
+    new LiveLine($('#veilThroughput'), {
+      page: 'veil', points: 50, interval: 900, min: 0, max: 220,
+      series: [{ color: '#4ade80', base: 120, vol: 25 }]
+    });
+  }
+  if (!veilTerminalStarted) {
+    veilTerminalStarted = true;
+  }
+  runVeilTerminal();
+
+  let sample = 1240;
+  const el = $('#veilSample');
+  setInterval(() => {
+    sample += rndInt(40, 260);
+    if (el) el.textContent = 'SAMPLE: ' + fmtIN(sample) + ' TOKENS';
+  }, 1800);
+}
+
+/* ==========================================================
+   8. AEGIS - table, vault, radar
+========================================================== */
+let aegisInit = false;
+let aegisTableStarted = false;
+
+const endpoints = [
+  'POST /v1/auth/token', 'GET /v2/ledger/node', 'PUT /v1/tenant/provision',
+  'POST /v1/crypt/envelope', 'GET /v1/accounts/me', 'POST /v1/keys/rotate',
+  'GET /v1/audit/stream', 'DELETE /v1/session/active'
+];
+const badEndpoints = [
+  "GET /v1/users?id=1'OR'1'='1",
+  'POST /v1/auth/../admin',
+  'GET /v1/ledger?q=<script>',
+  'POST /v1/token?redirect=//evil.tld'
+];
+
+function aegisRow() {
+  const isThreat = Math.random() < 0.18;
+  const throttled = !isThreat && Math.random() < 0.12;
+  const ep = isThreat ? pick(badEndpoints) : pick(endpoints);
+
+  let entropy, status, action, rowCls, epCls, stCls, entCls;
+  if (isThreat) {
+    entropy = (rnd(5.6, 7.4)).toFixed(2) + ' H';
+    status = 'BLOCKED [403]';
+    action = pick(['SQL_INJECTION', 'PATH_TRAVERSAL', 'XSS_PROBE', 'OPEN_REDIRECT']);
+    rowCls = 'bg-rose-950/25';
+    epCls = 'text-rose-400'; stCls = 'text-rose-400'; entCls = 'text-rose-400';
+  } else if (throttled) {
+    entropy = (rnd(3.1, 4.4)).toFixed(2) + ' H';
+    status = 'THROTTLED [429]';
+    action = 'BURST_LIMIT';
+    rowCls = '';
+    epCls = 'text-neutral-200'; stCls = 'text-amber-400'; entCls = 'text-neutral-400';
+  } else {
+    entropy = (rnd(2.1, 4.2)).toFixed(2) + ' H';
+    status = pick(['PASS [200 OK]', 'PASS [200 OK]', 'PASS [201 CREATED]']);
+    action = 'ATTESTED';
+    rowCls = '';
+    epCls = 'text-neutral-200'; stCls = 'text-emerald-400'; entCls = 'text-neutral-400';
+  }
+
+  const tr = document.createElement('tr');
+  tr.className = 'row-in hover:bg-obsidian-950 transition-colors ' + rowCls;
+  tr.innerHTML = `
+    <td class="px-5 py-3 text-neutral-600">${nowStamp()}.${rndInt(100,999)}</td>
+    <td class="px-5 py-3 ${epCls} max-w-[240px] truncate">${ep}</td>
+    <td class="px-5 py-3 ${entCls}">${entropy}</td>
+    <td class="px-5 py-3 ${stCls}">${status}</td>
+    <td class="px-5 py-3 text-right ${isThreat ? 'text-rose-400' : 'text-neutral-600'}">${action}</td>
+  `;
+  return tr;
+}
+
+function startAegisTable() {
+  if (aegisTableStarted) return;
+  aegisTableStarted = true;
+  const tb = $('#aegisTable');
+  const push = () => {
+    tb.prepend(aegisRow());
+    while (tb.children.length > 6) tb.lastElementChild.remove();
+  };
+  for (let i = 0; i < 5; i++) push();
+  setInterval(push, 2100);
+}
+
+let vaultStarted = false;
+function startVault() {
+  if (vaultStarted) return;
+  vaultStarted = true;
+  const list = $('#vaultList');
+  const render = () => {
+    const keys = [
+      { id: 'key_sec_prod_99ae…81', ttl: rndInt(200, 900), perms: '[read, attest]', state: 'active' },
+      { id: 'key_sec_edge_31cf…10', ttl: rndInt(900, 3400), perms: '[read, proxy]', state: 'active' },
+      { id: 'key_sec_ephem_11b8…9f', ttl: rndInt(-120, 0), perms: '[read]', state: 'expired' }
+    ];
+    list.innerHTML = keys.map(k => {
+      const expired = k.ttl <= 0;
+      const abs = Math.abs(k.ttl);
+      const m = Math.floor(abs / 60), s = abs % 60;
+      const ttlStr = expired ? 'EXPIRED' : `TTL: ${m}m ${String(s).padStart(2, '0')}s`;
+      return `
+        <div class="p-3 bg-obsidian-950 border border-neutral-800 ${expired ? 'opacity-50' : ''} transition-all duration-500">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-[11px] ${expired ? 'text-neutral-600 line-through' : 'text-primary'}">${k.id}</span>
+            ${expired
+              ? '<span class="font-mono text-[9px] text-neutral-700">AUTO-ROTATED</span>'
+              : '<button class="font-mono text-[9px] text-rose-400 hover:underline">REVOKE</button>'}
+          </div>
+          <div class="font-mono text-[10px] text-neutral-600 mt-1">${ttlStr} · Perms: ${k.perms}</div>
+        </div>`;
+    }).join('');
+  };
+  render();
+  setInterval(render, 5000);
+}
+
+function initAegis() {
+  if (!aegisInit) {
+    aegisInit = true;
+
+    new Radar($('#aegisRadar'), { page: 'aegis' });
+
+    new LiveLine($('#aegisChart'), {
+      page: 'aegis', points: 60, interval: 800, min: 0, max: 1400,
+      series: [
+        { color: '#e5e5e5', base: 820, vol: 120 },
+        { color: '#fb7185', base: 60, vol: 34 }
+      ]
+    });
+
+    new LiveBars($('#aegisBars'), {
+      page: 'aegis',
+      labels: ['SQLi', 'XSS', 'TRAVERSAL', 'RATE', 'TOKEN'],
+      values: [482, 291, 173, 604, 218],
+      max: 220,
+      interval: 2200
+    });
+
+    setInterval(() => {
+      const l = $('#aegisLat');
+      if (l) l.innerHTML = (rnd(0.34, 0.52)).toFixed(2) + '<span class="text-sm text-neutral-500">ms</span>';
+      const rc = $('#radarContacts');
+      if (rc) rc.textContent = fmtIN(rndInt(120, 340));
+    }, 2400);
+  }
+  startAegisTable();
+  startVault();
+}
+
+/* ==========================================================
+   9. ORACLE - chat engine
+========================================================== */
+const STORE_KEY = 'trustiq_oracle_chats_v1';
+let chats = [];
+let activeChatId = null;
+let oracleInited = false;
+
+function loadChats() {
+  try {
+    chats = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
+  } catch (e) { chats = []; }
+  if (!Array.isArray(chats)) chats = [];
+  chats = chats.slice(0, 10);
+}
+function saveChats() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(chats.slice(0, 10)));
+  } catch (e) {}
+}
+
+function relativeTime(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+function renderHistory() {
+  const box = $('#chatHistory');
+  const count = $('#historyCount');
+  if (!box) return;
+  count.textContent = `${chats.length} / 10`;
+
+  if (chats.length === 0) {
+    box.innerHTML = `<div class="px-3 py-8 text-center text-[11px] font-mono text-neutral-700">
+      No sessions yet.<br>Start a new chat to begin.
+    </div>`;
+    return;
+  }
+
+  box.innerHTML = chats.map(c => {
+    const active = c.id === activeChatId;
+    return `
+      <div data-chat="${c.id}" class="chat-item cursor-pointer px-3 py-2.5 border transition-all duration-300 ${
+        active ? 'border-neutral-700 bg-obsidian-850' : 'border-transparent hover:border-neutral-800 hover:bg-obsidian-950'
+      }">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-[12px] text-neutral-300 truncate">${escapeHtml(c.title)}</span>
+          <span class="text-[9px] font-mono text-neutral-700 shrink-0">${relativeTime(c.updated)}</span>
+        </div>
+        <div class="flex items-center justify-between mt-1">
+          <span class="text-[9px] font-mono text-neutral-700">${c.messages.length} msg</span>
+          ${c.faults ? `<span class="text-[9px] font-mono text-rose-400/70">${c.faults} faults</span>` : '<span class="text-[9px] font-mono text-emerald-400/60">clean</span>'}
+        </div>
+      </div>`;
+  }).join('');
+
+  $$('.chat-item', box).forEach(el => {
+    el.addEventListener('click', () => openChat(el.dataset.chat));
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+
+function newChat() {
+  activeChatId = null;
+  const box = $('#chatMessages');
+  box.innerHTML = '';
+  $('#chatTitleBar').textContent = 'NEW SESSION';
+  $('#chatInput').value = '';
+  $('#charCount').textContent = '0 characters';
+  renderHistory();
+  renderWelcome();
+  $('#chatInput').focus();
+}
+
+function renderWelcome() {
+  const box = $('#chatMessages');
+  const div = document.createElement('div');
+  div.className = 'bubble-in';
+  div.innerHTML = `
+    <div class="flex gap-3">
+      <div class="w-6 h-6 rounded-full border border-neutral-700 flex items-center justify-center shrink-0 mt-0.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      </div>
+      <div class="flex-1">
+        <p class="text-[13px] text-neutral-400 leading-relaxed">
+          Oracle interface initialised. Paste a snippet and I will return a deterministic verdict - hardcoded secrets, injection surfaces, unsafe execution, weak cryptography.
+        </p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button class="sample-btn px-3 py-1.5 border border-neutral-800 text-[10px] font-mono text-neutral-500 hover:text-primary hover:border-neutral-600 transition-colors">Go · SQL handler</button>
+          <button class="sample-btn px-3 py-1.5 border border-neutral-800 text-[10px] font-mono text-neutral-500 hover:text-primary hover:border-neutral-600 transition-colors">JS · auth flow</button>
+          <button class="sample-btn px-3 py-1.5 border border-neutral-800 text-[10px] font-mono text-neutral-500 hover:text-primary hover:border-neutral-600 transition-colors">Python · config</button>
+        </div>
+      </div>
+    </div>`;
+  box.appendChild(div);
+
+  const samples = {
+    'Go · SQL handler': `package dispatch\n\nimport (\n    "database/sql"\n    "fmt"\n)\n\nconst RootKeyMaster = "sec_priv_88fa0184b901a1c9ef001"\n\nfunc QueryUserAccount(db *sql.DB, uid string) {\n    q := fmt.Sprintf("SELECT balance FROM accounts WHERE user_id = '%s'", uid)\n    db.Query(q)\n}`,
+    'JS · auth flow': `const API_KEY = "sk_live_9f2b8c41aa7e0d33";\n\nfunction login(user, pass) {\n  const token = md5(user + pass);\n  return fetch("http://api.internal/auth?key=" + API_KEY)\n    .then(r => r.json())\n    .then(d => eval(d.next));\n}`,
+    'Python · config': `import requests\n\nDB_PASSWORD = "Sup3rS3cret!2024"\nSECRET_KEY = "django-insecure-8f2a9c1b"\n\ndef fetch(u):\n    return requests.get("http://internal.svc/data?url=" + u).json()`
+  };
+
+  $$('.sample-btn', box).forEach(btn => {
+    btn.addEventListener('click', () => {
+      $('#chatInput').value = samples[btn.textContent];
+      $('#charCount').textContent = samples[btn.textContent].length + ' characters';
+      $('#chatInput').focus();
+    });
+  });
+}
+
+function openChat(id) {
+  const c = chats.find(x => x.id === id);
+  if (!c) return;
+  activeChatId = id;
+  $('#chatTitleBar').textContent = c.title.toUpperCase().slice(0, 40);
+  const box = $('#chatMessages');
+  box.innerHTML = '';
+  c.messages.forEach(m => renderMessage(m, false));
+  box.scrollTop = box.scrollHeight;
+  renderHistory();
+}
+
+/* ---------- analysis engine ---------- */
+function analyzeCode(code) {
+  const findings = [];
+  const lines = code.split('\n');
+
+  const findLine = (re) => {
+    for (let i = 0; i < lines.length; i++) if (re.test(lines[i])) return i + 1;
+    return null;
+  };
+
+  const secretRe = /(password|passwd|pwd|secret|api[_-]?key|token|private[_-]?key|access[_-]?key)\s*[:=]\s*["'][^"']{6,}["']/i;
+  const secretLine = findLine(secretRe);
+  if (secretLine) {
+    const m = lines[secretLine - 1].match(/["']([^"']{6,})["']/);
+    const val = m ? m[1] : '';
+    const entropy = shannon(val);
+    findings.push({
+      sev: 'SEV-HIGH',
+      color: 'rose',
+      title: 'Hardcoded Credential',
+      line: secretLine,
+      body: `A literal secret was found in source. Shannon entropy index H = ${entropy.toFixed(2)} - consistent with a generated key rather than a placeholder.`,
+      fix: 'Delegate to an ephemeral local vault or environment variable.'
+    });
+  }
+
+  const sqlLine = findLine(/fmt\.Sprintf\s*\(.*SELECT|`.*SELECT.*\$\{|["'].*SELECT.*["']\s*\+/i);
+  if (sqlLine) {
+    findings.push({
+      sev: 'SEV-HIGH',
+      color: 'rose',
+      title: 'SQL String Interpolation',
+      line: sqlLine,
+      body: 'Query is assembled by raw string concatenation. Any external value reaching this line becomes an injection vector.',
+      fix: 'Use parameterised placeholders ($1 / ?) and bind arguments separately.'
+    });
+  }
+
+  const evalLine = findLine(/\beval\s*\(|\bexec\s*\(|new\s+Function\s*\(/);
+  if (evalLine) {
+    findings.push({
+      sev: 'SEV-HIGH',
+      color: 'rose',
+      title: 'Dynamic Code Execution',
+      line: evalLine,
+      body: 'Runtime evaluation of a value that appears to originate from a network response. This is arbitrary-code-execution surface.',
+      fix: 'Replace with an explicit parser or a whitelist of permitted operations.'
+    });
+  }
+
+  const httpLine = findLine(/["']http:\/\//);
+  if (httpLine) {
+    findings.push({
+      sev: 'SEV-MED',
+      color: 'amber',
+      title: 'Cleartext Transport',
+      line: httpLine,
+      body: 'Outbound request uses plain HTTP. Credentials and payloads are exposed to any on-path observer.',
+      fix: 'Enforce HTTPS and enable certificate pinning for internal services.'
+    });
+  }
+
+  const hashLine = findLine(/\bmd5\s*\(|\bsha1\s*\(/i);
+  if (hashLine) {
+    findings.push({
+      sev: 'SEV-MED',
+      color: 'amber',
+      title: 'Weak Cryptographic Hash',
+      line: hashLine,
+      body: 'MD5/SHA-1 are collision-prone and unsuitable for credential derivation or integrity proofs.',
+      fix: 'Use Argon2id for passwords, SHA-256 or BLAKE3 for integrity.'
+    });
+  }
+
+  const inputLine = findLine(/req\.(query|body|params)|request\.(args|form|json)/);
+  if (inputLine && findings.length < 3) {
+    findings.push({
+      sev: 'SEV-LOW',
+      color: 'neutral',
+      title: 'Unvalidated External Input',
+      line: inputLine,
+      body: 'Request data is consumed without a visible schema check. Downstream assumptions may not hold.',
+      fix: 'Validate against a strict schema before use.'
+    });
+  }
+
+  return findings;
+}
+
+function shannon(str) {
+  if (!str) return 0;
+  const freq = {};
+  for (const ch of str) freq[ch] = (freq[ch] || 0) + 1;
+  let h = 0;
+  const len = str.length;
+  for (const k in freq) {
+    const p = freq[k] / len;
+    h -= p * Math.log2(p);
+  }
+  return h;
+}
+
+/* ---------- rendering messages ---------- */
+function renderMessage(msg, animate = true) {
+  const box = $('#chatMessages');
+  const wrap = document.createElement('div');
+  wrap.className = 'bubble-in';
+
+  if (msg.role === 'user') {
+    wrap.innerHTML = `
+      <div class="flex justify-end">
+        <div class="max-w-[85%] border border-neutral-800 bg-obsidian-800/60 px-4 py-3">
+          <pre class="font-mono text-[11px] text-neutral-300 whitespace-pre-wrap break-words leading-relaxed">${escapeHtml(msg.text)}</pre>
+        </div>
+      </div>`;
+    box.appendChild(wrap);
+    return;
+  }
+
+  const findings = msg.findings || [];
+  const findingsHtml = findings.length
+    ? findings.map((f, i) => `
+        <div class="fade-up border border-${f.color === 'rose' ? 'rose' : f.color === 'amber' ? 'amber' : 'neutral'}-500/30 bg-obsidian-950 p-3.5" style="animation-delay:${i * 90}ms">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-mono text-[10px] tracking-widest text-${f.color === 'rose' ? 'rose' : f.color === 'amber' ? 'amber' : 'neutral'}-400">${f.sev} // ${f.title.toUpperCase()}</span>
+            <span class="font-mono text-[9px] text-neutral-700">LINE ${f.line}</span>
+          </div>
+          <p class="text-[12px] text-neutral-400 leading-relaxed">${escapeHtml(f.body)}</p>
+          <p class="text-[11px] text-neutral-600 mt-2 font-mono">→ ${escapeHtml(f.fix)}</p>
+        </div>`).join('')
+    : `<div class="fade-up border border-emerald-500/30 bg-obsidian-950 p-4 text-center">
+         <p class="text-[11px] font-mono tracking-widest text-emerald-400">NO CRITICAL FAULTS IDENTIFIED</p>
+         <p class="text-[11px] text-neutral-600 mt-2">Static invariants satisfied. Dynamic testing still recommended before merge.</p>
+       </div>`;
+
+  const parseMs = (rnd(0.8, 2.4)).toFixed(2);
+
+  wrap.innerHTML = `
+    <div class="flex gap-3">
+      <div class="w-6 h-6 rounded-full border border-neutral-700 flex items-center justify-center shrink-0 mt-0.5">
+        <span class="w-1.5 h-1.5 rounded-full ${findings.length ? 'bg-rose-400' : 'bg-emerald-400'}"></span>
+      </div>
+      <div class="flex-1 space-y-3">
+        <p class="text-[13px] text-neutral-300">
+          ${findings.length
+            ? `Analysis complete. <span class="text-rose-400">${findings.length} fault${findings.length > 1 ? 's' : ''} logged</span> against the submitted payload.`
+            : 'Analysis complete. <span class="text-emerald-400">No critical faults detected.</span>'}
+        </p>
+        <div class="space-y-2.5">${findingsHtml}</div>
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1 pt-2 border-t border-neutral-900 font-mono text-[10px] text-neutral-700">
+          <span>AST PARSE · ${parseMs} ms</span>
+          <span>CONFIDENCE · 100%</span>
+          <span>ATTESTATION · ED25519</span>
+        </div>
+      </div>
+    </div>`;
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = $('#chatMessages');
+  const d = document.createElement('div');
+  d.id = 'typingIndicator';
+  d.className = 'bubble-in';
+  d.innerHTML = `
+    <div class="flex gap-3">
+      <div class="w-6 h-6 rounded-full border border-neutral-700 flex items-center justify-center shrink-0 mt-0.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-neutral-500"></span>
+      </div>
+      <div class="flex items-center h-6">
+        <span class="tdots"><span></span><span></span><span></span></span>
+      </div>
+    </div>`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+function hideTyping() {
+  const t = $('#typingIndicator');
+  if (t) t.remove();
+}
+
+let sending = false;
+function sendMessage() {
+  if (sending) return;
+  const input = $('#chatInput');
+  const text = input.value.trim();
+  if (!text) {
+    input.focus();
+    return;
+  }
+  sending = true;
+  const btn = $('#sendBtn');
+  btn.textContent = 'ANALYZING…';
+  btn.classList.add('opacity-60');
+  btn.disabled = true;
+
+  let chat;
+  if (!activeChatId) {
+    chat = {
+      id: 'c_' + Date.now(),
+      title: text.replace(/\s+/g, ' ').slice(0, 34) || 'Untitled session',
+      messages: [],
+      faults: 0,
+      updated: Date.now()
+    };
+    chats.unshift(chat);
+    if (chats.length > 10) chats = chats.slice(0, 10);
+    activeChatId = chat.id;
+    $('#chatMessages').innerHTML = '';
+  } else {
+    chat = chats.find(c => c.id === activeChatId);
+    if (!chat) {
+      chat = { id: activeChatId, title: 'Session', messages: [], faults: 0, updated: Date.now() };
+      chats.unshift(chat);
+    }
+  }
+
+  const userMsg = { role: 'user', text, ts: Date.now() };
+  chat.messages.push(userMsg);
+  renderMessage(userMsg);
+  chat.updated = Date.now();
+  $('#chatTitleBar').textContent = chat.title.toUpperCase().slice(0, 40);
+
+  input.value = '';
+  $('#charCount').textContent = '0 characters';
+
+  saveChats();
+  renderHistory();
+
+  showTyping();
+
+  setTimeout(() => {
+    hideTyping();
+    const findings = analyzeCode(text);
+    const aiMsg = { role: 'assistant', findings, ts: Date.now(), text: 'verdict' };
+    chat.messages.push(aiMsg);
+    chat.faults = (chat.faults || 0) + findings.length;
+    chat.updated = Date.now();
+    renderMessage(aiMsg, true);
+
+    const files = $('#oracleFiles');
+    const flt = $('#oracleFaults');
+    const ptc = $('#oraclePatches');
+    const prs = $('#oracleParse');
+    if (files) files.textContent = (parseInt(files.textContent) || 0) + 1;
+    if (flt) flt.textContent = (parseInt(flt.textContent) || 0) + findings.length;
+    if (ptc) ptc.textContent = (parseInt(ptc.textContent) || 0) + findings.filter(f => f.sev !== 'SEV-LOW').length;
+    if (prs) prs.textContent = (rnd(0.8, 2.4)).toFixed(2) + ' ms';
+
+    saveChats();
+    renderHistory();
+
+    sending = false;
+    btn.textContent = 'ANALYZE CODE';
+    btn.classList.remove('opacity-60');
+    btn.disabled = false;
+  }, rnd(1100, 1700));
+}
+
+function initOracle() {
+  if (!oracleInited) {
+    oracleInited = true;
+    loadChats();
+
+    new LiveLine($('#oracleChart'), {
+      page: 'oracle', points: 40, interval: 950, min: 0, max: 600,
+      series: [{ color: '#fbbf24', base: 318, vol: 45 }]
+    });
+
+    setInterval(() => {
+      const r = $('#oracleRate');
+      if (r) r.textContent = fmtIN(rndInt(240, 420));
+    }, 2600);
+
+    $('#sendBtn').addEventListener('click', sendMessage);
+    $('#chatInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+    $('#chatInput').addEventListener('input', (e) => {
+      $('#charCount').textContent = e.target.value.length + ' characters';
+    });
+    $('#newChatBtn').addEventListener('click', newChat);
+    $('#clearHistoryBtn').addEventListener('click', () => {
+      chats = [];
+      activeChatId = null;
+      saveChats();
+      newChat();
+    });
+  }
+
+  renderHistory();
+  if (activeChatId) {
+    openChat(activeChatId);
+  } else {
+    newChat();
+  }
+}
+
+/* ==========================================================
+   10. MANIFESTO chart + CONTACT chart
+========================================================== */
+let manifestoInit = false;
+function initManifesto() {
+  if (manifestoInit) return;
+  manifestoInit = true;
+  new LiveLine($('#manifestoChart'), {
+    page: 'manifesto', points: 70, interval: 820, min: 0, max: 220,
+    series: [
+      { color: '#e5e5e5', base: 320, vol: 55 },
+      { color: '#4ade80', base: 540, vol: 80 },
+      { color: '#fbbf24', base: 190, vol: 40 }
+    ]
+  });
+}
+
+let contactInit = false;
+function initContact() {
+  if (contactInit) return;
+  contactInit = true;
+
+  new LiveLine($('#contactChart'), {
+    page: 'contact', points: 40, interval: 1500, min: 0, max: 12,
+    series: [{ color: '#4ade80', base: 3.8, vol: 1.1 }]
+  });
+
+  $('#contactForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = $('#contactBtn');
+    const status = $('#contactStatus');
+    btn.textContent = 'ENCRYPTING…';
+    btn.classList.add('opacity-60');
+    setTimeout(() => {
+      btn.textContent = 'TRANSMITTED ';
+      btn.classList.remove('opacity-60');
+      status.classList.remove('hidden');
+      status.classList.add('fade-up');
+    }, 1200);
+  });
+
+  setInterval(() => {
+    const m = $('#contactMedian');
+    if (m) m.textContent = `${rndInt(2, 5)}h ${rndInt(10, 55)}m`;
+  }, 4000);
+}
+
+/* ==========================================================
+   11. BOOT
+========================================================== */
+function bootPage(route) {
+  if (route === 'home') initHome();
+  if (route === 'tools') initTools();
+  if (route === 'veil') initVeil();
+  if (route === 'aegis') initAegis();
+  if (route === 'oracle') initOracle();
+  if (route === 'manifesto') initManifesto();
+  if (route === 'contact') initContact();
+}
+
+function boot() {
+  const initial = (location.hash.replace('#', '') || 'home');
+  const valid = ['home', 'tools', 'veil', 'aegis', 'oracle', 'manifesto', 'contact'];
+  const route = valid.includes(initial) ? initial : 'home';
+  navigate(route, false);
+}
+
+window.addEventListener('load', boot);
+if (document.readyState === 'complete') boot();
+
+window.addEventListener('resize', () => {});
+
+
+</script>
+
+<script id="trustiQ-nav-fix">
+(function(){
+  function startNav(){
+    const links = document.querySelectorAll('[data-nav]');
+    const pages = document.querySelectorAll('.page[data-page]');
+    const valid = ['home','tools','veil','aegis','oracle','manifesto','contact'];
+    function show(route){
+      if(!valid.includes(route)) route='home';
+      const target = document.querySelector('.page[data-page="'+route+'"]');
+      if(!target) return;
+      pages.forEach(p => p.classList.toggle('active', p === target));
+      document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.nav === route));
+      try { history.replaceState(null, '', '#'+route); } catch(e) {}
+      window.scrollTo({top:0, behavior:'auto'});
+      // Initialize only the selected page.
+      try {
+        if(route==='home' && typeof initHome==='function') initHome();
+        if(route==='tools' && typeof initTools==='function') initTools();
+        if(route==='veil' && typeof initVeil==='function') initVeil();
+        if(route==='aegis' && typeof initAegis==='function') initAegis();
+        if(route==='oracle' && typeof initOracle==='function') initOracle();
+        if(route==='manifesto' && typeof initManifesto==='function') initManifesto();
+        if(route==='contact' && typeof initContact==='function') initContact();
+      } catch(e) {}
+      target.querySelectorAll('[data-reveal]').forEach(el => {
+        el.classList.add('revealed');
+        el.style.opacity='1';
+        el.style.transform='none';
+        el.style.transitionDelay='0ms';
+      });
+      if(typeof initCounters==='function') { try { initCounters(target); } catch(e) {} }
+    }
+    links.forEach(link => link.addEventListener('click', function(e){
+      e.preventDefault(); e.stopImmediatePropagation();
+      show(this.dataset.nav);
+      const menu=document.getElementById('mobileMenu');
+      if(menu) menu.classList.add('hidden-menu');
+    }, true));
+    const initial=(location.hash||'#home').slice(1);
+    show(valid.includes(initial) ? initial : 'home');
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', startNav); else startNav();
+})();
+</script>
+</body>
+</html>

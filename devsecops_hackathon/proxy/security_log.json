@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2026-10-02T23:42:30.282496",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-02T23:42:41.849668",
+    "ip": "127.0.0.1",
+    "attack_type": "XSS",
+    "path": "api/reviews",
+    "details": "Malicious script detected in request body",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-08T18:43:49.340423",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/checkout",
+    "details": "Malicious SQL detected in request body",
+    "method": "POST"
+  }
+]
