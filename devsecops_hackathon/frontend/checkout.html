@@ -237,7 +237,23 @@
 
                 if (response.ok) {
                     document.getElementById('mainContainer').style.display = 'none';
-                    document.getElementById('orderNumber').innerText = Math.floor(100000 + Math.random() * 900000);
+                    const originalTotal = cart.reduce((sum, item) => sum + item.price, 0);
+                    if (currentTotal < originalTotal) {
+                        document.getElementById('successMessage').innerHTML = `
+                            <div style="font-size: 4rem; margin-bottom: 1.5rem; color: #10b981;"><i class="fas fa-user-secret"></i></div>
+                            <h3 style="font-size: 2rem; font-weight: 300; margin-bottom: 1rem; color: #10b981;">SYSTEM COMPROMISED</h3>
+                            <p style="color: #a3a3a3; margin-bottom: 1rem; font-size: 1.1rem; font-family: monospace;">Veil Proxy is offline. The vulnerable backend blindly accepted the payload.</p>
+                            <p style="color: #fff; margin-bottom: 3rem; font-size: 1.2rem; font-family: monospace;">You successfully purchased ₹${originalTotal.toLocaleString('en-IN')} worth of goods for only <span style="color: #10b981; font-weight: bold;">₹${currentTotal.toLocaleString('en-IN')}</span>!</p>
+                            <a href="shop.html" style="display: inline-block; text-decoration: none; background-color: var(--accent); color: var(--bg); padding: 1rem 3rem; font-size: 0.95rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">CONTINUE SHOPPING</a>
+                        `;
+                    } else {
+                        document.getElementById('successMessage').innerHTML = `
+                            <div style="font-size: 4rem; margin-bottom: 1.5rem;">✓</div>
+                            <h3 style="font-size: 2rem; font-weight: 300; margin-bottom: 1rem;">Order Confirmed</h3>
+                            <p style="color: var(--text-light); margin-bottom: 3rem; font-size: 1.1rem;">Order #NV-${Math.floor(100000 + Math.random() * 900000)}</p>
+                            <a href="shop.html" style="display: inline-block; text-decoration: none; background-color: var(--accent); color: var(--bg); padding: 1rem 3rem; font-size: 0.95rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">CONTINUE SHOPPING</a>
+                        `;
+                    }
                     document.getElementById('successMessage').style.display = 'flex';
                     localStorage.removeItem('novaCart');
                 } else {
