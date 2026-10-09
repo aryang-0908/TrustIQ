@@ -142,5 +142,13 @@
     "path": "api/checkout",
     "details": "Price tampered for product 3. Expected 34999.0, got 3.0",
     "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T10:40:48.801057",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
   }
 ]

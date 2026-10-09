@@ -124,5 +124,10 @@ def reviews():
         return jsonify({"status": "Review added", "review": review_text})
     return jsonify({"reviews": REVIEWS})
 
+@app.route('/api/leak_key', methods=['GET'])
+def leak_key():
+    # Intentionally leaks a fake live API key
+    return jsonify({"status": "success", "api_key": "sk_live_abc123DEF456ghi789"})
+
 if __name__ == '__main__':
     app.run(port=8001, debug=True)

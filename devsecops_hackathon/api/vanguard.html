@@ -404,6 +404,7 @@
                         <button onclick="simulateAttack('sql')" class="bg-red-900/40 border border-red-500 text-red-400 px-4 py-2 rounded font-mono text-sm hover:bg-red-900/80 transition">Inject SQLi Payload</button>
                         <button onclick="simulateAttack('xss')" class="bg-orange-900/40 border border-orange-500 text-orange-400 px-4 py-2 rounded font-mono text-sm hover:bg-orange-900/80 transition">Inject XSS Payload</button>
                         <button onclick="simulateAttack('idor')" class="bg-yellow-900/40 border border-yellow-500 text-yellow-400 px-4 py-2 rounded font-mono text-sm hover:bg-yellow-900/80 transition">Trigger IDOR (Admin)</button>
+                        <button onclick="simulateAttack('dlp')" class="bg-purple-900/40 border border-purple-500 text-purple-400 px-4 py-2 rounded font-mono text-sm hover:bg-purple-900/80 transition">Leak API Key (DLP)</button>
                     </div>
                     <div id="attack-result" class="mt-4 font-mono text-xs text-gray-500 h-8"></div>
                 </div>
@@ -427,6 +428,8 @@
                                 method: 'GET',
                                 headers: { 'Authorization': 'Bearer testuser' }
                             };
+                        } else if (type === 'dlp') {
+                            url = "http://127.0.0.1:8000/api/leak_key";
                         }
 
                         try {
