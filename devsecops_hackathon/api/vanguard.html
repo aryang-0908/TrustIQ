@@ -396,21 +396,7 @@
                 <p class="text-gray-300 text-lg mb-10 max-w-2xl mx-auto">Applications for the Fall 2027 semester are now open. Join a legacy of leaders and innovators.</p>
                 <a href="#" class="inline-block bg-secondary text-primary px-10 py-4 rounded-full font-bold text-lg hover:bg-yellow-500 transition shadow-xl mb-12">Begin Application</a>
 
-                <!-- Veil Interception Simulation -->
-                <div class="mt-12 bg-black/50 p-8 rounded-xl border border-red-500/30 max-w-3xl mx-auto">
-                    <h3 class="text-red-400 font-mono text-xl mb-4"><i class="fas fa-shield-halved mr-2"></i> Veil Dashboard Integration Test</h3>
-                    <p class="text-gray-400 text-sm mb-6 font-mono">Click the buttons below to fire malicious payloads at this server. If TrustIQ Veil is plugged in, it will intercept them and display them on the live dashboard.</p>
-                    <div class="flex flex-wrap justify-center gap-4">
-                        <button onclick="simulateAttack('sql')" class="bg-red-900/40 border border-red-500 text-red-400 px-4 py-2 rounded font-mono text-sm hover:bg-red-900/80 transition">Inject SQLi Payload</button>
-                        <button onclick="simulateAttack('xss')" class="bg-orange-900/40 border border-orange-500 text-orange-400 px-4 py-2 rounded font-mono text-sm hover:bg-orange-900/80 transition">Inject XSS Payload</button>
-                        <button onclick="simulateAttack('idor')" class="bg-yellow-900/40 border border-yellow-500 text-yellow-400 px-4 py-2 rounded font-mono text-sm hover:bg-yellow-900/80 transition">Trigger IDOR (Admin)</button>
-                        <button onclick="simulateAttack('dlp')" class="bg-purple-900/40 border border-purple-500 text-purple-400 px-4 py-2 rounded font-mono text-sm hover:bg-purple-900/80 transition">Leak API Key (DLP)</button>
-                        <button onclick="simulateAttack('header_xss')" class="bg-pink-900/40 border border-pink-500 text-pink-400 px-4 py-2 rounded font-mono text-sm hover:bg-pink-900/80 transition">Inject Malicious Header</button>
-                    </div>
-                    <div id="attack-result" class="mt-4 font-mono text-xs text-gray-500 h-8"></div>
-                </div>
-
-                <script>
+                </div><script>
                     async function simulateAttack(type) {
                         const resDiv = document.getElementById('attack-result');
                         resDiv.innerHTML = "Sending payload...";
@@ -571,5 +557,25 @@
 
         document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
     </script>
+
+    <!-- Dev Menu Toggle (Discreet) -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div id="dev-menu" class="hidden bg-gray-900 border border-gray-700 p-4 rounded-xl shadow-2xl mb-4 w-64 flex flex-col gap-2">
+            <h4 class="text-xs text-gray-500 font-mono mb-2 uppercase tracking-wider flex justify-between items-center">
+                <span><i class="fas fa-shield-halved mr-1"></i> Dev Payload Tools</span>
+                <button onclick="document.getElementById('dev-menu').classList.add('hidden')" class="hover:text-white"><i class="fas fa-times"></i></button>
+            </h4>
+            <button onclick="simulateAttack('sql')" class="bg-red-900/40 border border-red-500 text-red-400 px-3 py-1.5 rounded font-mono text-xs hover:bg-red-900/80 transition text-left">Inject SQLi Payload</button>
+            <button onclick="simulateAttack('xss')" class="bg-orange-900/40 border border-orange-500 text-orange-400 px-3 py-1.5 rounded font-mono text-xs hover:bg-orange-900/80 transition text-left">Inject XSS Payload</button>
+            <button onclick="simulateAttack('idor')" class="bg-yellow-900/40 border border-yellow-500 text-yellow-400 px-3 py-1.5 rounded font-mono text-xs hover:bg-yellow-900/80 transition text-left">Trigger IDOR (Admin)</button>
+            <button onclick="simulateAttack('dlp')" class="bg-purple-900/40 border border-purple-500 text-purple-400 px-3 py-1.5 rounded font-mono text-xs hover:bg-purple-900/80 transition text-left">Leak API Key (DLP)</button>
+            <button onclick="simulateAttack('header_xss')" class="bg-pink-900/40 border border-pink-500 text-pink-400 px-3 py-1.5 rounded font-mono text-xs hover:bg-pink-900/80 transition text-left">Inject Malicious Header</button>
+            <div id="attack-result" class="mt-2 font-mono text-[10px] text-gray-400 min-h-[20px] break-words"></div>
+        </div>
+        <button onclick="document.getElementById('dev-menu').classList.toggle('hidden')" class="bg-gray-800 hover:bg-primary border border-gray-700 hover:border-secondary text-gray-400 hover:text-secondary w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all opacity-50 hover:opacity-100 focus:outline-none">
+            <i class="fas fa-code"></i>
+        </button>
+    </div>
 </body>
 </html>
+

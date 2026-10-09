@@ -158,5 +158,13 @@
     "path": "api/products",
     "details": "Malicious payload detected in header: X-Custom-Header",
     "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T11:19:30.734108",
+    "ip": "127.0.0.1",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
   }
 ]
