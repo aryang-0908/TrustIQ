@@ -168,7 +168,7 @@
 
             try {
                 const tokenInput = document.getElementById('trustIqToken');
-                const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard/generate-token', {
+                const res = await fetch('https://geography-scoring-drawings-timing.trycloudflare.com/dashboard/generate-token', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: 'auto_shopper' })
                 });
                 const data = await res.json();
@@ -229,7 +229,7 @@
             paySpinner.style.display = 'block';
 
             try {
-                const response = await fetch('https://vanguard-proxy-2026.loca.lt/api/checkout', {
+                const response = await fetch('https://geography-scoring-drawings-timing.trycloudflare.com/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${window.sessionToken}` },
                     body: JSON.stringify({ product_id: cart.length > 0 ? cart[0].id : 1, price: currentTotal, user_id: "demo_user" })

@@ -2551,7 +2551,7 @@ function sendMessage() {
   showTyping();
 
   // LIVE CALL TO TRUSTIQ PROXY
-  fetch('https://vanguard-proxy-2026.loca.lt/dashboard/scan', {
+  fetch('https://geography-scoring-drawings-timing.trycloudflare.com/dashboard/scan', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ code: text })
@@ -2876,7 +2876,7 @@ window.addEventListener('resize', () => {});
   async function toggleProxy() {
       const newState = !proxyActive;
       try {
-          const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard/toggle_proxy', {
+          const res = await fetch('https://geography-scoring-drawings-timing.trycloudflare.com/dashboard/toggle_proxy', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
               body: JSON.stringify({ active: newState })
@@ -2885,7 +2885,7 @@ window.addEventListener('resize', () => {});
           proxyActive = data.proxy_active;
           updateProxyButtons();
       } catch (e) {
-          alert("Error toggling proxy: " + e.message + "\nCheck if https://vanguard-proxy-2026.loca.lt is accessible and bypass the reminder.");
+          alert("Error toggling proxy: " + e.message + "\nCheck if https://geography-scoring-drawings-timing.trycloudflare.com is accessible and bypass the reminder.");
           console.error(e);
       }
   }
@@ -2893,7 +2893,7 @@ window.addEventListener('resize', () => {});
   // Fetch initial state
   async function initProxyState() {
       try {
-          const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard', {
+          const res = await fetch('https://geography-scoring-drawings-timing.trycloudflare.com/dashboard', {
               headers: { 'Bypass-Tunnel-Reminder': 'true' }
           });
           const data = await res.json();
