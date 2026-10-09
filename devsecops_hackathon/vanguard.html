@@ -443,7 +443,7 @@
                                 options = {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
-                                    body: JSON.stringify({ user: "hacker", review: "<script>alert('You have been hacked!')</script>" })
+                                    body: JSON.stringify({ user: "hacker", review: "<script>alert('You have been hacked!')<\/script>" })
                                 };
                                 attackTitle = "STORED XSS EXPLOITED";
                             } else if (type === 'idor') {
