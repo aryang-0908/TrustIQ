@@ -443,7 +443,7 @@
                                 options = {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
-                                    body: JSON.stringify({ user: "hacker", review: "<script>alert('You have been hacked!')<\/script>" })
+                                    body: JSON.stringify({ user: "hacker", review: "<script>alert('You have been hacked!')</script>" })
                                 };
                                 attackTitle = "STORED XSS EXPLOITED";
                             } else if (type === 'idor') {
@@ -470,9 +470,9 @@
                             
                             if (resDiv) {
                                 if (response.status === 400 || response.status === 401 || response.status === 403 || response.status === 429) {
-                                    resDiv.innerHTML = \<span class="text-green-500 font-bold"><i class="fas fa-shield-alt"></i> BLOCKED BY VEIL: \</span> - \;
+                                    resDiv.innerHTML = `<span class="text-green-500 font-bold"><i class="fas fa-shield-alt"></i> BLOCKED BY VEIL: </span> ${text}`;
                                 } else {
-                                    resDiv.innerHTML = \<span class="text-red-500 font-bold"><i class="fas fa-exclamation-triangle"></i> HACK SUCCESSFUL: Payload bypassed proxy (HTTP \)</span>\;
+                                    resDiv.innerHTML = `<span class="text-red-500 font-bold"><i class="fas fa-exclamation-triangle"></i> HACK SUCCESSFUL: Payload bypassed proxy (HTTP ${response.status})</span>`;
                                     
                                     let formattedText = text;
                                     try {
@@ -483,14 +483,13 @@
                                 }
                             }
                         } catch (e) {
-                            console.error("Attack error:", e);
                             const resDiv = document.getElementById('attack-result');
                             if (resDiv) {
-                                resDiv.innerHTML = \<span class="text-red-500">Error: \</span>\;
+                                resDiv.innerHTML = `<span class="text-red-500">Error: ${e.message}</span>`;
                             }
                         }
                     }
-                </script>
+                    </script>
             </div>
         </div>
     </section>
