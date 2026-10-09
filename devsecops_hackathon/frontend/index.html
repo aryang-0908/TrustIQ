@@ -2885,7 +2885,7 @@ window.addEventListener('resize', () => {});
           proxyActive = data.proxy_active;
           updateProxyButtons();
       } catch (e) {
-          alert("Error toggling proxy. Is the proxy server running?");
+          alert("Error toggling proxy: " + e.message + "\nCheck if https://vanguard-proxy-2026.loca.lt is accessible and bypass the reminder.");
           console.error(e);
       }
   }
