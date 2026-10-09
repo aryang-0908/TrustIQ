@@ -414,15 +414,15 @@
                         resDiv.innerHTML = "Sending payload...";
                         resDiv.className = "mt-4 font-mono text-xs text-blue-400 h-8";
                         
-                        let url = '/api/vanguard.html';
+                        let url = 'http://127.0.0.1:8000/api/test_attack';
                         let options = { method: 'GET' };
 
                         if (type === 'sql') {
-                            url = "/api/vanguard.html?search=' OR 1=1 --";
+                            url = "http://127.0.0.1:8000/api/test_attack?search=' OR 1=1 --";
                         } else if (type === 'xss') {
-                            url = "/api/vanguard.html?q=<script>alert(1)</script>";
+                            url = "http://127.0.0.1:8000/api/test_attack?q=<script>alert(1)</script>";
                         } else if (type === 'idor') {
-                            url = "/api/orders/admin_99";
+                            url = "http://127.0.0.1:8000/api/orders/admin_99";
                             options = { 
                                 method: 'GET',
                                 headers: { 'Authorization': 'Bearer testuser' }

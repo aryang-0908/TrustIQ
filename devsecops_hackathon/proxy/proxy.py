@@ -236,6 +236,17 @@ def dashboard_logs():
     except (FileNotFoundError, json.JSONDecodeError):
         return jsonify([])
 
+@app.route('/veil', methods=['GET'])
+def veil_dashboard_ui():
+    """Serves the frontend live guard dashboard."""
+    import os
+    dashboard_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dashboard.html'))
+    try:
+        with open(dashboard_path, 'r', encoding='utf-8') as f:
+            return Response(f.read(), mimetype='text/html')
+    except FileNotFoundError:
+        return "Dashboard HTML not found", 404
+
 @app.route('/dashboard/generate-token', methods=['POST'])
 def generate_token():
     """Helper endpoint to generate JWT tokens for testing."""

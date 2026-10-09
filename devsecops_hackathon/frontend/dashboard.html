@@ -14,11 +14,16 @@
         .stat-value { font-size: 2.5rem; font-weight: 700; background: linear-gradient(to right, #4ade80, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .log-row:nth-child(even) { background-color: #0f0f0f; }
         .log-row:hover { background-color: #1a1a1a; }
+        .blink { animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
     </style>
 </head>
 <body class="p-6 md:p-10 min-h-screen">
 
-    <header class="flex justify-between items-end mb-10 border-b border-gray-800 pb-4">
+    <header class="flex justify-between items-end mb-8 border-b border-gray-800 pb-4">
         <div>
             <h1 class="text-3xl font-bold tracking-widest uppercase text-white glitch">TRUSTIQ // VEIL</h1>
             <p class="text-xs text-gray-500 mt-2">LIVE THREAT INTELLIGENCE & EGRESS MONITORING (24/7)</p>
@@ -30,7 +35,55 @@
         </div>
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+    <!-- NEW: ACTIVE SERVERS & LIVE GUARD CONSOLE -->
+    <div class="card p-6 rounded-lg shadow-lg mb-8 border-l-4 border-emerald-500 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+            <i class="fas fa-shield-alt text-9xl text-emerald-500"></i>
+        </div>
+        <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-2 relative z-10">
+            <h3 class="text-gray-300 text-sm tracking-wider font-bold"><i class="fas fa-server mr-2 text-emerald-400"></i>ACTIVE SERVERS: GUARD CONSOLE</h3>
+            <span class="text-xs font-bold text-emerald-400 blink">● LIVE TRACKING</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+            <!-- Server Info -->
+            <div class="col-span-1 border-r border-gray-800 pr-4">
+                <h4 class="text-white text-xl font-bold tracking-wide">Vanguard University</h4>
+                <p class="text-xs text-gray-400 mb-5 border-b border-gray-800 pb-3">Node: vanguard-prod-01 <br>IP: 127.0.0.1:3000</p>
+                
+                <div class="space-y-3 text-xs font-mono">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500">Veil Guard Status:</span> 
+                        <span class="bg-emerald-900/30 text-emerald-400 px-2 py-1 rounded" id="guard-status">ACTIVE</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500">Threat Level:</span> 
+                        <span class="text-emerald-400 font-bold" id="threat-level">SECURE</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500">Last Incident:</span> 
+                        <span class="text-gray-300" id="last-attack-time">None</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500">Packets Inspected:</span> 
+                        <span class="text-blue-400 font-bold" id="packets-inspected">0</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Live Guard Activity Stream -->
+            <div class="col-span-2 flex flex-col">
+                <h4 class="text-gray-400 text-xs mb-2 font-mono"><i class="fas fa-terminal mr-2"></i>VEIL SECURITY GUARD - LIVE ACTIVITY STREAM</h4>
+                <div id="guard-terminal" class="bg-[#050505] border border-gray-800 p-4 h-48 overflow-y-auto font-mono text-[11px] leading-relaxed rounded flex-1">
+                    <div class="text-gray-600 mb-2">--------------------------------------------------</div>
+                    <div class="text-blue-400">[*] TrustIQ Veil Guard initialized on Vanguard...</div>
+                    <div class="text-blue-400">[*] Establishing deep packet inspection hooks... OK.</div>
+                    <div class="text-gray-600 mb-2">--------------------------------------------------</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="card p-6 rounded-lg shadow-lg">
             <h3 class="text-gray-400 text-xs tracking-wider mb-2">TOTAL BLOCKED</h3>
             <div class="stat-value" id="stat-blocked">0</div>
@@ -49,7 +102,8 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <!-- ATTACKS & LOGS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="card p-6 rounded-lg shadow-lg col-span-1">
             <h3 class="text-gray-400 text-sm tracking-wider mb-4 border-b border-gray-800 pb-2">ATTACK VECTORS</h3>
             <ul class="space-y-4 text-sm" id="attack-vectors">
@@ -84,7 +138,7 @@
     </div>
 
     <!-- Vanguard Target Security Data -->
-    <div class="card p-6 rounded-lg shadow-lg mb-10">
+    <div class="card p-6 rounded-lg shadow-lg mb-8">
         <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
             <h3 class="text-gray-400 text-sm tracking-wider">TARGET SECURITY POSTURE (VANGUARD)</h3>
             <button onclick="fetchVanguardData()" class="text-xs text-blue-400 hover:text-blue-300"><i class="fas fa-sync"></i> Refresh Data</button>
@@ -116,53 +170,60 @@
     <script>
         const API_URL = "http://127.0.0.1:8000/dashboard";
 
+        let prevForwarded = -1;
+        let prevBlocked = -1;
+        let lastAttackCount = -1;
+
+        function appendTerminal(msg, type='info') {
+            const term = document.getElementById('guard-terminal');
+            const time = new Date().toLocaleTimeString();
+            let color = 'text-gray-400';
+            let icon = '';
+            
+            if (type === 'ok') { color = 'text-emerald-400'; icon = '<i class="fas fa-check text-emerald-500 mr-1"></i>'; }
+            if (type === 'warn') { color = 'text-yellow-400'; icon = '<i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i>'; }
+            if (type === 'danger') { color = 'text-red-500 font-bold'; icon = '<i class="fas fa-shield-virus text-red-500 mr-1"></i>'; }
+            if (type === 'info') { icon = '<i class="fas fa-search text-gray-500 mr-1"></i>'; }
+            
+            const line = document.createElement('div');
+            line.className = `mt-1 ${color}`;
+            line.innerHTML = `<span class="text-gray-600">[${time}]</span> ${icon} ${msg}`;
+            term.appendChild(line);
+            
+            // Keep only last 50 lines
+            while (term.children.length > 50) {
+                term.removeChild(term.firstChild);
+            }
+            term.scrollTop = term.scrollHeight;
+        }
+
         async function fetchVanguardData() {
             try {
-                // Fetch the actual Vanguard HTML directly from the Vanguard host
                 const res = await fetch("http://127.0.0.1:3000/api/vanguard.html");
                 const html = await res.text();
-                
-                // Parse the embedded ruleset
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, "text/html");
                 const scriptTag = doc.getElementById('internal-scanner-ruleset');
-                
                 if (scriptTag) {
                     const data = JSON.parse(scriptTag.textContent);
-                    
-                    // Render Secrets Rules
                     const secTable = document.getElementById('vanguard-secrets');
                     secTable.innerHTML = '';
                     data.secret_rules.forEach(rule => {
                         secTable.innerHTML += `
-                            <tr class="hover:bg-gray-900 transition">
-                                <td class="p-2 w-24 text-red-400">${rule.rule_code}</td>
-                                <td class="p-2">${rule.name}</td>
-                                <td class="p-2 text-gray-500">${rule.severity}</td>
-                            </tr>
+                            <tr class="hover:bg-gray-900 transition"><td class="p-2 w-24 text-red-400">${rule.rule_code}</td><td class="p-2">${rule.name}</td><td class="p-2 text-gray-500">${rule.severity}</td></tr>
                         `;
                     });
-
-                    // Render Dependencies
                     const depTable = document.getElementById('vanguard-deps');
                     depTable.innerHTML = '';
                     data.dependency_rules.forEach(dep => {
                         let sevClass = dep.severity === 'CRITICAL' ? 'text-red-500 font-bold' : (dep.severity === 'HIGH' ? 'text-red-400' : 'text-yellow-500');
                         depTable.innerHTML += `
-                            <tr class="hover:bg-gray-900 transition">
-                                <td class="p-2 text-white">${dep.package_name}</td>
-                                <td class="p-2 ${sevClass}">${dep.cve}</td>
-                                <td class="p-2 text-gray-500">&lt; ${dep.vulnerable_below}</td>
-                            </tr>
+                            <tr class="hover:bg-gray-900 transition"><td class="p-2 text-white">${dep.package_name}</td><td class="p-2 ${sevClass}">${dep.cve}</td><td class="p-2 text-gray-500">&lt; ${dep.vulnerable_below}</td></tr>
                         `;
                     });
                 }
-            } catch (err) {
-                console.error("Failed to load Vanguard data:", err);
-            }
+            } catch (err) { console.error("Failed to load Vanguard data:", err); }
         }
-
-        // Call on load
         fetchVanguardData();
 
         async function fetchDashboard() {
@@ -171,12 +232,54 @@
                 if (!res.ok) return;
                 const data = await res.json();
                 
-                // Update stats
+                // Update Guard Console Logic
+                const currentAttacks = data.recent_attacks ? data.recent_attacks.length : 0;
+                
+                if (prevForwarded !== -1) {
+                    let diffForward = data.total_forwarded - prevForwarded;
+                    let diffBlock = data.total_blocked - prevBlocked;
+                    
+                    if (diffBlock > 0 && currentAttacks > lastAttackCount) {
+                        // Threat Detected!
+                        const gStatus = document.getElementById('guard-status');
+                        gStatus.innerText = 'INTERCEPTING';
+                        gStatus.className = 'bg-red-900/30 text-red-400 px-2 py-1 rounded blink';
+                        
+                        const tLevel = document.getElementById('threat-level');
+                        tLevel.innerText = 'HIGH';
+                        tLevel.className = 'text-red-500 font-bold';
+                        
+                        const newAttacks = data.recent_attacks.slice(lastAttackCount);
+                        newAttacks.forEach(a => {
+                            appendTerminal(`VEIL BLOCKED THREAT: ${a.attack_type} from ${a.ip}. Payload dropped.`, 'danger');
+                            document.getElementById('last-attack-time').innerText = new Date(a.timestamp).toLocaleTimeString();
+                        });
+                        
+                        // Reset status visually after a few seconds
+                        setTimeout(() => {
+                            gStatus.innerText = 'ACTIVE';
+                            gStatus.className = 'bg-emerald-900/30 text-emerald-400 px-2 py-1 rounded';
+                            tLevel.innerText = 'SECURE';
+                            tLevel.className = 'text-emerald-400 font-bold';
+                        }, 4000);
+
+                    } else if (diffForward > 0) {
+                        appendTerminal(`Scanned ${diffForward} inbound request(s). Verified clean. Forwarding to Vanguard...`, 'ok');
+                    } else {
+                        appendTerminal(`Monitoring Vanguard perimeter... nothing detected.`, 'info');
+                    }
+                }
+                
+                prevForwarded = data.total_forwarded;
+                prevBlocked = data.total_blocked;
+                lastAttackCount = currentAttacks;
+                document.getElementById('packets-inspected').innerText = (data.total_forwarded + data.total_blocked).toLocaleString();
+
+                // Update standard stats
                 document.getElementById('stat-blocked').innerText = data.total_blocked || 0;
                 document.getElementById('stat-dlp').innerText = data.dlp_scrubbed || 0;
                 document.getElementById('stat-bans').innerText = data.ip_bans || 0;
                 document.getElementById('stat-forwarded').innerText = data.total_forwarded || 0;
-                
                 document.getElementById('stat-sql').innerText = data.sql_injection || 0;
                 document.getElementById('stat-xss').innerText = data.xss_attempts || 0;
                 document.getElementById('stat-idor').innerText = data.idor_attempts || 0;
@@ -184,7 +287,7 @@
                 document.getElementById('stat-tamper').innerText = data.price_tampering || 0;
                 document.getElementById('stat-rate').innerText = data.rate_limited || 0;
 
-                // Update logs
+                // Update logs table
                 const tbody = document.getElementById('logs-table');
                 if (data.recent_attacks && data.recent_attacks.length > 0) {
                     tbody.innerHTML = '';
@@ -192,11 +295,9 @@
                     attacks.forEach(attack => {
                         const tr = document.createElement('tr');
                         tr.className = 'log-row border-b border-gray-800';
-                        
                         let colorClass = 'text-red-400';
                         if(attack.attack_type === 'RATE_LIMIT') colorClass = 'text-yellow-400';
                         if(attack.attack_type === 'DLP_LEAK') colorClass = 'text-purple-400';
-
                         tr.innerHTML = `
                             <td class="py-2 px-3 text-gray-500">${new Date(attack.timestamp).toLocaleTimeString()}</td>
                             <td class="py-2 px-3">${attack.ip}</td>
@@ -207,15 +308,11 @@
                         tbody.appendChild(tr);
                     });
                 }
-            } catch (err) {
-                console.error("Dashboard fetch error:", err);
-            }
+            } catch (err) {}
         }
-
-        // Fetch immediately and poll every 2 seconds
+        
         fetchDashboard();
         setInterval(fetchDashboard, 2000);
     </script>
 </body>
 </html>
-
