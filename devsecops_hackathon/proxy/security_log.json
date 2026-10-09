@@ -150,5 +150,13 @@
     "path": "api/leak_key",
     "details": "Scrubbed outbound data: API Key",
     "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T11:09:55.191170",
+    "ip": "127.0.0.1",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
   }
 ]
