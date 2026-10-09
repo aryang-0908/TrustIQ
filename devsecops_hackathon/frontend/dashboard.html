@@ -226,93 +226,114 @@
         }
         fetchVanguardData();
 
-        async function fetchDashboard() {
-            try {
-                const res = await fetch(API_URL);
-                if (!res.ok) return;
-                const data = await res.json();
-                
-                // Update Guard Console Logic
-                const currentAttacks = data.recent_attacks ? data.recent_attacks.length : 0;
-                
-                if (prevForwarded !== -1) {
-                    let diffForward = data.total_forwarded - prevForwarded;
-                    let diffBlock = data.total_blocked - prevBlocked;
+            let lastIdlePrintTime = 0;
+
+            async function fetchDashboard() {
+                try {
+                    const res = await fetch(API_URL);
+                    if (!res.ok) return;
+                    const data = await res.json();
                     
-                    if (diffBlock > 0 && currentAttacks > lastAttackCount) {
-                        // Threat Detected!
-                        const gStatus = document.getElementById('guard-status');
-                        gStatus.innerText = 'INTERCEPTING';
-                        gStatus.className = 'bg-red-900/30 text-red-400 px-2 py-1 rounded blink';
+                    // Update Guard Console Logic
+                    const currentAttacks = data.recent_attacks ? data.recent_attacks.length : 0;
+                    
+                    if (prevForwarded !== -1) {
+                        let diffForward = data.total_forwarded - prevForwarded;
+                        let diffBlock = data.total_blocked - prevBlocked;
                         
-                        const tLevel = document.getElementById('threat-level');
-                        tLevel.innerText = 'HIGH';
-                        tLevel.className = 'text-red-500 font-bold';
-                        
-                        const newAttacks = data.recent_attacks.slice(lastAttackCount);
-                        newAttacks.forEach(a => {
-                            appendTerminal(`VEIL BLOCKED THREAT: ${a.attack_type} from ${a.ip}. Payload dropped.`, 'danger');
-                            document.getElementById('last-attack-time').innerText = new Date(a.timestamp).toLocaleTimeString();
-                        });
-                        
-                        // Reset status visually after a few seconds
-                        setTimeout(() => {
-                            gStatus.innerText = 'ACTIVE';
-                            gStatus.className = 'bg-emerald-900/30 text-emerald-400 px-2 py-1 rounded';
-                            tLevel.innerText = 'SECURE';
-                            tLevel.className = 'text-emerald-400 font-bold';
-                        }, 4000);
+                        if (diffBlock > 0 && currentAttacks > lastAttackCount) {
+                            // Threat Detected!
+                            const gStatus = document.getElementById('guard-status');
+                            gStatus.innerText = 'INTERCEPTING';
+                            gStatus.className = 'bg-red-900/30 text-red-400 px-2 py-1 rounded blink';
+                            
+                            const tLevel = document.getElementById('threat-level');
+                            tLevel.innerText = 'HIGH';
+                            tLevel.className = 'text-red-500 font-bold';
+                            
+                            const newAttacks = data.recent_attacks.slice(lastAttackCount);
+                            newAttacks.forEach(a => {
+                                appendTerminal(`VEIL BLOCKED THREAT: ${a.attack_type} from ${a.ip}. Payload dropped.`, 'danger');
+                                document.getElementById('last-attack-time').innerText = new Date(a.timestamp).toLocaleTimeString();
+                            });
+                            
+                            // Reset status visually after a few seconds
+                            setTimeout(() => {
+                                gStatus.innerText = 'ACTIVE';
+                                gStatus.className = 'bg-emerald-900/30 text-emerald-400 px-2 py-1 rounded';
+                                tLevel.innerText = 'SECURE';
+                                tLevel.className = 'text-emerald-400 font-bold';
+                            }, 4000);
 
-                    } else if (diffForward > 0) {
-                        appendTerminal(`Scanned ${diffForward} inbound request(s). Verified clean. Forwarding to Vanguard...`, 'ok');
-                    } else {
-                        appendTerminal(`Monitoring Vanguard perimeter... nothing detected.`, 'info');
+                        } else if (diffForward > 0) {
+                            appendTerminal(`Scanned ${diffForward} inbound request(s). Verified clean. Forwarding to Vanguard...`, 'ok');
+                        } else {
+                            let now = Date.now();
+                            if (now - lastIdlePrintTime >= 10000) {
+                                appendTerminal(`Monitoring Vanguard perimeter... nothing detected.`, 'info');
+                                lastIdlePrintTime = now;
+                            }
+                        }
                     }
-                }
-                
-                prevForwarded = data.total_forwarded;
-                prevBlocked = data.total_blocked;
-                lastAttackCount = currentAttacks;
-                document.getElementById('packets-inspected').innerText = (data.total_forwarded + data.total_blocked).toLocaleString();
+                    
+                    prevForwarded = data.total_forwarded;
+                    prevBlocked = data.total_blocked;
+                    lastAttackCount = currentAttacks;
+                    document.getElementById('packets-inspected').innerText = (data.total_forwarded + data.total_blocked).toLocaleString();
 
-                // Update standard stats
-                document.getElementById('stat-blocked').innerText = data.total_blocked || 0;
-                document.getElementById('stat-dlp').innerText = data.dlp_scrubbed || 0;
-                document.getElementById('stat-bans').innerText = data.ip_bans || 0;
-                document.getElementById('stat-forwarded').innerText = data.total_forwarded || 0;
-                document.getElementById('stat-sql').innerText = data.sql_injection || 0;
-                document.getElementById('stat-xss').innerText = data.xss_attempts || 0;
-                document.getElementById('stat-idor').innerText = data.idor_attempts || 0;
-                document.getElementById('stat-auth').innerText = data.auth_failures || 0;
-                document.getElementById('stat-tamper').innerText = data.price_tampering || 0;
-                document.getElementById('stat-rate').innerText = data.rate_limited || 0;
+                    // Update standard stats
+                    document.getElementById('stat-blocked').innerText = data.total_blocked || 0;
+                    document.getElementById('stat-dlp').innerText = data.dlp_scrubbed || 0;
+                    document.getElementById('stat-bans').innerText = data.ip_bans || 0;
+                    document.getElementById('stat-forwarded').innerText = data.total_forwarded || 0;
+                    document.getElementById('stat-sql').innerText = data.sql_injection || 0;
+                    document.getElementById('stat-xss').innerText = data.xss_attempts || 0;
+                    document.getElementById('stat-idor').innerText = data.idor_attempts || 0;
+                    document.getElementById('stat-auth').innerText = data.auth_failures || 0;
+                    document.getElementById('stat-tamper').innerText = data.price_tampering || 0;
+                    document.getElementById('stat-rate').innerText = data.rate_limited || 0;
 
-                // Update logs table
-                const tbody = document.getElementById('logs-table');
-                if (data.recent_attacks && data.recent_attacks.length > 0) {
-                    tbody.innerHTML = '';
-                    const attacks = [...data.recent_attacks].reverse().slice(0, 15);
-                    attacks.forEach(attack => {
-                        const tr = document.createElement('tr');
-                        tr.className = 'log-row border-b border-gray-800';
-                        let colorClass = 'text-red-400';
-                        if(attack.attack_type === 'RATE_LIMIT') colorClass = 'text-yellow-400';
-                        if(attack.attack_type === 'DLP_LEAK') colorClass = 'text-purple-400';
-                        tr.innerHTML = `
-                            <td class="py-2 px-3 text-gray-500">${new Date(attack.timestamp).toLocaleTimeString()}</td>
-                            <td class="py-2 px-3">${attack.ip}</td>
-                            <td class="py-2 px-3 font-bold ${colorClass}">${attack.attack_type}</td>
-                            <td class="py-2 px-3 text-gray-400">${attack.path}</td>
-                            <td class="py-2 px-3 truncate max-w-xs" title="${attack.details}">${attack.details}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                }
-            } catch (err) {}
-        }
-        
-        fetchDashboard();
-        setInterval(fetchDashboard, 2000);
-    </script>
-</body>
-</html>
+                    // Update logs table
+                    const tbody = document.getElementById('logs-table');
+                    if (data.recent_attacks && data.recent_attacks.length > 0) {
+                        tbody.innerHTML = '';
+                        const attacks = [...data.recent_attacks].reverse().slice(0, 15);
+                        attacks.forEach(attack => {
+                            const tr = document.createElement('tr');
+                            tr.className = 'log-row border-b border-gray-800 hover:bg-gray-800 transition cursor-pointer';
+                            tr.onclick = () => {
+                                document.getElementById('modalContent').textContent = JSON.stringify(attack, null, 4);
+                                document.getElementById('attackModal').classList.remove('hidden');
+                            };
+                            let colorClass = 'text-red-400';
+                            if(attack.attack_type === 'RATE_LIMIT') colorClass = 'text-yellow-400';
+                            if(attack.attack_type === 'DLP_LEAK') colorClass = 'text-purple-400';
+                            tr.innerHTML = `
+                                <td class="py-2 px-3 text-gray-500">${new Date(attack.timestamp).toLocaleTimeString()}</td>
+                                <td class="py-2 px-3">${attack.ip}</td>
+                                <td class="py-2 px-3 font-bold ${colorClass}">${attack.attack_type}</td>
+                                <td class="py-2 px-3 text-gray-400">${attack.path}</td>
+                                <td class="py-2 px-3 truncate max-w-xs" title="${attack.details}">${attack.details}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                } catch (err) {}
+            }
+            
+            fetchDashboard();
+            setInterval(fetchDashboard, 2000);
+        </script>
+
+        <!-- Full Data Modal -->
+        <div id="attackModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+            <div class="bg-gray-900 border border-red-500/30 rounded-lg p-6 max-w-2xl w-full shadow-2xl">
+                <h3 class="text-xl text-red-400 font-mono mb-4 border-b border-gray-700 pb-2"><i class="fas fa-search-plus mr-2"></i>Intercept Details</h3>
+                <pre id="modalContent" class="text-green-400 font-mono text-sm overflow-x-auto whitespace-pre-wrap p-4 bg-black rounded border border-gray-800"></pre>
+                <div class="mt-4 flex justify-end">
+                    <button onclick="document.getElementById('attackModal').classList.add('hidden')" class="bg-gray-800 hover:bg-red-900/50 hover:text-red-400 transition text-white px-6 py-2 rounded font-mono">Close</button>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
