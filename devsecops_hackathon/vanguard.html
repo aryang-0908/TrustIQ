@@ -431,15 +431,15 @@
                                 resDiv.className = "mt-4 font-mono text-xs text-blue-400 h-8";
                             }
                             
-                            let url = 'https://geography-scoring-drawings-timing.trycloudflare.com/api/search';
+                            let url = 'https://trustiq-aegis.loca.lt/api/search';
                             let options = { method: 'GET', headers: {'Bypass-Tunnel-Reminder': 'true'} };
                             let attackTitle = "SYSTEM COMPROMISED";
 
                             if (type === 'sql') {
-                                url = "https://geography-scoring-drawings-timing.trycloudflare.com/api/search?q=' OR 1=1 --";
+                                url = "https://trustiq-aegis.loca.lt/api/search?q=' OR 1=1 --";
                                 attackTitle = "SQL INJECTION SUCCESSFUL";
                             } else if (type === 'xss') {
-                                url = "https://geography-scoring-drawings-timing.trycloudflare.com/api/reviews";
+                                url = "https://trustiq-aegis.loca.lt/api/reviews";
                                 options = {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
@@ -447,17 +447,17 @@
                                 };
                                 attackTitle = "STORED XSS EXPLOITED";
                             } else if (type === 'idor') {
-                                url = "https://geography-scoring-drawings-timing.trycloudflare.com/api/orders/admin_99";
+                                url = "https://trustiq-aegis.loca.lt/api/orders/admin_99";
                                 options = { 
                                     method: 'GET',
                                     headers: { 'Authorization': 'Bearer user_1', 'Bypass-Tunnel-Reminder': 'true' }
                                 };
                                 attackTitle = "IDOR: UNAUTHORIZED ACCESS TO ADMIN ORDERS";
                             } else if (type === 'dlp') {
-                                url = "https://geography-scoring-drawings-timing.trycloudflare.com/api/admin/stats";
+                                url = "https://trustiq-aegis.loca.lt/api/admin/stats";
                                 attackTitle = "DLP FAILURE: SECRETS EXFILTRATED";
                             } else if (type === 'header_xss') {
-                                url = "https://geography-scoring-drawings-timing.trycloudflare.com/api/products";
+                                url = "https://trustiq-aegis.loca.lt/api/products";
                                 options = { 
                                     method: 'GET',
                                     headers: { 'is_admin': 'true', 'Bypass-Tunnel-Reminder': 'true' }
@@ -629,4 +629,5 @@
     </div>
 </body>
 </html>
+
 

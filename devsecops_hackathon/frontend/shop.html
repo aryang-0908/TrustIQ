@@ -722,9 +722,9 @@
             try {
                 const tokenInput = document.getElementById('trustIqToken');
                 tokenInput.value = "Authenticating...";
-                const res = await fetch('https://geography-scoring-drawings-timing.trycloudflare.com/dashboard/generate-token', {
+                const res = await fetch('https://trustiq-aegis.loca.lt/dashboard/generate-token', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
                     body: JSON.stringify({ user_id: 'auto_shopper' })
                 });
                 const data = await res.json();
@@ -771,11 +771,11 @@
 
             try {
                 // Live Call to TrustIQ Edge
-                const response = await fetch('https://geography-scoring-drawings-timing.trycloudflare.com/api/checkout', {
+                const response = await fetch('https://trustiq-aegis.loca.lt/api/checkout', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${window.sessionToken || 'invalid'}` 
+                        'Authorization': `Bearer ${window.sessionToken || 'invalid'}`, 'Bypass-Tunnel-Reminder': 'true' 
                     },
                     body: JSON.stringify({
                         product_id: cart.length > 0 ? cart[0].id : 1,
@@ -856,3 +856,5 @@
     </script>
 </body>
 </html>
+
+

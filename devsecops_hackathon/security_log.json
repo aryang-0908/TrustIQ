@@ -1,0 +1,122 @@
+[
+  {
+    "timestamp": "2026-10-10T01:23:48.471919",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T01:25:48.050700",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T01:44:15.714626",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 3.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T01:49:59.279175",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'testuser' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T01:50:05.339599",
+    "ip": "14.194.135.206",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T01:51:16.909656",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 4999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T01:53:55.294674",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'user_1' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T01:54:04.288006",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T01:54:07.997765",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T01:57:45.197763",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T02:06:32.139899",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'user_1' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T02:06:53.124661",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'user_1' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T02:07:01.325537",
+    "ip": "14.194.135.206",
+    "attack_type": "XSS",
+    "path": "api/reviews",
+    "details": "Malicious script detected in request body",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T02:09:25.497695",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T02:09:45.527677",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 399.0",
+    "method": "POST"
+  }
+]
