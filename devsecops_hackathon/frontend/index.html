@@ -863,6 +863,9 @@ input::placeholder, textarea::placeholder { color:#ffffff !important; opacity:0.
         </p>
       </div>
       <div class="flex items-center gap-4 shrink-0" data-reveal data-delay="220">
+          <button id="aegisProxyBtn" onclick="toggleProxy()" class="px-6 py-3 bg-red-500 text-white text-[11px] font-bold tracking-[0.2em] hover:bg-red-400 transition-colors duration-300 shadow-[0_0_15px_rgba(239,68,68,0.4)]">
+            CONNECT TO NOVA
+          </button>
           <button class="px-6 py-3 bg-neutral-100 text-obsidian-950 text-xs font-medium tracking-widest hover:bg-white transition-colors duration-300 hidden md:block">
             GENERATE EPHEMERAL KEY
           </button>
@@ -2835,8 +2838,59 @@ window.addEventListener('resize', () => {});
     document.getElementById('deployStep1').classList.add('hidden');
     document.getElementById('deployStep2').classList.remove('hidden');
   }
+
+  let proxyActive = false;
+  async function toggleProxy() {
+      const btn = document.getElementById('aegisProxyBtn');
+      try {
+          const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard/toggle_proxy', {
+              method: 'POST'
+          });
+          const data = await res.json();
+          proxyActive = data.proxy_active;
+          
+          if (proxyActive) {
+              btn.textContent = 'DISCONNECT FROM NOVA';
+              btn.classList.remove('bg-red-500', 'hover:bg-red-400', 'shadow-[0_0_15px_rgba(239,68,68,0.4)]');
+              btn.classList.add('bg-emerald-500', 'hover:bg-emerald-400', 'shadow-[0_0_15px_rgba(16,185,129,0.4)]');
+          } else {
+              btn.textContent = 'CONNECT TO NOVA';
+              btn.classList.remove('bg-emerald-500', 'hover:bg-emerald-400', 'shadow-[0_0_15px_rgba(16,185,129,0.4)]');
+              btn.classList.add('bg-red-500', 'hover:bg-red-400', 'shadow-[0_0_15px_rgba(239,68,68,0.4)]');
+          }
+      } catch (e) {
+          alert("Error toggling proxy. Is the proxy server running?");
+          console.error(e);
+      }
+  }
+
+  // Fetch initial state
+  async function initProxyState() {
+      try {
+          const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard/status');
+          const data = await res.json();
+          proxyActive = data.proxy_active;
+          const btn = document.getElementById('aegisProxyBtn');
+          if (btn) {
+              if (proxyActive) {
+                  btn.textContent = 'DISCONNECT FROM NOVA';
+                  btn.classList.remove('bg-red-500', 'hover:bg-red-400', 'shadow-[0_0_15px_rgba(239,68,68,0.4)]');
+                  btn.classList.add('bg-emerald-500', 'hover:bg-emerald-400', 'shadow-[0_0_15px_rgba(16,185,129,0.4)]');
+              } else {
+                  btn.textContent = 'CONNECT TO NOVA';
+                  btn.classList.remove('bg-emerald-500', 'hover:bg-emerald-400', 'shadow-[0_0_15px_rgba(16,185,129,0.4)]');
+                  btn.classList.add('bg-red-500', 'hover:bg-red-400', 'shadow-[0_0_15px_rgba(239,68,68,0.4)]');
+              }
+          }
+      } catch (e) {
+          console.error("Could not fetch proxy state", e);
+      }
+  }
+  
+  window.addEventListener('DOMContentLoaded', initProxyState);
 </script>
 </body>
+
 </html>
 
 
