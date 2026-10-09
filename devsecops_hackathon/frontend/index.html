@@ -2842,9 +2842,12 @@ window.addEventListener('resize', () => {});
   let proxyActive = false;
   async function toggleProxy() {
       const btn = document.getElementById('aegisProxyBtn');
+      const newState = !proxyActive;
       try {
           const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard/toggle_proxy', {
-              method: 'POST'
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+              body: JSON.stringify({ active: newState })
           });
           const data = await res.json();
           proxyActive = data.proxy_active;
@@ -2867,7 +2870,9 @@ window.addEventListener('resize', () => {});
   // Fetch initial state
   async function initProxyState() {
       try {
-          const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard/status');
+          const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard', {
+              headers: { 'Bypass-Tunnel-Reminder': 'true' }
+          });
           const data = await res.json();
           proxyActive = data.proxy_active;
           const btn = document.getElementById('aegisProxyBtn');
