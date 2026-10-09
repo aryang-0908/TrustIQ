@@ -422,7 +422,7 @@
                         if (type === 'sql') {
                             url = "http://127.0.0.1:8000/api/test_attack?search=' OR 1=1 --";
                         } else if (type === 'xss') {
-                            url = "http://127.0.0.1:8000/api/test_attack?q=<script>alert(1)</script>";
+                            url = "http://127.0.0.1:8000/api/test_attack?q=<script>alert(1)<\/script>";
                         } else if (type === 'idor') {
                             url = "http://127.0.0.1:8000/api/orders/admin_99";
                             options = { 
@@ -435,7 +435,7 @@
                             url = "http://127.0.0.1:8000/api/products";
                             options = { 
                                 method: 'GET',
-                                headers: { 'X-Custom-Header': "<script>alert('hacked')</script>" }
+                                headers: { 'X-Custom-Header': "<script>alert('hacked')<\/script>" }
                             };
                         }
 
