@@ -413,6 +413,18 @@ def proxy(path):
             return jsonify({"error": "TrustIQ: Forbidden. You do not own this resource."}), 403
 
     # ==========================================
+        # ==========================================
+    # RULE 4.5: MALICIOUS HEADER DETECTION
+    # ==========================================
+    restricted_headers = ['is_admin', 'role', 'permissions', 'x-forwarded-user', 'x-admin']
+    for req_header in request.headers.keys():
+        if req_header.lower() in restricted_headers:
+            security_stats["idor_attempts"] += 1
+            log_attack(client_ip, "PRIVILEGE_ESCALATION", f"Attempted to inject restricted header: {req_header}", path)
+            print(f"{Fore.RED}[BLOCKED] Privilege Escalation Attempt via Header: {req_header}.")
+            return jsonify({"error": f"TrustIQ: Privilege escalation attempt via {req_header} blocked."}), 403
+
+    # ==========================================
     # RULE 5: GENERIC PAYLOAD TAMPERING & PRIVILEGE ESCALATION
     # ==========================================
     if request.method in ['POST', 'PUT']:
