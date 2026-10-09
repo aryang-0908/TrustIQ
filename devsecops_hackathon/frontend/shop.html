@@ -722,7 +722,7 @@
             try {
                 const tokenInput = document.getElementById('trustIqToken');
                 tokenInput.value = "Authenticating...";
-                const res = await fetch('http://127.0.0.1:8000/dashboard/generate-token', {
+                const res = await fetch('https://vanguard-proxy-2026.loca.lt/dashboard/generate-token', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: 'auto_shopper' })
@@ -771,7 +771,7 @@
 
             try {
                 // Live Call to TrustIQ Edge
-                const response = await fetch('http://127.0.0.1:8000/api/checkout', {
+                const response = await fetch('https://vanguard-proxy-2026.loca.lt/api/checkout', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

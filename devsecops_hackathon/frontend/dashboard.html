@@ -168,7 +168,7 @@
     </div>
 
     <script>
-        const API_URL = "http://127.0.0.1:8000/dashboard";
+        const API_URL = "https://vanguard-proxy-2026.loca.lt/dashboard";
 
         let prevForwarded = -1;
         let prevBlocked = -1;
@@ -199,7 +199,7 @@
 
         async function fetchVanguardData() {
             try {
-                const res = await fetch("http://127.0.0.1:3000/api/vanguard.html");
+                const res = await fetch("https://745c00c3239a5a.lhr.life/api/vanguard.html", { headers: { 'Bypass-Tunnel-Reminder': 'true' } });
                 const html = await res.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, "text/html");
@@ -230,7 +230,7 @@
 
             async function fetchDashboard() {
                 try {
-                    const res = await fetch(API_URL);
+                    const res = await fetch(API_URL, { headers: { 'Bypass-Tunnel-Reminder': 'true' } });
                     if (!res.ok) return;
                     const data = await res.json();
                     

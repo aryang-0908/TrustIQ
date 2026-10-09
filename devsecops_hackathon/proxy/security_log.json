@@ -166,5 +166,453 @@
     "path": "api/products",
     "details": "Malicious payload detected in header: X-Custom-Header",
     "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T11:37:30.455007",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T11:37:35.879094",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T11:37:38.287096",
+    "ip": "127.0.0.1",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'testuser' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T11:37:40.910068",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:03:15.939340",
+    "ip": "127.0.0.1",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:03:36.399331",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:03:45.782531",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:03:48.031791",
+    "ip": "127.0.0.1",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:03:48.817140",
+    "ip": "127.0.0.1",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'testuser' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:03:49.600152",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:03:50.396747",
+    "ip": "127.0.0.1",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:03:51.114403",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T12:06:27.963751",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 1000.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T16:03:31.841007",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 248.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T16:07:24.810183",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T16:13:08.184292",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T16:13:16.960256",
+    "ip": "127.0.0.1",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T16:13:43.320017",
+    "ip": "127.0.0.1",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T16:14:43.424017",
+    "ip": "127.0.0.1",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:17:44.285044",
+    "ip": "182.72.39.9",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:17:50.161801",
+    "ip": "182.72.39.9",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:17:51.905002",
+    "ip": "182.72.39.9",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:17:59.586053",
+    "ip": "182.72.39.9",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:18:01.747430",
+    "ip": "182.72.39.9",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'testuser' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:18:04.610703",
+    "ip": "182.72.39.9",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:18:13.102652",
+    "ip": "182.72.39.9",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:18:15.496957",
+    "ip": "182.72.39.9",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:47:04.345800",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:53:47.840269",
+    "ip": "127.0.0.1",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T22:55:40.942829",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 1499.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T22:56:30.826865",
+    "ip": "127.0.0.1",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 1299.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-09T23:16:49.000245",
+    "ip": "14.194.135.206",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:20:07.736423",
+    "ip": "139.167.143.182",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:21:43.760126",
+    "ip": "139.167.143.182",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:21:58.148650",
+    "ip": "139.167.143.182",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:24:19.513929",
+    "ip": "14.194.135.206",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:24:50.587560",
+    "ip": "139.167.143.182",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'testuser' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:27:45.298680",
+    "ip": "139.167.143.182",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:28:31.519697",
+    "ip": "14.194.135.206",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:28:38.378721",
+    "ip": "14.194.135.206",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:28:43.243928",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'testuser' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:28:48.571203",
+    "ip": "14.194.135.206",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:28:52.252957",
+    "ip": "14.194.135.206",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:28:58.754460",
+    "ip": "14.194.135.206",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:29:06.126095",
+    "ip": "14.194.135.206",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:34:59.770210",
+    "ip": "14.194.135.206",
+    "attack_type": "DLP_LEAK",
+    "path": "api/leak_key",
+    "details": "Scrubbed outbound data: API Key",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:35:08.130016",
+    "ip": "14.194.135.206",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:35:10.666763",
+    "ip": "14.194.135.206",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:35:13.178752",
+    "ip": "14.194.135.206",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:35:17.472237",
+    "ip": "139.167.143.182",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:36:01.963037",
+    "ip": "14.194.135.206",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:36:02.126661",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'testuser' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:36:21.586540",
+    "ip": "14.194.135.206",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/test_attack",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:36:23.632617",
+    "ip": "14.194.135.206",
+    "attack_type": "XSS",
+    "path": "api/test_attack",
+    "details": "Malicious script detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-09T23:37:36.471978",
+    "ip": "14.194.135.206",
+    "attack_type": "INJECTION",
+    "path": "api/products",
+    "details": "Malicious payload detected in header: X-Custom-Header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T00:09:56.240379",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 9.0",
+    "method": "POST"
   }
 ]

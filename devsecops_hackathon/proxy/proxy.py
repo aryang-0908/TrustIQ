@@ -24,7 +24,7 @@ TARGET_URL = "http://127.0.0.1:8001"
 JWT_SECRET = "TrustIQ_hackathon_secret_2026"
 RATE_LIMIT_MAX = 10           # Max requests per window
 RATE_LIMIT_WINDOW = 60        # Window in seconds
-AUTO_BAN_THRESHOLD = 3        # Ban IP after this many blocked attacks
+AUTO_BAN_THRESHOLD = 9999     # Ban IP after this many blocked attacks (Increased for demo)
 AUDIT_LOG_FILE = "security_log.json"
 DISCORD_WEBHOOK_URL = None     # Set your Discord webhook URL here to enable alerts
 

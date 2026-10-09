@@ -2545,7 +2545,7 @@ function sendMessage() {
   showTyping();
 
   // LIVE CALL TO TRUSTIQ PROXY
-  fetch('http://127.0.0.1:8000/dashboard/scan', {
+  fetch('https://vanguard-proxy-2026.loca.lt/dashboard/scan', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ code: text })

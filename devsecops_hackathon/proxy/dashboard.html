@@ -185,7 +185,7 @@ python trustiq_gateway.py --target=http://localhost:8001</div>
 
         async function fetchDashboard() {
             try {
-                const res = await fetch('http://127.0.0.1:8000/dashboard');
+                const res = await fetch('https://bb64331eebcca5.lhr.life/dashboard');
                 if(!res.ok) return;
                 const data = await res.json();
                 
@@ -216,7 +216,7 @@ python trustiq_gateway.py --target=http://localhost:8001</div>
         
         async function fetchLogs() {
             try {
-                const res = await fetch('http://127.0.0.1:8000/dashboard/logs');
+                const res = await fetch('https://bb64331eebcca5.lhr.life/dashboard/logs');
                 if(!res.ok) return;
                 const data = await res.json();
                 
