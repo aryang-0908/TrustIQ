@@ -31,7 +31,9 @@
         <div class="text-right">
             <p class="text-xs text-gray-500">PROTECTED TARGET / PLUGGED-IN WEB</p>
             <p class="text-emerald-400 font-bold" id="target-url">http://127.0.0.1:8001</p>
-            <p class="text-xs text-emerald-400 animate-pulse mt-1"><i class="fas fa-circle"></i> SYSTEM ACTIVE</p>
+            <button id="toggleProxyBtn" onclick="toggleProxy()" class="mt-2 px-4 py-1.5 bg-red-900/30 text-red-400 border border-red-500 text-xs font-bold rounded hover:bg-red-800/50 transition shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                <i class="fas fa-plug"></i> <span id="toggleProxyText">CONNECT VEIL PROTECTION</span>
+            </button>
         </div>
     </header>
 
@@ -173,6 +175,37 @@
         let prevForwarded = -1;
         let prevBlocked = -1;
         let lastAttackCount = -1;
+        let proxyActiveState = false;
+
+        async function toggleProxy() {
+            const newState = !proxyActiveState;
+            try {
+                const res = await fetch(API_URL + "/toggle_proxy", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+                    body: JSON.stringify({ active: newState })
+                });
+                const data = await res.json();
+                proxyActiveState = data.proxy_active;
+                updateToggleButton();
+                appendTerminal(`Veil Protection has been ${proxyActiveState ? 'ENABLED' : 'DISABLED'}.`, proxyActiveState ? 'ok' : 'warn');
+            } catch (err) {
+                console.error(err);
+                alert('Failed to toggle protection');
+            }
+        }
+
+        function updateToggleButton() {
+            const btn = document.getElementById('toggleProxyBtn');
+            const txt = document.getElementById('toggleProxyText');
+            if (proxyActiveState) {
+                btn.className = "mt-2 px-4 py-1.5 bg-emerald-900/30 text-emerald-400 border border-emerald-500 text-xs font-bold rounded hover:bg-emerald-800/50 transition shadow-[0_0_10px_rgba(52,211,153,0.2)]";
+                txt.innerText = "DISCONNECT VEIL PROTECTION";
+            } else {
+                btn.className = "mt-2 px-4 py-1.5 bg-red-900/30 text-red-400 border border-red-500 text-xs font-bold rounded hover:bg-red-800/50 transition shadow-[0_0_10px_rgba(239,68,68,0.2)]";
+                txt.innerText = "CONNECT VEIL PROTECTION";
+            }
+        }
 
         function appendTerminal(msg, type='info') {
             const term = document.getElementById('guard-terminal');
@@ -237,6 +270,13 @@
                     // Update Guard Console Logic
                     const currentAttacks = data.recent_attacks ? data.recent_attacks.length : 0;
                     
+                    if (data.proxy_active !== undefined) {
+                        if (proxyActiveState !== data.proxy_active) {
+                            proxyActiveState = data.proxy_active;
+                            updateToggleButton();
+                        }
+                    }
+
                     if (prevForwarded !== -1) {
                         let diffForward = data.total_forwarded - prevForwarded;
                         let diffBlock = data.total_blocked - prevBlocked;

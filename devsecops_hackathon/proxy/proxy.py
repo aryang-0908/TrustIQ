@@ -34,6 +34,7 @@ VALID_PRICES = {"1": 24999.00, "2": 12499.00, "3": 34999.00, "4": 45000.00, "5":
 # ==========================================
 # IN-MEMORY TRACKING
 # ==========================================
+PROXY_ACTIVE = False                        # Start disabled so user can toggle it on
 rate_limit_tracker = defaultdict(list)      # IP -> [timestamp, timestamp, ...]
 attack_counter = defaultdict(int)           # IP -> count of blocked attacks
 ip_blocklist = set()                        # Set of banned IPs
@@ -48,7 +49,8 @@ security_stats = {
     "dlp_scrubbed": 0,
     "ip_bans": 0,
     "total_forwarded": 0,
-    "recent_attacks": []
+    "recent_attacks": [],
+    "proxy_active": False
 }
 
 # ==========================================
@@ -224,7 +226,18 @@ def dashboard():
     stats = dict(security_stats)
     stats["banned_ips"] = list(ip_blocklist)
     stats["active_rate_limits"] = len(rate_limit_tracker)
+    stats["proxy_active"] = PROXY_ACTIVE
     return jsonify(stats)
+
+@app.route('/dashboard/toggle_proxy', methods=['POST'])
+def toggle_proxy():
+    """Toggles the Veil proxy protection on and off."""
+    global PROXY_ACTIVE
+    data = request.json
+    PROXY_ACTIVE = bool(data.get("active", True))
+    security_stats["proxy_active"] = PROXY_ACTIVE
+    print(f"{Fore.MAGENTA}[SYSTEM] Proxy protection set to: {PROXY_ACTIVE}")
+    return jsonify({"status": "success", "proxy_active": PROXY_ACTIVE})
 
 @app.route('/dashboard/logs', methods=['GET'])
 def dashboard_logs():
@@ -325,6 +338,19 @@ def proxy(path):
     headers = {key: value for (key, value) in request.headers if key != 'Host'}
     
     print(f"\n{Fore.CYAN}[PROXY] {request.method} /{path} from {client_ip}")
+    
+    # ==========================================
+    # PROXY BYPASS CHECK (FOR DEMO BEFORE/AFTER)
+    # ==========================================
+    if not PROXY_ACTIVE:
+        print(f"{Fore.YELLOW}[BYPASS] Protection is disabled. Forwarding blindly to backend...")
+        resp = requests.request(
+            method=request.method, url=full_url, headers=headers,
+            data=request.get_data(), cookies=request.cookies, allow_redirects=False
+        )
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        response_headers = [(name, value) for (name, value) in resp.raw.headers.items() if name.lower() not in excluded_headers]
+        return Response(resp.content, resp.status_code, response_headers)
     
     # ==========================================
     # RULE 0: IP BLOCKLIST CHECK
