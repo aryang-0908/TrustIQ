@@ -6,5 +6,205 @@
     "path": "api/products",
     "details": "Attempted to inject restricted header: Is-Admin",
     "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T09:57:53.526516",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 1. Expected 24999.0, got 999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T10:05:34.396412",
+    "ip": "14.194.135.206",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:06:43.044938",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'user_1' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:09:06.124619",
+    "ip": "14.194.135.206",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:09:11.219500",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:09:17.371359",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'user_1' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:09:21.054795",
+    "ip": "14.194.135.206",
+    "attack_type": "XSS",
+    "path": "api/reviews",
+    "details": "Malicious script detected in request body",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T10:09:33.955065",
+    "ip": "14.194.135.206",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:09:58.112678",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:10:01.346521",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'user_1' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:15:52.622940",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 1499.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T10:16:29.092295",
+    "ip": "14.194.135.206",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:16:31.042754",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:16:33.467110",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'user_1' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:16:35.425031",
+    "ip": "14.194.135.206",
+    "attack_type": "XSS",
+    "path": "api/reviews",
+    "details": "Malicious script detected in request body",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T10:16:37.998559",
+    "ip": "14.194.135.206",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:17:12.210004",
+    "ip": "182.72.39.9",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 3499.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T10:19:19.412678",
+    "ip": "14.194.135.206",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:19:23.503472",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:19:26.587690",
+    "ip": "14.194.135.206",
+    "attack_type": "IDOR",
+    "path": "api/orders/admin_99",
+    "details": "User 'user_1' tried to access 'admin_99's data",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:19:30.461812",
+    "ip": "14.194.135.206",
+    "attack_type": "XSS",
+    "path": "api/reviews",
+    "details": "Malicious script detected in request body",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T10:19:35.559838",
+    "ip": "14.194.135.206",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:21:30.059258",
+    "ip": "14.194.135.206",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:22:02.323632",
+    "ip": "14.194.135.206",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T10:22:49.343396",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 1. Expected 24999.0, got 59.0",
+    "method": "POST"
   }
 ]
