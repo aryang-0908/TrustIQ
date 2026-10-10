@@ -416,7 +416,8 @@ def proxy(path):
         # ==========================================
     # RULE 4.5: MALICIOUS HEADER DETECTION
     # ==========================================
-    restricted_headers = ['is_admin', 'role', 'permissions', 'x-forwarded-user', 'x-admin']
+    restricted_headers = ['is_admin', 'is-admin', 'role', 'permissions', 'x-forwarded-user', 'x-admin']
+    print('DEBUG HEADERS:', list(request.headers.keys()))
     for req_header in request.headers.keys():
         if req_header.lower() in restricted_headers:
             security_stats["idor_attempts"] += 1
@@ -507,3 +508,6 @@ if __name__ == '__main__':
     print(f"{Fore.MAGENTA}{Style.BRIGHT}  Protecting: {TARGET_URL}")
     print(f"{Fore.MAGENTA}{Style.BRIGHT}=====================================================\n")
     app.run(port=8000, debug=True, use_reloader=False)
+
+
+

@@ -1,0 +1,10 @@
+[
+  {
+    "timestamp": "2026-10-10T09:55:38.533356",
+    "ip": "127.0.0.1",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
+  }
+]
