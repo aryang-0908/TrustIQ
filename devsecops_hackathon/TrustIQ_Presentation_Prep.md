@@ -1,6 +1,6 @@
 # TrustIQ - Presentation & Demo Prep Guide
 
-## 1. Elevator Pitch
+## 1. Elevator Pitch\
 **"TrustIQ is an automated, end-to-end DevSecOps pipeline and Zero-Trust proxy designed to bridge the gap between application development and security. It features two vulnerable target applications (Vanguard and Nova) to demonstrate real-world attacks. TrustIQ then mitigates these through 'Oracle', our custom SAST scanner that catches vulnerabilities before deployment, and 'Veil', a robust Zero-Trust Web Application Firewall (WAF) that actively blocks malicious traffic, enforces authentication, and prevents data leaks in real-time. Everything is monitored and orchestrated through a unified dashboard."**
 
 ## 2. Module Breakdown

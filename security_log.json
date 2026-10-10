@@ -206,5 +206,109 @@
     "path": "api/checkout",
     "details": "Price tampered for product 1. Expected 24999.0, got 59.0",
     "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T10:30:10.278240",
+    "ip": "182.72.39.9",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 1. Expected 24999.0, got 4999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T11:10:10.003609",
+    "ip": "14.194.135.206",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 1299.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T11:11:36.779132",
+    "ip": "14.194.135.206",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T11:14:41.190749",
+    "ip": "182.72.39.9",
+    "attack_type": "AUTH_FAILURE",
+    "path": "api/admin/stats",
+    "details": "Missing Authorization header",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T11:27:01.080780",
+    "ip": "139.167.143.182",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T11:37:29.570860",
+    "ip": "182.72.39.9",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T11:38:21.841300",
+    "ip": "139.167.143.182",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T11:40:06.329749",
+    "ip": "139.167.143.182",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T11:41:25.768282",
+    "ip": "182.72.39.9",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T11:49:59.700233",
+    "ip": "182.72.39.9",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 1. Expected 24999.0, got 650.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T12:18:57.636114",
+    "ip": "139.167.143.182",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T12:23:58.192334",
+    "ip": "182.72.39.9",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 3. Expected 34999.0, got 999.0",
+    "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T14:29:02.602118",
+    "ip": "182.72.39.9",
+    "attack_type": "PAYLOAD_TAMPERING",
+    "path": "api/checkout",
+    "details": "Price tampered for product 2. Expected 12499.0, got 12.0",
+    "method": "POST"
   }
 ]
