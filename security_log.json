@@ -310,5 +310,37 @@
     "path": "api/checkout",
     "details": "Price tampered for product 2. Expected 12499.0, got 12.0",
     "method": "POST"
+  },
+  {
+    "timestamp": "2026-10-10T14:57:58.202280",
+    "ip": "14.194.135.206",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-10-10T14:58:26.446259",
+    "ip": "14.194.135.206",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-11-06T23:55:36.754945",
+    "ip": "49.43.169.61",
+    "attack_type": "SQL_INJECTION",
+    "path": "api/search",
+    "details": "Malicious SQL detected in URL",
+    "method": "GET"
+  },
+  {
+    "timestamp": "2026-11-06T23:56:01.566026",
+    "ip": "49.43.169.61",
+    "attack_type": "PRIVILEGE_ESCALATION",
+    "path": "api/products",
+    "details": "Attempted to inject restricted header: Is-Admin",
+    "method": "GET"
   }
 ]

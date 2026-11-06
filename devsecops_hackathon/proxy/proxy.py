@@ -9,6 +9,7 @@ from datetime import datetime
 from collections import defaultdict
 from colorama import init, Fore, Style
 import sys
+import math
 
 if sys.stdout.encoding.lower() != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
@@ -268,6 +269,17 @@ def generate_token():
     token = jwt.encode({"user_id": user_id, "iat": time.time()}, JWT_SECRET, algorithm="HS256")
     return jsonify({"token": token, "user_id": user_id})
 
+def shannon_entropy(data):
+    """Calculates the Shannon Entropy of a string to detect high-randomness secrets."""
+    if not data:
+        return 0
+    entropy = 0
+    for x in set(data):
+        p_x = data.count(x) / len(data)
+        if p_x > 0:
+            entropy -= p_x * math.log2(p_x)
+    return entropy
+
 @app.route('/dashboard/scan', methods=['POST'])
 def scan_code():
     """Endpoint for the frontend Oracle Chatbox to scan code snippets."""
@@ -278,51 +290,79 @@ def scan_code():
     lines = code.split('\n')
     findings = []
     
-    # Advanced Patterns from scanner.py
     ADV_SECRETS = [
-        (re.compile(r'sk_(live|test|fake)_[a-zA-Z0-9]{10,}'), "Hardcoded Stripe API key"),
-        (re.compile(r'(AKIA|MOCK)[0-9A-Z]{16}'), "Hardcoded AWS Access Key"),
-        (re.compile(r'ghp_[a-zA-Z0-9]{36}'), "Hardcoded GitHub Personal Token"),
-        (re.compile(r'(?i)(password|passwd|pwd)\s*=\s*["\'][^"\']{4,}["\']'), "Hardcoded password"),
-        (re.compile(r'(?i)(api_key|apikey|secret_key|secret)\s*=\s*["\'][^"\']{8,}["\']'), "Hardcoded secret/API key"),
+        (re.compile(r'sk_(live|test|fake)_[a-zA-Z0-9]{10,}'), "Hardcoded Stripe API key", "Use os.getenv('STRIPE_SECRET_KEY') or a secret manager."),
+        (re.compile(r'(AKIA|MOCK|ASIA)[0-9A-Z]{16}'), "Hardcoded AWS Access Key", "Store credentials in environment variables or IAM roles."),
+        (re.compile(r'ghp_[a-zA-Z0-9]{36}'), "Hardcoded GitHub Personal Token", "Revoke token and inject via secure vault."),
+        (re.compile(r'-----BEGIN [A-Z ]+ PRIVATE KEY-----'), "Hardcoded Private Key", "Store private keys in a secure vault or HSM."),
+        (re.compile(r'(?i)(password|passwd|pwd|db_pass)\s*[:=]\s*["\'][^"\']{4,}["\']'), "Hardcoded password / credential", "Inject passwords via environment variables."),
+        (re.compile(r'(?i)(api_key|apikey|secret_key|secret|auth_token)\s*[:=]\s*["\'][^"\']{8,}["\']'), "Hardcoded secret/API key", "Use os.getenv() or a secret manager."),
+        (re.compile(r'(?i)(RootKeyMaster|MasterKey|SecretKey|PrivateKey)\s*[:=]\s*["\'][^"\']{8,}["\']'), "Hardcoded Master/Private Key token", "Use KMS or asymmetric key rotation."),
     ]
     ADV_PRICE = [
-        re.compile(r'request\.json\.get\([\'"]price[\'"]\)'),
-        re.compile(r'request\.form\.get\([\'"]price[\'"]\)'),
-        re.compile(r'request\.args\.get\([\'"]price[\'"]\)'),
+        (re.compile(r'request\.(json|form|args)\.get\([\'"]price[\'"]\)'), "Parameter Tampering Risk", "Never trust client-side prices. Look up prices in backend database catalog."),
     ]
     ADV_SQL = [
-        (re.compile(r'f["\'].*(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER).*\{.*\}.*["\']', re.IGNORECASE), "SQL injection via f-string"),
-        (re.compile(r'(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER).*%s', re.IGNORECASE), "SQL injection via %s formatting"),
-        (re.compile(r'(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER).*\+\s*(?:request|user_input|data)', re.IGNORECASE), "SQL injection via string concatenation"),
-        (re.compile(r'\.execute\(\s*f["\']', re.IGNORECASE), "SQL injection in .execute() with f-string"),
-        (re.compile(r'\.execute\(.*\+', re.IGNORECASE), "SQL injection in .execute() with concatenation"),
+        (re.compile(r'(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER|WHERE|FROM).*(?:\+|\|\||\.concat)', re.IGNORECASE), "SQL injection via string concatenation", "Use parameterized queries or prepared statements."),
+        (re.compile(r'(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER).*(?:%s|%d|\$\d+|\{\})', re.IGNORECASE), "SQL injection via string formatting", "Use query parameter bindings instead of string substitution."),
+        (re.compile(r'(?:sprintf|format)\s*\(\s*["\'].*(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER)', re.IGNORECASE), "SQL injection via sprintf formatting", "Use database driver parameterized placeholders."),
+        (re.compile(r'(?:f["\']|`)[^`]*(?:SELECT|INSERT|UPDATE|DELETE|DROP|ALTER)[^`]*\{', re.IGNORECASE), "SQL injection via string interpolation", "Use parameterized queries (e.g., ? or %s) instead of string interpolation."),
+        (re.compile(r'(?:\.execute|\.raw|\.query)\s*\([^)]*[\+\$\{]', re.IGNORECASE), "Unparameterized dynamic query execution", "Pass parameters as query bindings instead of concatenating variables."),
     ]
     ADV_XSS = [
-        (re.compile(r'innerHTML\s*='), "Potential XSS via innerHTML assignment"),
-        (re.compile(r'document\.write\('), "Potential XSS via document.write"),
-        (re.compile(r'\|\s*safe'), "Potential XSS via Jinja2 |safe filter"),
-        (re.compile(r'Markup\(.*request'), "Potential XSS via Flask Markup with user input"),
+        (re.compile(r'innerHTML\s*='), "Potential XSS via innerHTML assignment", "Use textContent or a sanitized DOM sanitizer like DOMPurify."),
+        (re.compile(r'document\.write\s*\('), "Potential XSS via document.write", "Avoid document.write; manipulate safe DOM nodes directly."),
+        (re.compile(r'\beval\s*\('), "Dangerous code execution via eval()", "Refactor logic to eliminate eval(). Use JSON.parse or strict parsers."),
+        (re.compile(r'dangerouslySetInnerHTML'), "Dangerous React innerHTML injection", "Ensure HTML is sanitized with DOMPurify."),
+        (re.compile(r'\|\s*safe'), "Potential XSS via Jinja2 |safe filter", "Avoid bypassing Jinja2 auto-escaping."),
+        (re.compile(r'Markup\(.*(?:request|input|param)'), "Potential XSS via Flask Markup with user input", "Escape dynamic content before creating Markup objects."),
     ]
+    ADV_SSRF = [
+        (re.compile(r'(?:requests\.(?:get|post)|fetch|http\.get)\s*\([^)]*[\+].*(?:url|u\b|req|param|input)', re.IGNORECASE), "Server-Side Request Forgery (SSRF) risk", "Validate and allowlist destination URLs before dispatching outbound HTTP requests."),
+    ]
+    
+    ENTROPY_REGEX = re.compile(r'["\']([A-Za-z0-9+/=_-]{20,})["\']')
     
     for i, line in enumerate(lines):
         line_num = i + 1
+        line_matched = False
         
-        for pattern, desc in ADV_SECRETS:
+        for pattern, desc, fix in ADV_SECRETS:
             if pattern.search(line):
-                findings.append({"line": line_num, "issue": desc, "fix": "Use os.getenv() or a secure vault."})
+                findings.append({"line": line_num, "issue": desc, "fix": fix})
+                line_matched = True
                 
-        for pattern in ADV_PRICE:
+        for pattern, desc, fix in ADV_PRICE:
             if pattern.search(line):
-                findings.append({"line": line_num, "issue": "Parameter Tampering Risk", "fix": "Never trust client-side prices. Look up prices in backend database."})
+                findings.append({"line": line_num, "issue": desc, "fix": fix})
+                line_matched = True
                 
-        for pattern, desc in ADV_SQL:
+        for pattern, desc, fix in ADV_SQL:
             if pattern.search(line):
-                findings.append({"line": line_num, "issue": desc, "fix": "Use parameterized queries or an ORM (e.g. SQLAlchemy)."})
+                findings.append({"line": line_num, "issue": desc, "fix": fix})
+                line_matched = True
                 
-        for pattern, desc in ADV_XSS:
+        for pattern, desc, fix in ADV_XSS:
             if pattern.search(line):
-                findings.append({"line": line_num, "issue": desc, "fix": "Sanitize user input before rendering it in the DOM."})
+                findings.append({"line": line_num, "issue": desc, "fix": fix})
+                line_matched = True
+                
+        for pattern, desc, fix in ADV_SSRF:
+            if pattern.search(line):
+                findings.append({"line": line_num, "issue": desc, "fix": fix})
+                line_matched = True
+                
+        if not line_matched:
+            for match in ENTROPY_REGEX.finditer(line):
+                val = match.group(1)
+                if "/" not in val and len(val) >= 20:
+                    ent = shannon_entropy(val)
+                    if ent >= 4.2:
+                        findings.append({
+                            "line": line_num,
+                            "issue": f"High Shannon Entropy Secret (Entropy: {ent:.2f})",
+                            "fix": "Shannon Entropy engine flagged a high-randomness string. Verify and move to a secure secrets vault."
+                        })
                 
     return jsonify({"vulnerabilities": findings})
 
